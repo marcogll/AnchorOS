@@ -27,12 +27,12 @@ SalonOS es un sistema operativo para salones de belleza orientado a agenda, pago
 
 * Acceso prioritario a agenda.
 * Beneficios financieros definidos en pricing.
-* Invitaciones mensuales.
+* Invitaciones semanales.
 
 ### 3.3 Ecosistema de Exclusividad (Invitaciones)
 
-* Cada cuenta Tier Gold tiene **5 invitaciones mensuales**.
-* Las invitaciones **se resetean el día 1 de cada mes**.
+* Cada cuenta Tier Gold tiene **5 invitaciones semanales**.
+* Las invitaciones **se resetean cada semana** (Lunes 00:00 UTC).
 * El reseteo es automático mediante:
 
   * Supabase Edge Function **o**
@@ -41,6 +41,14 @@ SalonOS es un sistema operativo para salones de belleza orientado a agenda, pago
 
   * Idempotente.
   * Auditado en `audit_logs`.
+
+### 3.4 Jerarquía de Roles
+
+* **Admin**: Acceso total. Puede ver PII de clientes y hacer ajustes.
+* **Manager**: Acceso operacional. Puede ver PII de clientes y hacer ajustes.
+* **Staff**: Nivel de coordinación. Puede ver PII de clientes y hacer ajustes.
+* **Artist**: Nivel de ejecución. **Solo puede ver nombre y notas** del cliente. No ve email ni phone.
+* **Customer**: Nivel más bajo. Solo puede ver sus propios datos.
 
 ---
 

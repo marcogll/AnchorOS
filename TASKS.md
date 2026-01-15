@@ -19,8 +19,8 @@ Este documento define las tareas ejecutables del proyecto **SalonOS**, alineadas
 
 * Crear proyecto Supabase.
 * Configurar Auth (Magic Links Email/SMS).
-* Definir roles: Admin / Manager / Staff / Customer.
-* Configurar RLS base por rol.
+* Definir roles: Admin / Manager / Staff / Artist / Customer.
+* Configurar RLS base por rol (Artist NO ve email/phone de customers).
 
 **Output:**
 
@@ -60,8 +60,8 @@ Tareas:
 * Implementar generador de Short ID (6 chars, collision-safe).
 * Validación de unicidad antes de persistir booking.
 * Generador y validación de códigos de invitación.
-* Lógica de cuotas mensuales por Tier.
-* Reseteo automático de invitaciones el día 1 de cada mes (UTC).
+* Lógica de cuotas semanales por Tier.
+* Reseteo automático de invitaciones cada semana (Lunes 00:00 UTC).
 
 **Output:**
 
@@ -88,10 +88,16 @@ Tareas:
 
 ### 2.1 Disponibilidad Doble Capa
 
-* Validación Staff:
+* Validación Staff (rol Staff):
 
   * Horario laboral.
   * Eventos bloqueantes en Google Calendar.
+
+* Validación Recurso:
+
+  * Disponibilidad de estación física.
+
+* Regla de prioridad dinámica entre Staff y Artist.
 
 * Validación Recurso:
 
@@ -106,9 +112,9 @@ Tareas:
 
 ---
 
-### 2.2 Servicios Express (Dual Staff)
+### 2.2 Servicios Express (Dual Artists)
 
-* Búsqueda de dos colaboradoras simultáneas.
+* Búsqueda de dos artists simultáneas.
 * Bloqueo del recurso principal requerido.
 * Aplicación automática de Premium Fee.
 

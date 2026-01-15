@@ -21,7 +21,7 @@ Ningún agente tiene autoridad de producto. Todos ejecutan estrictamente bajo el
 **Rol:** Arquitecto de sistema y reglas de negocio.
 
 **Responsabilidades explícitas alineadas al PRD:**
-- Definir la lógica de reseteo mensual de invitaciones (día 1, idempotente, auditable).
+- Definir la lógica de reseteo semanal de invitaciones (Lunes 00:00 UTC, idempotente, auditable).
 - Especificar manejo UTC-first y puntos válidos de conversión de zona horaria.
 - Diseñar el algoritmo de generación de Short ID con reintentos por colisión.
 - Modelar estados, transiciones y edge cases críticos.
@@ -42,7 +42,7 @@ Ningún agente tiene autoridad de producto. Todos ejecutan estrictamente bajo el
 **Rol:** Ingeniero de backend.
 
 **Responsabilidades explícitas alineadas al PRD:**
-- Implementar el reseteo mensual de invitaciones mediante:
+- Implementar el reseteo semanal de invitaciones mediante:
   - Cron Job o
   - Supabase Edge Function.
 - Garantizar que todos los timestamps persistidos estén en UTC.
@@ -89,7 +89,8 @@ Ningún agente tiene autoridad de producto. Todos ejecutan estrictamente bajo el
 
 **Responsabilidades explícitas alineadas al PRD:**
 - Verificar que ningún timestamp no-UTC sea almacenado.
-- Auditar la idempotencia del reseteo mensual de invitaciones.
+- Auditar la idempotencia del reseteo semanal de invitaciones.
+- Verificar que los roles Artist NO puedan acceder a email/phone de customers.
 - Detectar riesgos de colisión, enumeración o fuga de Short IDs.
 - Revisar cumplimiento de RLS y límites de acceso.
 
