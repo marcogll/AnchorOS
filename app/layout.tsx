@@ -26,24 +26,30 @@ export default function RootLayout({
         <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
       </head>
       <body className={`${inter.variable} font-sans`}>
-        <header className="site-header">
-          <nav className="nav-primary">
-            <div className="logo">
-              <a href="/">ANCHOR:23</a>
-            </div>
+        {typeof window === 'undefined' && (
+          <header className="site-header">
+            <nav className="nav-primary">
+              <div className="logo">
+                <a href="/">ANCHOR:23</a>
+              </div>
 
             <ul className="nav-links">
               <li><a href="/">Inicio</a></li>
               <li><a href="/historia">Nosotros</a></li>
               <li><a href="/servicios">Servicios</a></li>
-              <li><a href="/membresias">Membresías</a></li>
             </ul>
 
-            <div className="nav-actions">
-              <a className="btn-primary" href="/membresias">Solicitar Membresía</a>
+            <div className="nav-actions flex items-center gap-4">
+              <a href="/booking/servicios" className="btn-secondary">
+                Book Now
+              </a>
+              <a href="/membresias" className="btn-primary">
+                Memberships
+              </a>
             </div>
-          </nav>
-        </header>
+            </nav>
+          </header>
+        )}
 
         <main>{children}</main>
 
@@ -56,7 +62,7 @@ export default function RootLayout({
           <div className="footer-links">
             <a href="/historia">Nosotros</a>
             <a href="/servicios">Servicios</a>
-            <a href="/contacto">Contáctanos</a>
+            <a href="/franchises">Franquicias</a>
           </div>
 
           <div className="footer-legal">

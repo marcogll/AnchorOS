@@ -22,11 +22,24 @@
 }
 
 @layer components {
-  .site-header {
+  .booking-header {
     @apply fixed top-0 left-0 right-0 z-50;
     background: var(--bone-white);
     backdrop-filter: blur(8px);
     border-bottom: 1px solid var(--mocha-taupe);
+  }
+
+  .booking-nav {
+    @apply max-w-7xl mx-auto px-8 py-4 flex items-center justify-between;
+  }
+
+  .booking-nav .logo a {
+    @apply text-xl tracking-tight hover:opacity-80 transition-opacity;
+    color: var(--charcoal-brown);
+  }
+
+  .booking-nav .nav-actions {
+    @apply flex items-center gap-4;
   }
 
   .nav-primary {
