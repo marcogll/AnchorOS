@@ -186,21 +186,31 @@ Para probar localmente:
 ```
 
 Luego accede a:
-- `http://anchor23.mx:3000`
-- `http://booking.anchor23.mx:3000`
-- `http://kiosk.anchor23.mx:3000/location-id`
+- `http://anchor23.mx:2311`
+- `http://booking.anchor23.mx:2311` (pendiente)
+- `http://kiosk.anchor23.mx:2311/{location-id}`
+
+### Puerto Local
+
+El puerto configurado por defecto es **2311**. Para iniciar el servidor:
+
+```bash
+npm run dev
+```
+
+El sitio estará disponible en: **http://localhost:2311**
 
 ### Con ngrok (testing rápido)
 
 ```bash
 # Para anchor23.mx
-ngrok http 3000 --subdomain=anchor23-mx
+ngrok http 2311 --subdomain=anchor23-mx
 
 # Para booking.anchor23.mx
-ngrok http 3000 --subdomain=booking-anchor23-mx
+ngrok http 2311 --subdomain=booking-anchor23-mx
 
 # Para kiosk.anchor23.mx
-ngrok http 3000 --subdomain=kiosk-anchor23-mx
+ngrok http 2311 --subdomain=kiosk-anchor23-mx
 ```
 
 ---

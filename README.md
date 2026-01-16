@@ -185,6 +185,8 @@ npm install
 npm run dev
 ```
 
+El sitio estará disponible en **http://localhost:2311**
+
 ---
 
 ## 9. Convenciones de Desarrollo
