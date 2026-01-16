@@ -11,7 +11,7 @@ export default function HomePage() {
             </svg>
           </div>
           <h1>ANCHOR:23</h1>
-          <h2>Belleza Anclada en Exclusividad</h2>
+          <h2>Belleza anclada en exclusividad</h2>
           <p>Un estándar exclusivo de lujo y precisión.</p>
 
           <div className="hero-actions">
@@ -21,7 +21,7 @@ export default function HomePage() {
         </div>
 
         <div className="hero-image">
-          <div className="w-full h-96 bg-gradient-to-br from-gray-200 to-gray-300 flex items-center justify-center">
+          <div className="w-full h-96 flex items-center justify-center">
             <span className="text-gray-500 text-lg">Imagen Hero</span>
           </div>
         </div>
@@ -35,10 +35,15 @@ export default function HomePage() {
             Anchor:23 nace de la unión de dos creativos que creen en el lujo
             como estándar, no como promesa.
           </p>
+          <p>
+            Aquí, lo excepcional es norma: una experiencia exclusiva y coherente,
+            diseñada para quienes entienden que el verdadero lujo está en la
+            precisión, no en el exceso.
+          </p>
         </article>
 
         <aside className="foundation-image">
-          <div className="w-full h-full bg-gradient-to-br from-gray-200 to-gray-300 flex items-center justify-center">
+          <div className="w-full h-full flex items-center justify-center">
             <span className="text-gray-500 text-lg">Imagen Fundamento</span>
           </div>
         </aside>
@@ -50,17 +55,17 @@ export default function HomePage() {
         <div className="service-cards">
           <article className="service-card">
             <h4>Spa de Alta Gama</h4>
-            <p>Experiencias diseñadas para el rejuvenecimiento.</p>
+            <p>Sauna y spa excepcionales, diseñados para el rejuvenecimiento y el equilibrio.</p>
           </article>
 
           <article className="service-card">
             <h4>Arte y Manicure de Precisión</h4>
-            <p>Detalle, exactitud y perfección.</p>
+            <p>Estilización y técnica donde el detalle define el resultado.</p>
           </article>
 
           <article className="service-card">
             <h4>Peinado y Maquillaje de Lujo</h4>
-            <p>Transformaciones discretas y sofisticadas.</p>
+            <p>Transformaciones discretas y sofisticadas para ocasiones selectas.</p>
           </article>
         </div>
 

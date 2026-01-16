@@ -2,11 +2,15 @@ import type { Metadata } from 'next'
 import { Inter } from 'next/font/google'
 import './globals.css'
 
-const inter = Inter({ subsets: ['latin'] })
+const inter = Inter({ 
+  subsets: ['latin'],
+  variable: '--font-sans',
+  display: 'swap',
+})
 
 export const metadata: Metadata = {
-  title: 'ANCHOR:23 — Belleza Anclada en Exclusividad',
-  description: 'Salón de ultra lujo. Un estándar exclusivo de precisión y elegancia.',
+  title: 'ANCHOR:23 — Belleza anclada en exclusividad',
+  description: 'Salón de ultra lujo. Un estándar exclusivo de lujo y precisión.',
 }
 
 export default function RootLayout({
@@ -16,7 +20,12 @@ export default function RootLayout({
 }) {
   return (
     <html lang="es">
-      <body className={inter.className}>
+      <head>
+        <link rel="preconnect" href="https://fonts.googleapis.com" />
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="" />
+        <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
+      </head>
+      <body className={`${inter.variable} font-sans`}>
         <header className="site-header">
           <nav className="nav-primary">
             <div className="logo">

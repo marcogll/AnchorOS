@@ -4,37 +4,47 @@
 
 @layer base {
   :root {
-    --foreground-rgb: 20, 20, 20;
-    --background-rgb: 255, 255, 255;
-    --accent-rgb: 180, 150, 120;
-    --accent-dark-rgb: 140, 110, 80;
+    --bone-white: #F6F1EC;
+    --soft-cream: #EFE7DE;
+    --mocha-taupe: #B8A89A;
+    --deep-earth: #6F5E4F;
+    --charcoal-brown: #3F362E;
   }
 
   body {
-    color: rgb(var(--foreground-rgb));
-    background: rgb(var(--background-rgb));
+    color: var(--charcoal-brown);
+    background: var(--bone-white);
+  }
+  
+  h1, h2, h3, h4, h5, h6 {
+    font-family: 'Playfair Display', serif;
   }
 }
 
 @layer components {
   .site-header {
-    @apply fixed top-0 left-0 right-0 z-50 bg-white/95 backdrop-blur-sm border-b border-gray-100;
+    @apply fixed top-0 left-0 right-0 z-50;
+    background: var(--bone-white);
+    backdrop-filter: blur(8px);
+    border-bottom: 1px solid var(--mocha-taupe);
   }
 
   .nav-primary {
-    @apply max-w-7xl mx-auto px-6 py-4 flex items-center justify-between;
+    @apply max-w-7xl mx-auto px-8 py-6 flex items-center justify-between;
   }
 
   .logo a {
-    @apply text-2xl font-bold tracking-tight text-gray-900 hover:text-gray-700 transition-colors;
+    @apply text-2xl tracking-tight hover:opacity-80 transition-opacity;
+    color: var(--charcoal-brown);
   }
 
   .nav-links {
-    @apply hidden md:flex items-center space-x-8;
+    @apply hidden md:flex items-center space-x-12;
   }
 
   .nav-links a {
-    @apply text-gray-600 hover:text-gray-900 transition-colors font-medium;
+    @apply hover:opacity-70 transition-opacity font-medium;
+    color: var(--charcoal-brown);
   }
 
   .nav-actions {
@@ -42,166 +52,211 @@
   }
 
   .btn-primary {
-    @apply inline-flex items-center justify-center px-6 py-3 border border-transparent text-sm font-medium rounded-md text-white bg-gray-900 hover:bg-gray-800 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-900 transition-all;
+    @apply inline-flex items-center justify-center px-8 py-3 border text-sm font-medium rounded transition-all;
+    background: var(--deep-earth);
+    color: var(--bone-white);
+    border-color: var(--deep-earth);
+  }
+  
+  .btn-primary:hover {
+    opacity: 0.85;
   }
 
   .btn-secondary {
-    @apply inline-flex items-center justify-center px-6 py-3 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-900 transition-all;
+    @apply inline-flex items-center justify-center px-8 py-3 border text-sm font-medium rounded transition-all;
+    background: var(--soft-cream);
+    color: var(--charcoal-brown);
+    border-color: var(--mocha-taupe);
+  }
+  
+  .btn-secondary:hover {
+    background: var(--mocha-taupe);
   }
 
   .hero {
-    @apply min-h-screen flex items-center justify-center bg-gradient-to-br from-gray-50 to-gray-100 pt-20;
+    @apply min-h-screen flex items-center justify-center pt-24;
+    background: var(--bone-white);
   }
 
   .hero-content {
-    @apply max-w-7xl mx-auto px-6 text-center;
+    @apply max-w-7xl mx-auto px-8 text-center;
   }
 
   .logo-mark {
-    @apply w-24 h-24 mx-auto mb-8 text-gray-900;
+    @apply w-24 h-24 mx-auto mb-12;
+    color: var(--charcoal-brown);
   }
 
   .hero h1 {
-    @apply text-6xl md:text-8xl font-bold text-gray-900 mb-4 tracking-tight;
+    @apply text-7xl md:text-9xl mb-6 tracking-tight;
+    color: var(--charcoal-brown);
   }
 
   .hero h2 {
-    @apply text-2xl md:text-3xl font-light text-gray-600 mb-4;
+    @apply text-2xl md:text-3xl mb-8;
+    color: var(--charcoal-brown);
+    opacity: 0.85;
   }
 
   .hero p {
-    @apply text-lg text-gray-500 mb-8 max-w-2xl mx-auto;
+    @apply text-xl mb-12 max-w-2xl mx-auto leading-relaxed;
+    color: var(--charcoal-brown);
+    opacity: 0.7;
   }
 
   .hero-actions {
-    @apply flex items-center justify-center gap-4 flex-wrap;
+    @apply flex items-center justify-center gap-6 flex-wrap;
   }
 
   .hero-image {
-    @apply mt-12 rounded-2xl overflow-hidden shadow-2xl;
+    @apply mt-16 rounded-2xl overflow-hidden;
+    background: var(--soft-cream);
   }
 
   .foundation {
-    @apply max-w-7xl mx-auto px-6 py-24 grid md:grid-cols-2 gap-12 items-center;
+    @apply max-w-7xl mx-auto px-8 py-32 grid md:grid-cols-2 gap-16 items-center;
   }
 
   .foundation article {
-    @apply space-y-6;
+    @apply space-y-8;
   }
 
   .foundation h3 {
-    @apply text-sm font-semibold text-gray-500 tracking-widest uppercase;
+    @apply text-sm font-semibold tracking-widest uppercase mb-4;
+    color: var(--mocha-taupe);
   }
 
   .foundation h4 {
-    @apply text-3xl md:text-4xl font-bold text-gray-900;
+    @apply text-4xl md:text-5xl mb-6;
+    color: var(--charcoal-brown);
   }
 
   .foundation p {
-    @apply text-lg text-gray-600 leading-relaxed;
+    @apply text-xl leading-relaxed;
+    color: var(--charcoal-brown);
+    opacity: 0.85;
   }
 
   .foundation-image {
-    @apply rounded-2xl overflow-hidden shadow-xl h-96 bg-gradient-to-br from-gray-200 to-gray-300;
+    @apply rounded-2xl overflow-hidden h-96;
+    background: var(--soft-cream);
   }
 
   .services-preview {
-    @apply max-w-7xl mx-auto px-6 py-24;
+    @apply max-w-7xl mx-auto px-8 py-32;
   }
 
   .services-preview h3 {
-    @apply text-3xl md:text-4xl font-bold text-gray-900 mb-12 text-center;
+    @apply text-4xl md:text-5xl mb-16 text-center;
+    color: var(--charcoal-brown);
   }
 
   .service-cards {
-    @apply grid md:grid-cols-3 gap-8 mb-12;
+    @apply grid md:grid-cols-3 gap-12 mb-16;
   }
 
   .service-card {
-    @apply p-8 bg-white rounded-2xl shadow-lg hover:shadow-xl transition-shadow border border-gray-100;
+    @apply p-10 rounded-2xl transition-shadow;
+    background: var(--soft-cream);
   }
 
   .service-card h4 {
-    @apply text-xl font-semibold text-gray-900 mb-4;
+    @apply text-2xl mb-6;
+    color: var(--charcoal-brown);
   }
 
   .service-card p {
-    @apply text-gray-600;
+    color: var(--charcoal-brown);
+    opacity: 0.8;
   }
 
   .testimonials {
-    @apply max-w-7xl mx-auto px-6 py-24 bg-gradient-to-br from-gray-50 to-gray-100 rounded-3xl mb-12;
+    @apply max-w-7xl mx-auto px-8 py-32 rounded-3xl mb-12;
+    background: var(--soft-cream);
   }
 
   .testimonials h3 {
-    @apply text-3xl md:text-4xl font-bold text-gray-900 mb-12 text-center;
+    @apply text-4xl md:text-5xl mb-16 text-center;
+    color: var(--charcoal-brown);
   }
 
   .testimonial-grid {
-    @apply grid md:grid-cols-2 gap-8 mb-12;
+    @apply grid md:grid-cols-2 gap-12 mb-16;
   }
 
   .testimonial {
-    @apply p-8 bg-white rounded-2xl shadow-lg;
+    @apply p-10 rounded-2xl;
+    background: var(--bone-white);
   }
 
   .testimonial .stars {
-    @apply text-2xl mb-4;
+    @apply text-2xl mb-6;
+    color: var(--mocha-taupe);
   }
 
   .testimonial p {
-    @apply text-lg text-gray-700 mb-4 italic;
+    @apply text-xl mb-6 italic leading-relaxed;
+    color: var(--charcoal-brown);
+    opacity: 0.85;
   }
 
   .testimonial cite {
-    @apply text-gray-900 font-semibold not-italic block;
+    @apply font-semibold not-italic block;
+    color: var(--charcoal-brown);
   }
 
   .site-footer {
-    @apply bg-gray-900 text-white py-12;
+    @apply py-16;
+    background: var(--charcoal-brown);
   }
 
   .site-footer a {
-    @apply text-gray-400 hover:text-white transition-colors;
+    @apply hover:opacity-70 transition-opacity;
+    color: var(--mocha-taupe);
   }
 
   .footer-brand {
-    @apply max-w-7xl mx-auto px-6 mb-8;
+    @apply max-w-7xl mx-auto px-8 mb-12;
   }
 
   .footer-brand span {
-    @apply text-2xl font-bold block mb-2;
+    @apply text-2xl block mb-3;
+    color: var(--bone-white);
   }
 
   .footer-brand p {
-    @apply text-gray-400;
+    color: var(--mocha-taupe);
   }
 
   .footer-links {
-    @apply max-w-7xl mx-auto px-6 mb-8 flex flex-wrap gap-6;
+    @apply max-w-7xl mx-auto px-8 mb-12 flex flex-wrap gap-8;
   }
 
   .footer-legal {
-    @apply max-w-7xl mx-auto px-6 mb-8 flex flex-wrap gap-6;
+    @apply max-w-7xl mx-auto px-8 mb-12 flex flex-wrap gap-8;
   }
 
   .footer-contact {
-    @apply max-w-7xl mx-auto px-6 flex flex-wrap gap-6;
+    @apply max-w-7xl mx-auto px-8 flex flex-wrap gap-8;
+    color: var(--mocha-taupe);
   }
 
   .section {
-    @apply py-24;
+    @apply py-32;
   }
 
   .section-header {
-    @apply max-w-7xl mx-auto px-6 mb-12;
+    @apply max-w-7xl mx-auto px-8 mb-16;
   }
 
   .section-title {
-    @apply text-3xl md:text-4xl font-bold text-gray-900 mb-4;
+    @apply text-4xl md:text-5xl mb-6;
+    color: var(--charcoal-brown);
   }
 
   .section-subtitle {
-    @apply text-lg text-gray-600 max-w-2xl;
+    @apply text-xl max-w-2xl leading-relaxed;
+    color: var(--charcoal-brown);
+    opacity: 0.8;
   }
 }

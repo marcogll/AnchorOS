@@ -2,17 +2,17 @@ export default function ServiciosPage() {
   const services = [
     {
       category: 'Spa de Alta Gama',
-      description: 'Experiencias diseñadas para el rejuvenecimiento.',
+      description: 'Sauna y spa excepcionales, diseñados para el rejuvenecimiento y el equilibrio.',
       items: ['Tratamientos Faciales', 'Masajes Terapéuticos', 'Hidroterapia']
     },
     {
       category: 'Arte y Manicure de Precisión',
-      description: 'Detalle, exactitud y perfección.',
+      description: 'Estilización y técnica donde el detalle define el resultado.',
       items: ['Manicure de Precisión', 'Pedicure Spa', 'Arte en Uñas']
     },
     {
       category: 'Peinado y Maquillaje de Lujo',
-      description: 'Transformaciones discretas y sofisticadas.',
+      description: 'Transformaciones discretas y sofisticadas para ocasiones selectas.',
       items: ['Corte y Estilismo', 'Color Premium', 'Maquillaje Profesional']
     },
     {
