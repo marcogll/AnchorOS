@@ -1,7 +1,7 @@
 // Types based on SalonOS database schema
 
-export type UserRole = 'admin' | 'manager' | 'staff' | 'artist' | 'customer'
-export type CustomerTier = 'free' | 'gold'
+export type UserRole = 'admin' | 'manager' | 'staff' | 'artist' | 'customer' | 'kiosk'
+export type CustomerTier = 'free' | 'gold' | 'black' | 'VIP'
 export type BookingStatus = 'pending' | 'confirmed' | 'cancelled' | 'completed' | 'no_show'
 export type InvitationStatus = 'pending' | 'used' | 'expired'
 export type ResourceType = 'station' | 'room' | 'equipment'
@@ -37,6 +37,19 @@ export interface Staff {
   role: UserRole
   display_name: string
   phone?: string
+  is_active: boolean
+  created_at: string
+  updated_at: string
+  location?: Location
+}
+
+export interface Kiosk {
+  id: string
+  location_id: string
+  device_name: string
+  display_name: string
+  api_key: string
+  ip_address?: string
   is_active: boolean
   created_at: string
   updated_at: string
@@ -147,6 +160,11 @@ export type Database = {
         Row: Staff
         Insert: Omit<Staff, 'id' | 'created_at' | 'updated_at'>
         Update: Partial<Omit<Staff, 'id' | 'created_at'>>
+      }
+      kiosks: {
+        Row: Kiosk
+        Insert: Omit<Kiosk, 'id' | 'created_at' | 'updated_at' | 'api_key'>
+        Update: Partial<Omit<Kiosk, 'id' | 'created_at' | 'updated_at' | 'api_key'>>
       }
       services: {
         Row: Service
