@@ -2,26 +2,206 @@
 @tailwind components;
 @tailwind utilities;
 
-:root {
-  --foreground-rgb: 0, 0, 0;
-  --background-start-rgb: 214, 219, 220;
-  --background-end-rgb: 255, 255, 255;
-}
-
-@media (prefers-color-scheme: dark) {
+@layer base {
   :root {
-    --foreground-rgb: 255, 255, 255;
-    --background-start-rgb: 0, 0, 0;
-    --background-end-rgb: 0, 0, 0;
+    --foreground-rgb: 20, 20, 20;
+    --background-rgb: 255, 255, 255;
+    --accent-rgb: 180, 150, 120;
+    --accent-dark-rgb: 140, 110, 80;
+  }
+
+  body {
+    color: rgb(var(--foreground-rgb));
+    background: rgb(var(--background-rgb));
   }
 }
 
-body {
-  color: rgb(var(--foreground-rgb));
-  background: linear-gradient(
-      to bottom,
-      transparent,
-      rgb(var(--background-end-rgb))
-    )
-    rgb(var(--background-start-rgb));
+@layer components {
+  .site-header {
+    @apply fixed top-0 left-0 right-0 z-50 bg-white/95 backdrop-blur-sm border-b border-gray-100;
+  }
+
+  .nav-primary {
+    @apply max-w-7xl mx-auto px-6 py-4 flex items-center justify-between;
+  }
+
+  .logo a {
+    @apply text-2xl font-bold tracking-tight text-gray-900 hover:text-gray-700 transition-colors;
+  }
+
+  .nav-links {
+    @apply hidden md:flex items-center space-x-8;
+  }
+
+  .nav-links a {
+    @apply text-gray-600 hover:text-gray-900 transition-colors font-medium;
+  }
+
+  .nav-actions {
+    @apply flex items-center;
+  }
+
+  .btn-primary {
+    @apply inline-flex items-center justify-center px-6 py-3 border border-transparent text-sm font-medium rounded-md text-white bg-gray-900 hover:bg-gray-800 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-900 transition-all;
+  }
+
+  .btn-secondary {
+    @apply inline-flex items-center justify-center px-6 py-3 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-900 transition-all;
+  }
+
+  .hero {
+    @apply min-h-screen flex items-center justify-center bg-gradient-to-br from-gray-50 to-gray-100 pt-20;
+  }
+
+  .hero-content {
+    @apply max-w-7xl mx-auto px-6 text-center;
+  }
+
+  .logo-mark {
+    @apply w-24 h-24 mx-auto mb-8 text-gray-900;
+  }
+
+  .hero h1 {
+    @apply text-6xl md:text-8xl font-bold text-gray-900 mb-4 tracking-tight;
+  }
+
+  .hero h2 {
+    @apply text-2xl md:text-3xl font-light text-gray-600 mb-4;
+  }
+
+  .hero p {
+    @apply text-lg text-gray-500 mb-8 max-w-2xl mx-auto;
+  }
+
+  .hero-actions {
+    @apply flex items-center justify-center gap-4 flex-wrap;
+  }
+
+  .hero-image {
+    @apply mt-12 rounded-2xl overflow-hidden shadow-2xl;
+  }
+
+  .foundation {
+    @apply max-w-7xl mx-auto px-6 py-24 grid md:grid-cols-2 gap-12 items-center;
+  }
+
+  .foundation article {
+    @apply space-y-6;
+  }
+
+  .foundation h3 {
+    @apply text-sm font-semibold text-gray-500 tracking-widest uppercase;
+  }
+
+  .foundation h4 {
+    @apply text-3xl md:text-4xl font-bold text-gray-900;
+  }
+
+  .foundation p {
+    @apply text-lg text-gray-600 leading-relaxed;
+  }
+
+  .foundation-image {
+    @apply rounded-2xl overflow-hidden shadow-xl h-96 bg-gradient-to-br from-gray-200 to-gray-300;
+  }
+
+  .services-preview {
+    @apply max-w-7xl mx-auto px-6 py-24;
+  }
+
+  .services-preview h3 {
+    @apply text-3xl md:text-4xl font-bold text-gray-900 mb-12 text-center;
+  }
+
+  .service-cards {
+    @apply grid md:grid-cols-3 gap-8 mb-12;
+  }
+
+  .service-card {
+    @apply p-8 bg-white rounded-2xl shadow-lg hover:shadow-xl transition-shadow border border-gray-100;
+  }
+
+  .service-card h4 {
+    @apply text-xl font-semibold text-gray-900 mb-4;
+  }
+
+  .service-card p {
+    @apply text-gray-600;
+  }
+
+  .testimonials {
+    @apply max-w-7xl mx-auto px-6 py-24 bg-gradient-to-br from-gray-50 to-gray-100 rounded-3xl mb-12;
+  }
+
+  .testimonials h3 {
+    @apply text-3xl md:text-4xl font-bold text-gray-900 mb-12 text-center;
+  }
+
+  .testimonial-grid {
+    @apply grid md:grid-cols-2 gap-8 mb-12;
+  }
+
+  .testimonial {
+    @apply p-8 bg-white rounded-2xl shadow-lg;
+  }
+
+  .testimonial .stars {
+    @apply text-2xl mb-4;
+  }
+
+  .testimonial p {
+    @apply text-lg text-gray-700 mb-4 italic;
+  }
+
+  .testimonial cite {
+    @apply text-gray-900 font-semibold not-italic block;
+  }
+
+  .site-footer {
+    @apply bg-gray-900 text-white py-12;
+  }
+
+  .site-footer a {
+    @apply text-gray-400 hover:text-white transition-colors;
+  }
+
+  .footer-brand {
+    @apply max-w-7xl mx-auto px-6 mb-8;
+  }
+
+  .footer-brand span {
+    @apply text-2xl font-bold block mb-2;
+  }
+
+  .footer-brand p {
+    @apply text-gray-400;
+  }
+
+  .footer-links {
+    @apply max-w-7xl mx-auto px-6 mb-8 flex flex-wrap gap-6;
+  }
+
+  .footer-legal {
+    @apply max-w-7xl mx-auto px-6 mb-8 flex flex-wrap gap-6;
+  }
+
+  .footer-contact {
+    @apply max-w-7xl mx-auto px-6 flex flex-wrap gap-6;
+  }
+
+  .section {
+    @apply py-24;
+  }
+
+  .section-header {
+    @apply max-w-7xl mx-auto px-6 mb-12;
+  }
+
+  .section-title {
+    @apply text-3xl md:text-4xl font-bold text-gray-900 mb-4;
+  }
+
+  .section-subtitle {
+    @apply text-lg text-gray-600 max-w-2xl;
+  }
 }
