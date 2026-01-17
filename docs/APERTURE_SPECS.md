@@ -594,3 +594,418 @@ Response: {
    - Actualización manual de tiempo real por staff
    - Cálculo de diferencias
    - Nómina basada en horas reales trabajadas
+
+## 7. Sistema de Permisos Granulares
+
+### 7.1 Objetivo
+Sistema de permisos flexible que permite asignar permisos de forma granular a **cualquier usuario**, independientemente de su rol. Solo usuarios con rol `admin` pueden asignar permisos.
+
+### 7.2 Principios
+- **Flexibilidad**: Permisos independientes del rol
+- **Control Total**: Solo admins pueden asignar permisos
+- **Auditoría**: Todos los cambios de permisos se registran
+- **UI Components**: Componentes reutilizables para verificar permisos
+
+### 7.3 Categorías de Permisos
+
+#### 1. Dashboard y Estadísticas
+- 'dashboard.view' - Ver dashboard principal
+- 'dashboard.view_kpi' - Ver KPI cards
+- 'dashboard.view_charts' - Ver gráficos de rendimiento
+- 'dashboard.reports_sales' - Ver reportes de ventas
+- 'dashboard.reports_payments' - Ver reportes de pagos
+- 'dashboard.reports_payroll' - Ver reportes de nómina
+- 'dashboard.activity_feed' - Ver feed de actividad reciente
+- 'dashboard.export_data' - Exportar datos (CSV, Excel, PDF)
+
+#### 2. Calendario y Citas
+- 'calendar.view' - Ver calendario maestro
+- 'calendar.create_booking' - Crear nuevas citas
+- 'calendar.edit_booking' - Editar citas existentes
+- 'calendar.cancel_booking' - Cancelar citas
+- 'calendar.reschedule_booking' - Reprogramar citas
+- 'calendar.assign_resource' - Asignar recursos a citas
+- 'calendar.view_availability' - Ver disponibilidad
+
+#### 3. Gestión de Staff
+- 'staff.view_list' - Ver lista de staff
+- 'staff.view_profile' - Ver perfil de staff
+- 'staff.create' - Crear nuevo staff
+- 'staff.edit' - Editar staff existente
+- 'staff.delete' - Eliminar staff (soft delete)
+- 'staff.assign_role' - Asignar rol a staff
+- 'staff.view_schedule' - Ver horarios de staff
+- 'staff.edit_schedule' - Editar horarios de staff
+- 'staff.view_commissions' - Ver comisiones
+- 'staff.edit_commissions' - Editar comisiones
+
+#### 4. Gestión de Clientes
+- 'clients.view_list' - Ver lista de clientes
+- 'clients.view_profile' - Ver perfil de cliente
+- 'clients.create' - Crear nuevo cliente
+- 'clients.edit' - Editar cliente existente
+- 'clients.delete' - Eliminar cliente (soft delete)
+- 'clients.view_history' - Ver histórico de citas
+- 'clients.view_notes' - Ver notas técnicas
+- 'clients.view_gallery' - Ver galería de fotos (VIP/Black/Gold)
+- 'clients.upload_photos' - Subir fotos a galería
+- 'clients.view_memberships' - Ver membresías del cliente
+- 'clients.assign_membership' - Asignar membresía
+- 'clients.view_points' - Ver puntos del cliente
+- 'clients.redeem_points' - Redimir puntos
+- 'clients.edit_credits' - Editar créditos de membresía
+
+#### 5. POS y Ventas
+- 'pos.access' - Acceder a POS
+- 'pos.create_sale' - Crear venta en POS
+- 'pos.view_history' - Ver historial de ventas
+- 'pos.open_register' - Abrir registro de caja
+- 'pos.close_register' - Cerrar registro de caja
+- 'pos.view_daily_sales' - Ver ventas del día
+- 'pos.view_all_closers' - Ver todos los cierres de caja
+- 'pos.manage_own' - Gestionar cierre de caja propio
+
+#### 6. Finanzas
+- 'finance.view_expenses' - Ver gastos
+- 'finance.create_expense' - Crear gasto
+- 'finance.edit_expense' - Editar gasto
+- 'finance.delete_expense' - Eliminar gasto
+- 'finance.view_reports' - Ver reportes financieros
+- 'finance.view_profit_margin' - Ver márgen de beneficio
+- 'finance.view_monthly_report' - Ver reporte mensual
+
+#### 7. Marketing
+- 'marketing.view_campaigns' - Ver campañas
+- 'marketing.create_campaign' - Crear campaña
+- 'marketing.edit_campaign' - Editar campaña
+- 'marketing.delete_campaign' - Eliminar campaña
+- 'marketing.send_campaign' - Enviar campaña
+- 'marketing.view_pricing' - Ver precios inteligentes
+- 'marketing.edit_pricing' - Editar precios inteligentes
+- 'marketing.view_integrations' - Ver integraciones
+- 'marketing.configure_integrations' - Configurar integraciones
+
+#### 8. Configuración
+- 'settings.view_general' - Ver configuración general
+- 'settings.edit_general' - Editar configuración general
+- 'settings.view_locations' - Ver ubicaciones
+- 'settings.edit_locations' - Editar ubicaciones
+- 'settings.create_location' - Crear ubicación
+
+### 7.4 Estructura de Base de Datos
+
+**Tabla: user_permissions**
+```sql
+CREATE TABLE user_permissions (
+  id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+  user_id UUID NOT NULL REFERENCES auth.users(id) ON DELETE CASCADE,
+  permission_key TEXT NOT NULL,
+  granted BOOLEAN NOT NULL DEFAULT true,
+  granted_by UUID REFERENCES staff(id) ON DELETE SET NULL,
+  granted_at TIMESTAMPTZ DEFAULT NOW(),
+  
+  CONSTRAINT user_permissions_unique UNIQUE (user_id, permission_key),
+  CONSTRAINT user_permissions_user_check CHECK (
+    EXISTS (SELECT 1 FROM auth.users WHERE id = user_id)
+  )
+);
+
+CREATE INDEX idx_user_permissions_user ON user_permissions(user_id);
+CREATE INDEX idx_user_permissions_key ON user_permissions(permission_key);
+```
+
+### 7.5 API Endpoints
+
+#### Verificar Permiso Individual
+```typescript
+POST /api/aperture/permissions/check
+Body: {
+  permission_key: string
+}
+Response: {
+  success: boolean,
+  has_permission: boolean
+}
+```
+
+#### Obtener Permisos del Usuario
+```typescript
+GET /api/aperture/permissions/user
+Response: {
+  success: boolean,
+  permissions: Record<string, boolean> // { 'dashboard.view': true, 'pos.access': false }
+}
+```
+
+#### Asignar Permiso (Solo Admin)
+```typescript
+POST /api/aperture/permissions/assign
+Body: {
+  user_id: UUID,
+  permissions: Array<{
+    permission_key: string,
+    granted: boolean
+  }>
+}
+Response: {
+  success: boolean,
+  message: 'Permissions updated successfully'
+}
+```
+
+#### Obtener Todos los Permisos Disponibles
+```typescript
+GET /api/aperture/permissions/list
+Response: {
+  success: boolean,
+  permissions: Array<{
+    key: string,
+    category: string,
+    description: string
+  }>
+}
+```
+
+### 7.6 Funciones Helper
+
+#### hasPermission(user_id, permission_key)
+```typescript
+export async function hasPermission(
+  user_id: string,
+  permission_key: string
+): Promise<boolean> {
+  const supabase = createClient(
+    process.env.NEXT_PUBLIC_SUPABASE_URL!,
+    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
+  )
+
+  const { data } = await supabase
+    .from('user_permissions')
+    .select('granted')
+    .eq('user_id', user_id)
+    .eq('permission_key', permission_key)
+    .single()
+
+  return data?.granted ?? false
+}
+```
+
+#### hasPermissions(user_id, permission_keys)
+```typescript
+export async function hasPermissions(
+  user_id: string,
+  permission_keys: string[]
+): Promise<Record<string, boolean>> {
+  const supabase = createClient(
+    process.env.NEXT_PUBLIC_SUPABASE_URL!,
+    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
+  )
+
+  const { data } = await supabase
+    .from('user_permissions')
+    .select('permission_key', 'granted')
+    .eq('user_id', user_id)
+    .in('permission_key', permission_keys)
+
+  const result: Record<string, boolean> = {}
+  if (data) {
+    for (const item of data) {
+      result[item.permission_key] = item.granted
+    }
+  }
+
+  return result
+}
+```
+
+#### isAdmin(user_id)
+```typescript
+export async function isAdmin(user_id: string): Promise<boolean> {
+  const supabase = createClient(
+    process.env.NEXT_PUBLIC_SUPABASE_URL!,
+    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
+  )
+
+  const { data: staff } = await supabase
+    .from('staff')
+    .select('role')
+    .eq('user_id', user_id)
+    .single()
+
+  return staff?.role === 'admin'
+}
+```
+
+### 7.7 UI Components
+
+#### PermissionChecker
+```typescript
+import { useAuth } from '@/lib/auth/context'
+
+interface PermissionCheckerProps {
+  permission_key: string;
+  fallback?: React.ReactNode;
+  children: React.ReactNode;
+}
+
+export function PermissionChecker({ permission_key, fallback = null, children }: PermissionCheckerProps) {
+  const { user } = useAuth()
+  const [hasPermission, setHasPermission] = useState(false)
+  const [loading, setLoading] = useState(true)
+
+  useEffect(() => {
+    checkPermission()
+  }, [user?.id, permission_key])
+
+  const checkPermission = async () => {
+    if (!user?.id) {
+      setHasPermission(false)
+      setLoading(false)
+      return
+    }
+
+    const response = await fetch('/api/aperture/permissions/check', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ permission_key }),
+    })
+
+    const result = await response.json()
+    setHasPermission(result.has_permission)
+    setLoading(false)
+  }
+
+  if (loading) return <div>Loading...</div>
+  if (!hasPermission && fallback) return fallback
+  if (!hasPermission) return null
+
+  return <>{children}
+}
+```
+
+#### MultiPermissionChecker
+```typescript
+import { useAuth } from '@/lib/auth/context'
+
+interface MultiPermissionCheckerProps {
+  permission_keys: string[];
+  mode?: 'all' | 'any'; // Require all or any permissions
+  fallback?: React.ReactNode;
+  children: React.ReactNode;
+}
+
+export function MultiPermissionChecker({ permission_keys, mode = 'all', fallback = null, children }: MultiPermissionCheckerProps) {
+  const { user } = useAuth()
+  const [permissions, setPermissions] = useState<Record<string, boolean>>({})
+  const [loading, setLoading] = useState(true)
+
+  useEffect(() => {
+    checkPermissions()
+  }, [user?.id, permission_keys])
+
+  const checkPermissions = async () => {
+    if (!user?.id) {
+      setLoading(false)
+      return
+    }
+
+    const response = await fetch('/api/aperture/permissions/user', {
+      method: 'GET',
+    })
+
+    const result = await response.json()
+    setPermissions(result.permissions)
+    setLoading(false)
+  }
+
+  const hasAccess = mode === 'all'
+    ? Object.values(permissions).every(Boolean)
+    : Object.values(permissions).some(Boolean)
+
+  if (loading) return <div>Loading...</div>
+  if (!hasAccess && fallback) return fallback
+  if (!hasAccess) return null
+
+  return <>{children}
+}
+```
+
+### 7.8 Ejemplos de Uso
+
+#### Verificar un permiso
+```typescript
+export default function StaffManagement() {
+  const { user } = useAuth()
+
+  return (
+    <PermissionChecker
+      permission_key="staff.delete"
+      user_id={user.id}
+      fallback={
+        <div className="text-red-500">
+          No tienes permiso para eliminar staff
+        </div>
+      }
+    >
+      <Button onClick={() => deleteStaff(staffId)}>
+        Eliminar Staff
+      </Button>
+    </PermissionChecker>
+  )
+}
+```
+
+#### Verificar múltiples permisos
+```typescript
+export default function POSPage() {
+  const { user } = useAuth()
+
+  return (
+    <MultiPermissionChecker
+      user_id={user.id}
+      permission_keys={['pos.access', 'pos.create_sale']}
+      mode="all"
+      fallback={
+        <div className="text-center text-gray-500">
+          No tienes acceso al POS
+        </div>
+      }
+    >
+      <Button onClick={() => openPOSScreen()}>
+        Abrir POS
+      </Button>
+    </MultiPermissionChecker>
+  )
+}
+```
+
+#### Verificar permiso condicional
+```typescript
+export default function DashboardPage() {
+  const { user } = useAuth()
+
+  return (
+    <div>
+      {/* Componente que requiere permiso */}
+      <PermissionChecker permission_key="dashboard.view" user_id={user.id}>
+        <StatsCard />
+      </PermissionChecker>
+
+      {/* Otro componente que requiere permiso */}
+      <MultiPermissionChecker
+        user_id={user.id}
+        permission_keys={['pos.access', 'pos.create_sale']}
+        mode="any"
+        fallback={
+          <div className="text-center text-gray-500">
+            El POS no está disponible en este momento
+          </div>
+        }
+      >
+        <Button>Ver POS</Button>
+      </MultiPermissionChecker>
+    </div>
+  )
+}
+```
+
