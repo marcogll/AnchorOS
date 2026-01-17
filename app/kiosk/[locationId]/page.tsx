@@ -234,7 +234,7 @@ export default function KioskPage({ params }: { params: { locationId: string } }
         </Card>
 
         <footer className="mt-8 text-center text-sm text-muted-foreground">
-          <p>SalonOS Kiosk v1.0</p>
+          <p>AnchorOS Kiosk v1.0</p>
           <p className="mt-1">Necesitas ayuda? Contacta al personal del salón</p>
         </footer>
       </div>

@@ -1,15 +1,16 @@
-# 🥂 SalonOS
+# 🥂 AnchorOS
 
-**Exclusive Studio Management & CRM Engine**
-Repositorio principal del sistema SalonOS.
+**Exclusive Studio Management & CRM Engine**  
+**Codename: Adela**
+Repositorio principal del sistema AnchorOS.
 
 Este README es la puerta de entrada técnica al proyecto. Define qué es este repositorio, cómo se estructura y cómo debe ser utilizado por desarrollo, producto y operación.
 
 ---
 
-## 1. ¿Qué es SalonOS?
+## 1. ¿Qué es AnchorOS?
 
-SalonOS es un sistema propietario de gestión operativa y CRM diseñado para estudios de belleza de alta exclusividad. No es una agenda genérica: coordina **personas, recursos físicos, pagos, privilegios y datos** bajo reglas estrictas de control y privacidad.
+AnchorOS es un sistema propietario de gestión operativa y CRM diseñado para estudios de belleza de alta exclusividad. No es una agenda genérica: coordina **personas, recursos físicos, pagos, privilegios y datos** bajo reglas estrictas de control y privacidad.
 
 El sistema está diseñado para:
 
@@ -92,7 +93,7 @@ El PRD es la fuente de verdad funcional. El README es la guía de ejecución.
 ## 6. Estructura del Proyecto
 
 ```
-/salonos
+/anchoros
 ├── app/                          # Next.js App Router
 │   ├── (anchor23)/               # anchor23.mx - Frontend institucional
 │   │   ├── page.tsx              # Landing page
@@ -173,7 +174,7 @@ NEXT_PUBLIC_KIOSK_API_KEY=
 
 ```
 git clone <repo-url>
-cd salonos
+cd anchoros
 ```
 
 2. Instalar dependencias
@@ -409,11 +410,25 @@ https://kiosk.anchor23.mx/{location-id}
 
 ## 14. Filosofía Operativa
 
-SalonOS no busca volumen.
+AnchorOS no busca volumen.
 
 Busca **control, eficiencia y blindaje**.
 
 Este repositorio implementa esa filosofía a nivel de sistema.
+
+---
+
+## 15. Codename: Adela
+
+AnchorOS se conoce internamente como **Adela**, un acrónimo que representa los pilares fundamentales del sistema:
+
+- **A**ttention - Atención personalizada y detallada a cada cliente
+- **D**igital Engagement - Compromiso digital con la marca y servicios
+- **E**ngagement Logistics - Logística de interacción eficiente
+- **L**ogistics Analytics - Análisis de datos para optimización operativa
+- **A**nalytics - Inteligencia de datos para decisiones estratégicas
+
+Adela simboliza la transformación digital de los salones de belleza de alta gama, combinando lujo, tecnología y eficiencia operativa.
 
 ---
 

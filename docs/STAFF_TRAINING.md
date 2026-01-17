@@ -1,10 +1,10 @@
-# Guía de Entrenamiento para Staff — SalonOS
+# Guía de Entrenamiento para Staff — AnchorOS
 
-Esta guía está diseñada para capacitar al personal del salón en el uso del sistema SalonOS.
+Esta guía está diseñada para capacitar al personal del salón en el uso del sistema AnchorOS.
 
 ## Introducción al Sistema
 
-SalonOS es una plataforma integral de gestión que incluye:
+AnchorOS es una plataforma integral de gestión que incluye:
 - Sistema de reservas (The Boutique)
 - Dashboard administrativo (Aperture)
 - Sistema de kiosko para autoservicio

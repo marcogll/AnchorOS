@@ -1,4 +1,4 @@
-# Guía de Onboarding para Clientes — SalonOS
+# Guía de Onboarding para Clientes — AnchorOS
 
 Bienvenido a Anchor23. Esta guía te ayudará a familiarizarte con nuestros sistemas de reserva y servicios.
 

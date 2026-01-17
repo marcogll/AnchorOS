@@ -1,6 +1,6 @@
-# Guía de Troubleshooting — SalonOS
+# Guía de Troubleshooting — AnchorOS
 
-Esta guía ayuda a resolver problemas comunes durante el setup y desarrollo de SalonOS.
+Esta guía ayuda a resolver problemas comunes durante el setup y desarrollo de AnchorOS.
 
 ## Configuración de Entorno
 

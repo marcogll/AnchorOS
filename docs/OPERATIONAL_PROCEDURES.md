@@ -1,6 +1,6 @@
-# Procedimientos Operativos — SalonOS
+# Procedimientos Operativos — AnchorOS
 
-Guía interna para operaciones diarias del salón usando el sistema SalonOS.
+Guía interna para operaciones diarias del salón usando el sistema AnchorOS.
 
 ## Apertura Diaria
 

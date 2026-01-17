@@ -1,6 +1,6 @@
 # TASKS.md — Plan de Ejecución por Fases
 
-Este documento define las tareas ejecutables del proyecto **SalonOS**, alineadas estrictamente con el PRD. Ninguna tarea puede introducir lógica no documentada.
+Este documento define las tareas ejecutables del proyecto **AnchorOS**, alineadas estrictamente con el PRD. Ninguna tarea puede introducir lógica no documentada.
 
 ---
 

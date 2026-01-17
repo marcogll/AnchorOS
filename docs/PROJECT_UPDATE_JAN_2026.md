@@ -2,7 +2,7 @@
 
 ## Resumen Ejecutivo
 
-Se ha completado el **Sistema de Kiosko** y la **Actualización de Recursos** del sistema SalonOS. Estos cambios representan una expansión significativa de las capacidades del sistema, mejorando la operativa del salón y la experiencia del cliente.
+Se ha completado el **Sistema de Kiosko** y la **Actualización de Recursos** del sistema AnchorOS. Estos cambios representan una expansión significativa de las capacidades del sistema, mejorando la operativa del salón y la experiencia del cliente.
 
 ---
 
@@ -330,7 +330,7 @@ README.md
 
 ## Conclusión
 
-El sistema de kiosko y la actualización de recursos representan un avance significativo en las capacidades operativas de SalonOS. Estas mejoras preparan el sistema para una implementación en producción, optimizando tanto la experiencia del cliente como la eficiencia operativa del salón.
+El sistema de kiosko y la actualización de recursos representan un avance significativo en las capacidades operativas de AnchorOS. Estas mejoras preparan el sistema para una implementación en producción, optimizando tanto la experiencia del cliente como la eficiencia operativa del salón.
 
 El proyecto está en un estado sólido (90% completado de Fase 1), con una infraestructura robusta y segura lista para el desarrollo de las fases restantes.
 

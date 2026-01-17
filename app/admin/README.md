@@ -1,6 +1,6 @@
 # Admin Enrollment System
 
-Sistema de administración de usuarios y kiosks para SalonOS.
+Sistema de administración de usuarios y kiosks para AnchorOS.
 
 ## Descripción
 

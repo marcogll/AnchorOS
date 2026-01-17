@@ -1,4 +1,4 @@
-// Types based on SalonOS database schema
+// Types based on AnchorOS (Adela) database schema
 
 /** User roles in the system */
 export type UserRole = 'admin' | 'manager' | 'staff' | 'artist' | 'customer' | 'kiosk'

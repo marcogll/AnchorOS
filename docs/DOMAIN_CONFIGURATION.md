@@ -2,7 +2,7 @@
 
 ## Arquitectura de Dominios
 
-El proyecto SalonOS está diseñado para funcionar con múltiples subdominios, cada uno con una función específica:
+El proyecto AnchorOS está diseñado para funcionar con múltiples subdominios, cada uno con una función específica:
 
 | Subdominio | Función | Estado | URL de ejemplo |
 |-------------|----------|---------|----------------|
@@ -267,8 +267,8 @@ El kiosko usa API keys de 64 caracteres para autenticación:
 
 ```bash
 # Clonar repositorio
-git clone <repo-url> /var/www/salonos
-cd /var/www/salonos
+git clone <repo-url> /var/www/anchoros
+cd /var/www/anchoros
 
 # Instalar dependencias
 npm install
@@ -282,7 +282,7 @@ npm run build
 npm start
 
 # Configurar PM2 para proceso en segundo plano
-pm2 start npm --name "salonos" -- start
+pm2 start npm --name "anchoros" -- start
 pm2 save
 pm2 startup
 ```

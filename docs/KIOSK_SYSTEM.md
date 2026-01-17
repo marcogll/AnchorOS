@@ -1,4 +1,4 @@
-# Sistema de Kiosko - SalonOS
+# Sistema de Kiosko - AnchorOS
 
 ## Resumen
 

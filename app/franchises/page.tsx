@@ -30,7 +30,7 @@ export default function FranchisesPage() {
   const benefits = [
     'Modelo de negocio exclusivo y probado',
     'Una sucursal por ciudad: saturación controlada',
-    'Sistema operativo completo (SalonOS)',
+    'Sistema operativo completo (AnchorOS)',
     'Capacitación en estándares de lujo',
     'Membresía de clientes como fuente recurrente',
     'Soporte continuo y actualizaciones'

@@ -77,13 +77,13 @@ https://tu-dominio.com/kiosk/{location-id}
 
 Ejemplo:
 ```
-https://salonos.example.com/kiosk/550e8400-e29b-41d4-a716-446655440000
+https://kiosk.anchor23.mx/550e8400-e29b-41d4-a716-446655440000
 ```
 
 ## Estructura de Archivos
 
 ```
-salonOS/
+AnchorOS/
 ├── supabase/
 │   └── migrations/
 │       └── 20260116000000_add_kiosk_system.sql

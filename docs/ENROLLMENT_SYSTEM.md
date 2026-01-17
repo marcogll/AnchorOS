@@ -2,7 +2,7 @@
 
 ## Resumen
 
-El sistema de enrollment permite a los administradores agregar nuevos usuarios (staff, artists, managers) y kiosks al sistema SalonOS mediante una interfaz web segura.
+El sistema de enrollment permite a los administradores agregar nuevos usuarios (staff, artists, managers) y kiosks al sistema AnchorOS mediante una interfaz web segura.
 
 ---
 

@@ -183,7 +183,7 @@ Grid de servicios con:
 2. **Beneficios**
    - Modelo de negocio exclusivo
    - Una sucursal por ciudad
-   - Sistema operativo completo (SalonOS)
+   - Sistema operativo completo (AnchorOS)
    - Capacitación en estándares de lujo
    - Membresía como fuente recurrente
    - Soporte continuo

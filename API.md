@@ -1,7 +1,7 @@
-# SalonOS API Documentation
+# AnchorOS API Documentation
 
 ## Overview
-SalonOS is a comprehensive salon management system built with Next.js, Supabase, and Stripe integration.
+AnchorOS is a comprehensive salon management system built with Next.js, Supabase, and Stripe integration.
 
 ## Authentication
 - **Client Authentication**: Magic link via Supabase Auth

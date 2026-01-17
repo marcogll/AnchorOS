@@ -1,4 +1,4 @@
-# Actualización de Recursos - SalonOS
+# Actualización de Recursos - AnchorOS
 
 ## Cambios Realizados
 

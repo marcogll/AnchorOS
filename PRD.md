@@ -1,8 +1,10 @@
-# PRD — SalonOS
+# PRD — AnchorOS
+
+**Codename: Adela**
 
 ## 1. Objetivo
 
-SalonOS es un sistema operativo para salones de belleza orientado a agenda, pagos, membresías e invitados, con reglas estrictas de tiempo, seguridad y automatización.
+AnchorOS es un sistema operativo para salones de belleza orientado a agenda, pagos, membresías e invitados, con reglas estrictas de tiempo, seguridad y automatización.
 
 ---
 
@@ -116,4 +118,4 @@ SalonOS es un sistema operativo para salones de belleza orientado a agenda, pago
 
 ## 9. Estado del Documento
 
-Este PRD es la fuente única de verdad funcional del sistema SalonOS.
+Este PRD es la fuente única de verdad funcional del sistema AnchorOS.
