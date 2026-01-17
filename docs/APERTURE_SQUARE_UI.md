@@ -5,7 +5,137 @@
 
 ---
 
-## 1. Objetivo
+## 1. Stack Técnico
+
+### Frontend Framework
+- **Next.js 14** (App Router) - Ya implementado
+- **UI Library**: **Radix UI** (componentes accesibles preconstruidos)
+- **Estilizado**: **Tailwind CSS + Square UI custom styling**
+- **Icons**: Lucide React (24px, stroke 2px)
+
+### Backend
+- **Database**: Supabase (PostgreSQL + RLS)
+- **Auth**: Supabase Auth
+
+### Notas Importantes
+- **Radix UI es la librería principal** para componentes accesibles
+- Solo si Radix NO tiene un componente, usar Headless UI
+- Estilizado personalizado con tokens Square UI
+- Accesibilidad priorizada (ARIA attributes, keyboard navigation)
+
+---
+
+## 2. Objetivo
+
+Aperture (aperture.anchor23.mx) es el dashboard administrativo y CRM interno de AnchorOS. El estilo de diseño debe seguir principios similares a **SquareUi** pero construido con **Radix UI**:
+
+- Minimalista y limpio
+- Cards bien definidas con sombras sutiles
+- Espaciado generoso
+- Foco en usabilidad y claridad
+- Animaciones sutiles
+- **Accesibilidad completa** (prioridad Radix)
+
+---
+
+## 3. Componentes Radix UI Utilizados
+
+### Componentes Instalados
+
+```bash
+npm install @radix-ui/react-button @radix-ui/react-select @radix-ui/react-tabs \
+  @radix-ui/react-dropdown-menu @radix-ui/react-dialog \
+  @radix-ui/react-tooltip @radix-ui/react-label @radix-ui/react-switch \
+  @radix-ui/react-checkbox
+```
+
+### Componentes Radix con Estilizado Square UI
+
+1. **@radix-ui/react-button**
+   - Estilos: `primary`, `secondary`, `ghost`, `danger`, `success`, `warning`
+   - Squared corners (border-radius: 0 o 4px)
+   - Full width con variant `default` (ancho 100%)
+   - Transiciones suaves (150ms ease-out)
+
+2. **@radix-ui/react-select**
+   - Dropdown con Square UI styling
+   - Background: `--ui-bg-card`
+   - Border: `--ui-border`
+   - Hover: background `--ui-bg-hover`
+   - Selected: background `--ui-bg-hover`, font-weight 500
+
+3. **@radix-ui/react-tabs**
+   - Tabs con Square UI styling
+   - Active indicator: borde inferior 2px solid `--ui-primary`
+   - Colors: `--ui-text-primary` para activo, `--ui-text-secondary` para inactivo
+
+4. **@radix-ui/react-dropdown-menu**
+   - Menús desplegables Square UI
+   - Background: `--ui-bg-card`
+   - Border: `--ui-border`
+   - Shadow: `--ui-shadow-md`
+   - Hover: `background: var(--ui-bg-hover)`
+
+5. **@radix-ui/react-dialog**
+   - Modals con Square UI styling
+   - Background: `--ui-bg-card`
+   - Border: `--ui-border`
+   - Radius: `--ui-radius-xl`
+   - Shadow: `--ui-shadow-xl`
+
+6. **@radix-ui/react-tooltip**
+   - Tooltips con Square UI styling
+   - Background: `--ui-text-primary`
+- Font size: `--text-sm`
+- Padding: `--space-2` / `--space-3`
+- Shadow: `--ui-shadow-md`
+
+7. **@radix-ui/react-label**
+   - Labels con Square UI styling
+   - Color: `--ui-text-primary`
+- Font-weight: 500 o 600
+- Required indicator con asterisco rojo
+
+8. **@radix-ui/react-switch**
+   - Switches con Square UI styling
+   - Track: `--ui-border`
+- Thumb: `--ui-primary` background
+- Thumb radius: 0 (squared)
+
+9. **@radix-ui/react-checkbox**
+   - Checkboxes con Square UI styling
+   - Border: `--ui-border`
+- Checked: Background `--ui-primary`
+- Checkmark color: `--ui-text-inverse`
+
+### Componentes Custom (No Radix UI)
+
+1. **Card** - Custom
+   - Background: `--ui-bg-card`
+   - Border: `--ui-border`
+   - Radius: `--ui-radius-lg` (8px)
+   - Shadow: `--ui-shadow-md` o `--ui-shadow-lg`
+   - Variants: `default`, `elevated`, `bordered`
+
+2. **Avatar** - Custom
+   - Iniciales para usuarios sin foto
+   - Status indicators: online (green), offline (gray), busy (red)
+   - Radius: `--ui-radius-full`
+
+3. **Table** - Custom
+   - Headers con `font-weight: 600`
+   - Row hover: `background: var(--ui-bg-hover)`
+   - Sticky header
+   - Sort indicators
+
+4. **Badge** - Custom
+   - Variants: `default`, `success`, `warning`, `error`, `info`
+   - Small: `text-xs`, Medium: `text-sm`
+- Radius: `--ui-radius-full`
+
+---
+
+## 4. Estilos Square UI Componentes
 
 Aperture (aperture.anchor23.mx) es el dashboard administrativo y CRM interno de AnchorOS. El estilo de diseño debe seguir principios similares a SquareUi:
 
