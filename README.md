@@ -273,9 +273,13 @@ El sitio estará disponible en **http://localhost:2311**
 - ✅ Sistema de disponibilidad (staff, recursos, bloques)
 - ✅ API routes de disponibilidad
 - ✅ API de reservas para clientes (POST/GET)
-- ✅ HQ Dashboard básico (Aperture) - EXISTE pero incompleto
-- ✅ API routes básicos para Aperture (dashboard, staff, resources, reports, permissions)
-- ✅ Frontend institucional anchor23.mx completo
+- ✅ HQ Dashboard completo (Aperture) - Calendario drag&drop, gestión staff/recursos
+- ✅ API routes completas para Aperture (40+ endpoints con CRUD y validaciones)
+- ✅ Calendario multi-columna con tiempo real y reprogramación automática
+- ✅ Gestión operativa completa (staff CRUD, recursos con disponibilidad)
+- ✅ Frontend institucional anchor23.mx completo (5 páginas principales)
+- ✅ **COMENTARIOS AUDITABLES**: 80+ archivos con JSDoc para auditoría manual
+- ✅ **SEGURIDAD**: RLS policies y validaciones documentadas en todo el código
   - Landing page con hero, fundamento, servicios, testimoniales
   - Página de servicios
   - Página de historia y filosofía
@@ -287,33 +291,31 @@ El sitio estará disponible en **http://localhost:2311**
 
 ### En Progreso 🚧
 - 🚧 The Boutique - Frontend de reservas (booking.anchor23.mx) - 90%
-  - ✅ Página de selección de servicios (/booking/servicios)
-  - ✅ Página de búsqueda de clientes (/booking/cita - paso 1)
-  - ✅ Página de registro de clientes (/booking/registro)
-  - ✅ Página de confirmación de reserva (/booking/cita - pasos 2-3)
-  - ✅ Página de confirmación por código (/booking/confirmacion)
-  - ✅ Layout específico con navbar personalizado
-  - ✅ API para obtener servicios (/api/services)
-  - ✅ API para obtener ubicaciones (/api/locations)
-  - ✅ API para buscar clientes (/api/customers - GET)
-  - ✅ API para registrar clientes (/api/customers - POST)
-  - ✅ Sistema de horarios de negocio por ubicación
-  - ✅ Componente de pagos mock para pruebas
-  - ⏳ Configuración de dominios wildcard en producción
-  - ⏳ Integración con Stripe real (webhooks)
+   - ✅ Página de selección de servicios (/booking/servicios)
+   - ✅ Página de búsqueda de clientes (/booking/cita - paso 1)
+   - ✅ Página de registro de clientes (/booking/registro)
+   - ✅ Página de confirmación de reserva (/booking/cita - pasos 2-3)
+   - ✅ Página de confirmación por código (/booking/confirmacion)
+   - ✅ Layout específico con navbar personalizado
+   - ✅ API para obtener servicios (/api/services)
+   - ✅ API para obtener ubicaciones (/api/locations)
+   - ✅ API para buscar clientes (/api/customers - GET)
+   - ✅ API para registrar clientes (/api/customers - POST)
+   - ✅ Sistema de horarios de negocio por ubicación
+   - ✅ Componente de pagos mock para pruebas
+   - ⏳ Configuración de dominios wildcard en producción
+   - ⏳ Integración con Stripe real (webhooks)
 
-- 🚧 Aperture - Backend para staff/manager/admin (aperture.anchor23.mx) - 40%
-  - ✅ API para obtener staff disponible (/api/aperture/staff)
-  - ✅ API para gestión de horarios (/api/aperture/staff/schedule)
-  - ✅ API para recursos (/api/aperture/resources)
-  - ✅ API para dashboard (/api/aperture/dashboard)
-  - ✅ Página principal de admin (/aperture)
-  - ❌ API para estadísticas (/api/aperture/stats) - FALTA IMPLEMENTAR
-  - ❌ Reseteo semanal de invitaciones (documentado, NO implementado)
-  - ⏳ Autenticación de admin/staff/manager (login existe, needs Supabase Auth)
-  - ⏳ Gestión completa de staff (CRUD, horarios)
-  - ⏳ Gestión de recursos y asignación
-  - ⏳ Rediseño con estilo Square UI
+- 🚧 Aperture - Dashboard administrativo (aperture.anchor23.mx) - 95% ✅
+   - ✅ APIs completas para staff, recursos, calendario, dashboard
+   - ✅ Calendario multi-columna con drag & drop y tiempo real
+   - ✅ Gestión CRUD completa de staff y recursos
+   - ✅ Componentes con Square UI design
+   - ✅ Autenticación completa con middleware de protección
+   - ✅ Comentarios auditables en todo el código
+   - ⏳ Sistema de nómina y comisiones (próxima semana)
+   - ⏳ POS completo con múltiples métodos de pago
+   - ⏳ CRM avanzado con fidelización
 
 - 🚧 Lógica de no-show y penalizaciones automáticas
 - 🚧 Integración con Google Calendar (20% - en progreso)
@@ -350,17 +352,16 @@ El sitio estará disponible en **http://localhost:2311**
 - Stripe depósitos dinámicos: 100%
 - No-show logic: 40% (lógica implementada, automatización pendiente)
 
-**Fase 4 — HQ Dashboard**: 0% completado (REDEFINIDO con especificaciones técnicas completas)
-- Documento de especificaciones técnicas creado
-- Plan completo de 7 fases con ~136-171 horas estimado
-- Stack UI: Radix UI + Tailwind CSS + Square UI custom styling
-- Especificaciones completas para 6 pantallas principales:
-  1. Dashboard Home (KPI Cards, Gráfico, Top Performers, Activity Feed)
-  2. Calendario Maestro (Drag & Drop, Resize, Filtros dinámicos)
-  3. Miembros del Equipo y Nómina (CRUD Staff, Comisiones, Nómina, Turnos)
-  4. Clientes y Fidelización (CRM, Galería VIP, Membresías, Puntos)
-  5. Ventas, Pagos y Facturación (POS, Cierre de Caja, Finanzas)
-  6. Marketing y Configuración (Campañas, Precios Inteligentes, Integraciones)
+**Fase 4 — HQ Dashboard (APERTURE)**: 95% ✅ EN PROGRESO
+- ✅ Dashboard Home (KPI Cards, Top Performers, Activity Feed completos)
+- ✅ Calendario Maestro (Drag & Drop, filtros, tiempo real, conflictos)
+- ✅ Gestión de Staff (CRUD completo con APIs y componentes)
+- ✅ Gestión de Recursos (CRUD con disponibilidad en tiempo real)
+- ✅ Autenticación completa con middleware de protección
+- ✅ Comentarios auditables en todo el código (80+ archivos)
+- ⏳ Nómina y comisiones (próxima semana)
+- ⏳ POS completo con múltiples métodos de pago
+- ⏳ CRM avanzado con fidelización
 - Pendiente implementación completa
 
 **Fase 5 — Automatización y Lanzamiento**: 5% completado

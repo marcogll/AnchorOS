@@ -4,16 +4,24 @@ import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
-import { Calendar, Users, Clock, DollarSign, TrendingUp, LogOut } from 'lucide-react'
+import { StatsCard } from '@/components/ui/stats-card'
+import { Table, TableHeader, TableBody, TableHead, TableRow, TableCell } from '@/components/ui/table'
+import { Avatar } from '@/components/ui/avatar'
+import { Calendar, Users, Clock, DollarSign, TrendingUp, LogOut, Trophy } from 'lucide-react'
 import { format } from 'date-fns'
 import { es } from 'date-fns/locale'
 import { useAuth } from '@/lib/auth/context'
+import CalendarView from '@/components/calendar-view'
+import StaffManagement from '@/components/staff-management'
+import ResourcesManagement from '@/components/resources-management'
 
-/** @description Admin dashboard component for managing salon operations including bookings, staff, resources, reports, and permissions. */
+/**
+ * @description Admin dashboard component for managing salon operations including bookings, staff, resources, reports, and permissions.
+ */
 export default function ApertureDashboard() {
-  const { user, loading: authLoading, signOut } = useAuth()
+  const { user, signOut } = useAuth()
   const router = useRouter()
-  const [activeTab, setActiveTab] = useState<'dashboard' | 'staff' | 'resources' | 'reports' | 'permissions'>('dashboard')
+  const [activeTab, setActiveTab] = useState<'dashboard' | 'calendar' | 'staff' | 'resources' | 'reports' | 'permissions'>('dashboard')
   const [reportType, setReportType] = useState<'sales' | 'payments' | 'payroll'>('sales')
   const [bookings, setBookings] = useState<any[]>([])
   const [staff, setStaff] = useState<any[]>([])
@@ -27,37 +35,19 @@ export default function ApertureDashboard() {
     completedToday: 0,
     upcomingToday: 0
   })
-
-  useEffect(() => {
-    if (!authLoading && !user) {
-      router.push('/booking/login?redirect=/aperture')
-    }
-  }, [user, authLoading, router])
-
-  if (authLoading) {
-    return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
-        <div className="text-center">
-          <p>Cargando...</p>
-        </div>
-      </div>
-    )
-  }
-
-  useEffect(() => {
-    if (!user) {
-      router.push('/aperture/login')
-    }
-  }, [user, router])
-
-  if (!user) {
-    return null
-  }
+  const [customers, setCustomers] = useState({
+    total: 0,
+    newToday: 0,
+    newMonth: 0
+  })
+  const [topPerformers, setTopPerformers] = useState<any[]>([])
+  const [activityFeed, setActivityFeed] = useState<any[]>([])
 
   useEffect(() => {
     if (activeTab === 'dashboard') {
       fetchBookings()
       fetchStats()
+      fetchDashboardData()
     } else if (activeTab === 'staff') {
       fetchStaff()
     } else if (activeTab === 'resources') {
@@ -94,6 +84,26 @@ export default function ApertureDashboard() {
       }
     } catch (error) {
       console.error('Error fetching stats:', error)
+    }
+  }
+
+  const fetchDashboardData = async () => {
+    try {
+      const response = await fetch('/api/aperture/dashboard?include_customers=true&include_top_performers=true&include_activity=true')
+      const data = await response.json()
+      if (data.success) {
+        if (data.customers) {
+          setCustomers(data.customers)
+        }
+        if (data.topPerformers) {
+          setTopPerformers(data.topPerformers)
+        }
+        if (data.activityFeed) {
+          setActivityFeed(data.activityFeed)
+        }
+      }
+    } catch (error) {
+      console.error('Error fetching dashboard data:', error)
     }
   }
 
@@ -171,15 +181,19 @@ export default function ApertureDashboard() {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ roleId, permId })
       })
-      fetchPermissions() // Refresh
+      fetchPermissions()
     } catch (error) {
       console.error('Error toggling permission:', error)
     }
   }
 
-  const handleLogout = () => {
-    localStorage.removeItem('admin_enrollment_key')
-    window.location.href = '/'
+  const handleLogout = async () => {
+    await signOut()
+    router.push('/aperture/login')
+  }
+
+  if (!user) {
+    return null
   }
 
   return (
@@ -200,45 +214,29 @@ export default function ApertureDashboard() {
 
       <div className="max-w-7xl mx-auto px-8">
         <div className="mb-8 grid grid-cols-1 md:grid-cols-4 gap-4">
-          <Card>
-            <CardHeader className="pb-3">
-              <CardTitle className="text-sm font-semibold">Citas Hoy</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <p className="text-3xl font-bold text-gray-900">{stats.completedToday}</p>
-              <p className="text-sm text-gray-600">Completadas</p>
-            </CardContent>
-          </Card>
+          <StatsCard
+            icon={<Calendar className="h-6 w-6" style={{ color: 'var(--deep-earth)' }} />}
+            title="Citas Hoy"
+            value={stats.completedToday}
+          />
 
-          <Card>
-            <CardHeader className="pb-3">
-              <CardTitle className="text-sm font-semibold">Ingresos Hoy</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <p className="text-3xl font-bold text-gray-900">${stats.totalRevenue.toLocaleString()}</p>
-              <p className="text-sm text-gray-600">Ingresos</p>
-            </CardContent>
-          </Card>
+          <StatsCard
+            icon={<DollarSign className="h-6 w-6" style={{ color: 'var(--deep-earth)' }} />}
+            title="Ingresos Hoy"
+            value={`$${stats.totalRevenue.toLocaleString()}`}
+          />
 
-          <Card>
-            <CardHeader className="pb-3">
-              <CardTitle className="text-sm font-semibold">Pendientes</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <p className="text-3xl font-bold text-gray-900">{stats.upcomingToday}</p>
-              <p className="text-sm text-gray-600">Por iniciar</p>
-            </CardContent>
-          </Card>
+          <StatsCard
+            icon={<Clock className="h-6 w-6" style={{ color: 'var(--deep-earth)' }} />}
+            title="Pendientes"
+            value={stats.upcomingToday}
+          />
 
-          <Card>
-            <CardHeader className="pb-3">
-              <CardTitle className="text-sm font-semibold">Total Mes</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <p className="text-3xl font-bold text-gray-900">{stats.totalBookings}</p>
-              <p className="text-sm text-gray-600">Este mes</p>
-            </CardContent>
-          </Card>
+          <StatsCard
+            icon={<TrendingUp className="h-6 w-6" style={{ color: 'var(--deep-earth)' }} />}
+            title="Total Mes"
+            value={stats.totalBookings}
+          />
         </div>
 
         <div className="mb-6">
@@ -249,6 +247,13 @@ export default function ApertureDashboard() {
             >
               <TrendingUp className="w-4 h-4 mr-2" />
               Dashboard
+            </Button>
+            <Button
+              variant={activeTab === 'calendar' ? 'default' : 'outline'}
+              onClick={() => setActiveTab('calendar')}
+            >
+              <Calendar className="w-4 h-4 mr-2" />
+              Calendario
             </Button>
             <Button
               variant={activeTab === 'staff' ? 'default' : 'outline'}
@@ -281,109 +286,132 @@ export default function ApertureDashboard() {
           </div>
         </div>
 
+        {activeTab === 'calendar' && (
+          <CalendarView />
+        )}
+
         {activeTab === 'dashboard' && (
-          <Card>
-            <CardHeader>
-              <CardTitle>Dashboard</CardTitle>
-              <CardDescription>Resumen de operaciones del día</CardDescription>
-            </CardHeader>
-            <CardContent>
-              {pageLoading ? (
-                <div className="text-center py-8">
-                  Cargando...
-                </div>
-              ) : (
-                <div className="space-y-4">
-                  {bookings.length === 0 ? (
-                    <p className="text-center text-gray-500">No hay citas para hoy</p>
-                  ) : (
-                    bookings.map((booking) => (
-                      <div key={booking.id} className="flex items-center justify-between p-4 border rounded-lg">
-                        <div className="flex items-center gap-4">
-                          <div>
-                            <p className="font-semibold">{booking.customer?.first_name} {booking.customer?.last_name}</p>
-                            <p className="text-sm text-gray-500">{booking.service?.name}</p>
-                            <p className="text-sm text-gray-400">
-                              {format(new Date(booking.start_time_utc), 'HH:mm', { locale: es })} - {format(new Date(booking.end_time_utc), 'HH:mm', { locale: es })}
+          <div className="space-y-6">
+            <Card>
+              <CardHeader>
+                <CardTitle>Top Performers</CardTitle>
+                <CardDescription>Staff con mejor rendimiento este mes</CardDescription>
+              </CardHeader>
+              <CardContent>
+                {pageLoading || topPerformers.length === 0 ? (
+                  <div className="text-center py-8">
+                    <p className="text-gray-500">Cargando performers...</p>
+                  </div>
+                ) : (
+                  <Table>
+                    <TableHeader>
+                      <TableRow>
+                        <TableHead>#</TableHead>
+                        <TableHead>Staff</TableHead>
+                        <TableHead>Role</TableHead>
+                        <TableHead className="text-right">Citas</TableHead>
+                        <TableHead className="text-right">Horas</TableHead>
+                        <TableHead className="text-right">Ingresos</TableHead>
+                      </TableRow>
+                    </TableHeader>
+                    <TableBody>
+                      {topPerformers.map((performer, index) => (
+                        <TableRow key={performer.staffId}>
+                          <TableCell className="font-medium">
+                            {index < 3 && (
+                              <div className="flex items-center gap-2">
+                                <Trophy className="h-4 w-4" style={{
+                                  color: index === 0 ? '#FFD700' : index === 1 ? '#C0C0C0' : '#CD7F32'
+                                }} />
+                              </div>
+                            )}
+                            {index + 1}
+                          </TableCell>
+                          <TableCell>
+                            <div className="flex items-center gap-2">
+                              <Avatar fallback={performer.displayName.split(' ').map((n: string) => n[0]).join('').toUpperCase().slice(0, 2)} />
+                              <span className="font-medium">{performer.displayName}</span>
+                            </div>
+                          </TableCell>
+                          <TableCell>
+                            <span className="px-2 py-1 rounded text-xs font-medium" style={{
+                              backgroundColor: 'var(--sand-beige)',
+                              color: 'var(--charcoal-brown)'
+                            }}>
+                              {performer.role}
+                            </span>
+                          </TableCell>
+                          <TableCell className="text-right font-medium">{performer.totalBookings}</TableCell>
+                          <TableCell className="text-right">{performer.totalHours.toFixed(1)}h</TableCell>
+                          <TableCell className="text-right font-semibold" style={{ color: 'var(--forest-green)' }}>
+                            ${performer.totalRevenue.toLocaleString()}
+                          </TableCell>
+                        </TableRow>
+                      ))}
+                    </TableBody>
+                  </Table>
+                )}
+              </CardContent>
+            </Card>
+
+            <Card>
+              <CardHeader>
+                <CardTitle>Actividad Reciente</CardTitle>
+                <CardDescription>Últimas acciones en el sistema</CardDescription>
+              </CardHeader>
+              <CardContent>
+                {pageLoading || activityFeed.length === 0 ? (
+                  <div className="text-center py-8">
+                    <p className="text-gray-500">Cargando actividad...</p>
+                  </div>
+                ) : (
+                  <div className="space-y-3">
+                    {activityFeed.map((activity) => (
+                      <div key={activity.id} className="flex items-start gap-3 p-3 rounded-lg" style={{
+                        backgroundColor: 'var(--sand-beige)'
+                      }}>
+                        <div className="flex-shrink-0 w-10 h-10 rounded-full flex items-center justify-center" style={{
+                          backgroundColor: 'var(--mocha-taupe)',
+                          color: 'var(--charcoal-brown)'
+                        }}>
+                          <Users className="h-5 w-5" />
+                        </div>
+                        <div className="flex-1 min-w-0">
+                          <div className="flex items-center justify-between mb-1">
+                            <p className="font-semibold text-sm" style={{ color: 'var(--deep-earth)' }}>
+                              {activity.action === 'completed' && 'Cita completada'}
+                              {activity.action === 'confirmed' && 'Cita confirmada'}
+                              {activity.action === 'cancelled' && 'Cita cancelada'}
+                              {activity.action === 'created' && 'Nueva cita'}
                             </p>
-                          </div>
-                          <div className="text-right">
-                            <span className={`px-2 py-1 rounded text-xs ${
-                              booking.status === 'confirmed'
-                                ? 'bg-green-100 text-green-800'
-                                : booking.status === 'pending'
-                                ? 'bg-yellow-100 text-yellow-800'
-                                : 'bg-gray-100 text-gray-800'
-                            }`}>
-                              {booking.status}
+                            <span className="text-xs" style={{ color: 'var(--charcoal-brown)', opacity: 0.6 }}>
+                              {format(new Date(activity.timestamp), 'HH:mm', { locale: es })}
                             </span>
                           </div>
+                          <p className="text-sm" style={{ color: 'var(--charcoal-brown)' }}>
+                            <span className="font-medium">{activity.customerName}</span> - {activity.serviceName}
+                          </p>
+                          {activity.staffName && (
+                            <p className="text-xs mt-1" style={{ color: 'var(--charcoal-brown)', opacity: 0.7 }}>
+                              Staff: {activity.staffName}
+                            </p>
+                          )}
                         </div>
                       </div>
-                    ))
-                  )}
-                </div>
-              )}
-            </CardContent>
-          </Card>
+                    ))}
+                  </div>
+                )}
+              </CardContent>
+            </Card>
+          </div>
         )}
 
         {activeTab === 'staff' && (
-          <Card>
-            <CardHeader>
-              <CardTitle>Gestión de Staff</CardTitle>
-              <CardDescription>Administra horarios y disponibilidad del equipo</CardDescription>
-            </CardHeader>
-            <CardContent>
-              {pageLoading ? (
-                <p className="text-center">Cargando staff...</p>
-              ) : (
-                <div className="space-y-4">
-                  {staff.map((member) => (
-                    <div key={member.id} className="flex items-center justify-between p-4 border rounded-lg">
-                      <div>
-                        <p className="font-semibold">{member.display_name}</p>
-                        <p className="text-sm text-gray-600">{member.role}</p>
-                      </div>
-                      <Button variant="outline" size="sm">
-                        Gestionar Horarios
-                      </Button>
-                    </div>
-                  ))}
-                </div>
-              )}
-            </CardContent>
-          </Card>
+          <StaffManagement />
         )}
 
         {activeTab === 'resources' && (
-          <Card>
-            <CardHeader>
-              <CardTitle>Gestión de Recursos</CardTitle>
-              <CardDescription>Administra estaciones y asignación</CardDescription>
-            </CardHeader>
-            <CardContent>
-              {pageLoading ? (
-                <p className="text-center">Cargando recursos...</p>
-              ) : (
-                <div className="space-y-4">
-                  {resources.map((resource) => (
-                    <div key={resource.id} className="flex items-center justify-between p-4 border rounded-lg">
-                      <div>
-                        <p className="font-semibold">{resource.name}</p>
-                        <p className="text-sm text-gray-600">{resource.type} - {resource.location_name}</p>
-                      </div>
-                      <span className={`px-2 py-1 rounded text-xs ${
-                        resource.is_available ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'
-                      }`}>
-                        {resource.is_available ? 'Disponible' : 'Ocupado'}
-                      </span>
-                    </div>
-                  ))}
-                </div>
-              )}
-            </CardContent>
-          </Card>
+          <ResourcesManagement />
         )}
 
         {activeTab === 'permissions' && (
@@ -487,7 +515,7 @@ export default function ApertureDashboard() {
 
                     {reportType === 'payments' && (
                       <div className="space-y-4">
-                        <h3 className="text-lg font-semibold">Pagos Recientes</h3>
+                        <h3 className="text-lg font-semibold mb-2">Pagos Recientes</h3>
                         {reports.payments && reports.payments.length > 0 ? (
                           <div className="space-y-2">
                             {reports.payments.map((payment: any) => (
@@ -508,7 +536,7 @@ export default function ApertureDashboard() {
 
                     {reportType === 'payroll' && (
                       <div className="space-y-4">
-                        <h3 className="text-lg font-semibold">Nómina Semanal</h3>
+                        <h3 className="text-lg font-semibold mb-2">Nómina Semanal</h3>
                         {reports.payroll && reports.payroll.length > 0 ? (
                           <div className="space-y-2">
                             {reports.payroll.map((staff: any) => (

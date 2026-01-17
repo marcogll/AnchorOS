@@ -43,12 +43,25 @@ AnchorOS is a comprehensive salon management system built with Next.js, Supabase
 - `GET /api/aperture/stats` - Statistics
 
 #### Staff Management
-- `GET /api/aperture/staff` - List staff members
-- `POST /api/aperture/staff` - Create/Update staff
+- `GET /api/aperture/staff` - List staff with filters (location, role, schedule)
+- `POST /api/aperture/staff` - Create new staff member
+- `GET /api/aperture/staff/[id]` - Get specific staff member
+- `PUT /api/aperture/staff/[id]` - Update staff member
+- `DELETE /api/aperture/staff/[id]` - Deactivate staff member
 
-#### Resources
-- `GET /api/aperture/resources` - List resources
-- `POST /api/aperture/resources` - Manage resources
+#### Resources Management
+- `GET /api/aperture/resources` - List resources with availability
+- `POST /api/aperture/resources` - Create new resource
+- `GET /api/aperture/resources/[id]` - Get specific resource
+- `PUT /api/aperture/resources/[id]` - Update resource
+- `DELETE /api/aperture/resources/[id]` - Deactivate resource
+
+#### Calendar Management
+- `GET /api/aperture/calendar` - Get calendar data with bookings
+- `POST /api/aperture/bookings/[id]/reschedule` - Reschedule booking
+
+#### Locations
+- `GET /api/aperture/locations` - List all locations
 
 #### Reports
 - `GET /api/aperture/reports/sales` - Sales reports

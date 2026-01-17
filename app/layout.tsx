@@ -2,6 +2,7 @@ import type { Metadata } from 'next'
 import { Inter } from 'next/font/google'
 import './globals.css'
 import { AuthProvider } from '@/lib/auth/context'
+import { AuthGuard } from '@/components/auth-guard'
 
 const inter = Inter({ 
   subsets: ['latin'],
@@ -28,32 +29,34 @@ export default function RootLayout({
       </head>
       <body className={`${inter.variable} font-sans`}>
         <AuthProvider>
-          {typeof window === 'undefined' && (
-            <header className="site-header">
-              <nav className="nav-primary">
-                <div className="logo">
-                  <a href="/">ANCHOR:23</a>
-                </div>
+          <AuthGuard>
+            {typeof window === 'undefined' && (
+              <header className="site-header">
+                <nav className="nav-primary">
+                  <div className="logo">
+                    <a href="/">ANCHOR:23</a>
+                  </div>
 
-              <ul className="nav-links">
-                <li><a href="/">Inicio</a></li>
-                <li><a href="/historia">Nosotros</a></li>
-                <li><a href="/servicios">Servicios</a></li>
-              </ul>
+                  <ul className="nav-links">
+                    <li><a href="/">Inicio</a></li>
+                    <li><a href="/historia">Nosotros</a></li>
+                    <li><a href="/servicios">Servicios</a></li>
+                  </ul>
 
-              <div className="nav-actions flex items-center gap-4">
-                <a href="/booking/servicios" className="btn-secondary">
-                  Book Now
-                </a>
-                <a href="/membresias" className="btn-primary">
-                  Memberships
-                </a>
-              </div>
-              </nav>
-            </header>
-          )}
+                  <div className="nav-actions flex items-center gap-4">
+                    <a href="/booking/servicios" className="btn-secondary">
+                      Book Now
+                    </a>
+                    <a href="/membresias" className="btn-primary">
+                      Memberships
+                    </a>
+                  </div>
+                </nav>
+              </header>
+            )}
 
-          <main>{children}</main>
+            <main>{children}</main>
+          </AuthGuard>
         </AuthProvider>
 
         <footer className="site-footer">

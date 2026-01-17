@@ -10,6 +10,19 @@
     --deep-earth: #6F5E4F;
     --charcoal-brown: #3F362E;
 
+    --ivory-cream: #FFFEF9;
+    --sand-beige: #E8E4DD;
+    --forest-green: #2E8B57;
+    --clay-orange: #D2691E;
+    --brick-red: #B22222;
+    --slate-blue: #6A5ACD;
+
+    --forest-green-alpha: rgba(46, 139, 87, 0.1);
+    --clay-orange-alpha: rgba(210, 105, 30, 0.1);
+    --brick-red-alpha: rgba(178, 34, 34, 0.1);
+    --slate-blue-alpha: rgba(106, 90, 205, 0.1);
+    --charcoal-brown-alpha: rgba(63, 54, 46, 0.1);
+
     /* Aperture - Square UI */
     --ui-primary: #006AFF;
     --ui-primary-hover: #005ED6;
@@ -50,6 +63,13 @@
     --ui-radius-xl: 12px;
     --ui-radius-2xl: 16px;
     --ui-radius-full: 9999px;
+
+    --radius-sm: 4px;
+    --radius-md: 6px;
+    --radius-lg: 8px;
+    --radius-xl: 12px;
+    --radius-2xl: 16px;
+    --radius-full: 9999px;
 
     /* Font sizes */
     --text-xs: 0.75rem;   /* 12px */

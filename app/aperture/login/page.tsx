@@ -2,8 +2,6 @@
 
 import { useState } from 'react'
 import { useAuth } from '@/lib/auth/context'
-import { useRouter } from 'next/navigation'
-import { supabase } from '@/lib/supabase/client'
 
 export default function ApertureLogin() {
   const [email, setEmail] = useState('')
@@ -11,7 +9,6 @@ export default function ApertureLogin() {
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
   const { signInWithPassword } = useAuth()
-  const router = useRouter()
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -23,27 +20,14 @@ export default function ApertureLogin() {
 
       if (error) {
         setError(error.message)
+        setLoading(false)
       } else {
-        // Check user role from database
-        const { data: { user } } = await supabase.auth.getUser()
-        if (user) {
-          const { data: staff } = await supabase
-            .from('staff')
-            .select('role')
-            .eq('user_id', user.id)
-            .single()
-
-          if (staff && ['admin', 'manager', 'staff'].includes(staff.role)) {
-            router.push('/aperture')
-          } else {
-            setError('Unauthorized access')
-            await supabase.auth.signOut()
-          }
-        }
+        // AuthProvider and AuthGuard will handle redirect automatically
+        setLoading(false)
       }
     } catch (err) {
+      console.error('Login error:', err)
       setError('An error occurred')
-    } finally {
       setLoading(false)
     }
   }
