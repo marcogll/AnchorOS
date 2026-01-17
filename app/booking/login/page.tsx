@@ -8,6 +8,7 @@ import { Label } from '@/components/ui/label'
 import { Mail, CheckCircle } from 'lucide-react'
 import { useAuth } from '@/lib/auth/context'
 
+/** @description Login page component for customer authentication using magic link emails. */
 export default function LoginPage() {
   const { signIn } = useAuth()
   const [email, setEmail] = useState('')

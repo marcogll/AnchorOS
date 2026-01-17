@@ -1,6 +1,9 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { supabaseAdmin } from '@/lib/supabase/client'
 
+/**
+ * @description Retrieves detailed availability time slots for a date
+ */
 export async function GET(request: NextRequest) {
   try {
     const { searchParams } = new URL(request.url)

@@ -1,6 +1,9 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { supabaseAdmin } from '@/lib/supabase/client'
 
+/**
+ * @description Updates the status of a specific booking
+ */
 export async function PATCH(
   request: NextRequest,
   { params }: { params: { id: string } }

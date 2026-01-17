@@ -1,3 +1,4 @@
+/** @description Legal terms and conditions page component outlining salon policies and user agreements. */
 export default function LegalPage() {
   return (
     <div className="section">

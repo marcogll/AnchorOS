@@ -1,6 +1,9 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { supabaseAdmin } from '@/lib/supabase/client'
 
+/**
+ * @description Fetches sales report including total sales, completed bookings, average service price, and sales by service
+ */
 export async function GET() {
   try {
     // Get total sales

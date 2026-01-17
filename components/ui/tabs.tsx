@@ -5,6 +5,9 @@ import { cn } from "@/lib/utils"
 
 const Tabs = TabsPrimitive.Root
 
+/**
+ * TabsList component that renders the container for tab triggers.
+ */
 const TabsList = React.forwardRef<
   React.ElementRef<typeof TabsPrimitive.List>,
   React.ComponentPropsWithoutRef<typeof TabsPrimitive.List>
@@ -20,6 +23,9 @@ const TabsList = React.forwardRef<
 ))
 TabsList.displayName = TabsPrimitive.List.displayName
 
+/**
+ * TabsTrigger component for individual tab buttons.
+ */
 const TabsTrigger = React.forwardRef<
   React.ElementRef<typeof TabsPrimitive.Trigger>,
   React.ComponentPropsWithoutRef<typeof TabsPrimitive.Trigger>
@@ -35,6 +41,9 @@ const TabsTrigger = React.forwardRef<
 ))
 TabsTrigger.displayName = TabsPrimitive.Trigger.displayName
 
+/**
+ * TabsContent component for the content of each tab panel.
+ */
 const TabsContent = React.forwardRef<
   React.ElementRef<typeof TabsPrimitive.Content>,
   React.ComponentPropsWithoutRef<typeof TabsPrimitive.Content>

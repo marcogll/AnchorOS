@@ -1,6 +1,9 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { supabaseAdmin } from '@/lib/supabase/client'
 
+/**
+ * @description Retrieves staff availability schedule with optional filters
+ */
 export async function GET(request: NextRequest) {
   try {
     const { searchParams } = new URL(request.url)
@@ -60,6 +63,9 @@ export async function GET(request: NextRequest) {
   }
 }
 
+/**
+ * @description Creates or updates staff availability
+ */
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json()
@@ -145,6 +151,9 @@ export async function POST(request: NextRequest) {
   }
 }
 
+/**
+ * @description Deletes staff availability by ID
+ */
 export async function DELETE(request: NextRequest) {
   try {
     const { searchParams } = new URL(request.url)

@@ -11,6 +11,7 @@ import { format } from 'date-fns'
 import { es } from 'date-fns/locale'
 import { useAuth } from '@/lib/auth/context'
 
+/** @description Customer profile management page component for viewing and editing personal information and booking history. */
 export default function PerfilPage() {
   const { user, loading: authLoading } = useAuth()
   const router = useRouter()

@@ -1,3 +1,4 @@
+/** @description Static services page component displaying available salon services and categories. */
 export default function ServiciosPage() {
   const services = [
     {

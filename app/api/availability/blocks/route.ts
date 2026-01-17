@@ -17,6 +17,9 @@ async function validateAdmin(request: NextRequest) {
   return true
 }
 
+/**
+ * @description Creates a booking block for a resource
+ */
 export async function POST(request: NextRequest) {
   try {
     const isAdmin = await validateAdmin(request)
@@ -76,6 +79,9 @@ export async function POST(request: NextRequest) {
   }
 }
 
+/**
+ * @description Retrieves booking blocks with filters
+ */
 export async function GET(request: NextRequest) {
   try {
     const isAdmin = await validateAdmin(request)
@@ -151,6 +157,9 @@ export async function GET(request: NextRequest) {
   }
 }
 
+/**
+ * @description Deletes a booking block by ID
+ */
 export async function DELETE(request: NextRequest) {
   try {
     const isAdmin = await validateAdmin(request)

@@ -1,5 +1,6 @@
 // Types based on SalonOS database schema
 
+/** User roles in the system */
 export type UserRole = 'admin' | 'manager' | 'staff' | 'artist' | 'customer' | 'kiosk'
 export type CustomerTier = 'free' | 'gold' | 'black' | 'VIP'
 export type BookingStatus = 'pending' | 'confirmed' | 'cancelled' | 'completed' | 'no_show'
@@ -7,6 +8,7 @@ export type InvitationStatus = 'pending' | 'used' | 'expired'
 export type ResourceType = 'station' | 'room' | 'equipment'
 export type AuditAction = 'create' | 'update' | 'delete' | 'reset_invitations' | 'payment' | 'status_change'
 
+/** Represents a salon location with timezone and contact info */
 export interface Location {
   id: string
   name: string
@@ -100,6 +102,7 @@ export interface Invitation {
   inviter?: Customer
 }
 
+/** Represents a customer booking with service, staff, and resource assignments */
 export interface Booking {
   id: string
   short_id: string

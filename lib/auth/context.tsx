@@ -14,6 +14,9 @@ type AuthContextType = {
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined)
 
+/**
+ * AuthProvider component that manages authentication state and provides it to children.
+ */
 export function AuthProvider({ children }: { children: ReactNode }) {
   const [user, setUser] = useState<User | null>(null)
   const [session, setSession] = useState<Session | null>(null)
@@ -72,6 +75,9 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>
 }
 
+/**
+ * useAuth hook that returns the current authentication context.
+ */
 export function useAuth() {
   const context = useContext(AuthContext)
   if (context === undefined) {

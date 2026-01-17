@@ -362,52 +362,52 @@ Validación Staff (rol Staff):
 
 ## PRÓXIMAS TARES PRIORITARIAS
 
-### Prioridad Alta - Esta Semana
+### Prioridad Alta - Esta Semana (Timeline: 7 días)
 
-1. **Terminar The Boutique (booking.anchor23.mx)**
-   - Implementar autenticación de clientes
-   - Completar flujo de reserva
-   - Integrar con sistema de pagos (Stripe)
-   - Testing completo del flujo
+1. **Terminar The Boutique (booking.anchor23.mx)** - 3-4 días
+   - Implementar autenticación de clientes (depende de: Supabase Auth configurado)
+   - Completar flujo de reserva (depende de: auth implementado)
+   - Integrar con sistema de pagos (Stripe) (depende de: webhooks Stripe)
+   - Testing completo del flujo (depende de: integración completa)
 
-2. **Completar Aperture (aperture.anchor23.mx)**
-   - Implementar autenticación de admin/staff/manager
-   - Gestión completa de staff (CRUD, horarios)
-   - Gestión de recursos y asignación
-   - Dashboard operativo completo
-   - Testing de APIs
+2. **Completar Aperture (aperture.anchor23.mx)** - 4-5 días
+   - Implementar autenticación de admin/staff/manager (depende de: Supabase Auth)
+   - Gestión completa de staff (CRUD, horarios) (depende de: auth implementado, APIs existentes)
+   - Gestión de recursos y asignación (depende de: staff gestión)
+   - Dashboard operativo completo (depende de: gestión implementada)
+   - Testing de APIs (depende de: todas las funciones)
 
-3. **Configurar Kioskos en Producción**
-   - Crear kioskos para cada location
-   - Configurar API keys en variables de entorno
-   - Probar acceso desde pantalla táctil
-   - Usar el sistema de enrollment en `/admin/enrollment`
+3. **Configurar Kioskos en Producción** - 1-2 días
+   - Crear kioskos para cada location (depende de: migraciones en prod)
+   - Configurar API keys en variables de entorno (depende de: env setup)
+   - Probar acceso desde pantalla táctil (depende de: kioskos creados)
+   - Usar el sistema de enrollment en `/admin/enrollment` (depende de: admin auth)
 
-### Prioridad Media - Próximas 2 Semanas
+### Prioridad Media - Próximas 2 Semanas (Timeline: 14 días)
 
-4. **Implementar API Pública (api.anchor23.mx)**
-   - Horarios de operación públicos
-   - Lista de servicios disponibles
-   - Ubicaciones y contacto
-   - Información sin datos sensibles
+4. **Implementar API Pública (api.anchor23.mx)** - 3-4 días
+   - Horarios de operación públicos (depende de: locations table)
+   - Lista de servicios disponibles (depende de: services table, RLS público)
+   - Ubicaciones y contacto (depende de: locations table)
+   - Información sin datos sensibles (depende de: RLS configurado)
 
-5. **Sistema de Autenticación Completo**
-   - Supabase Auth para staff/admin
-   - Perfiles de cliente en The Boutique
-   - Gestión de sesiones
+5. **Sistema de Autenticación Completo** - 5-7 días
+   - Supabase Auth para staff/admin (depende de: roles configurados)
+   - Perfiles de cliente en The Boutique (depende de: auth cliente)
+   - Gestión de sesiones (depende de: Supabase Auth completo)
 
-6. **Integración con Stripe**
-   - Webhooks para pagos
-   - Depósitos dinámicos ($200 vs 50%)
-   - Lógica de no-show y penalizaciones
+6. **Integración con Stripe** - 4-5 días
+   - Webhooks para pagos (depende de: Stripe account, endpoints)
+   - Depósitos dinámicos ($200 vs 50%) (depende de: webhooks)
+   - Lógica de no-show y penalizaciones (depende de: webhooks, bookings logic)
 
-### Prioridad Baja - Próximo Mes
+### Prioridad Baja - Próximo Mes (Timeline: 30 días)
 
-7. **Documentar nuevos endpoints y configuración**
-   - API docs para aperture.anchor23.mx
-   - API docs para api.anchor23.mx
-   - Configuración de dominios wildcard
-   - Guías de despliegue y testing
+7. **Documentar nuevos endpoints y configuración** - 7-10 días
+   - API docs para aperture.anchor23.mx (depende de: APIs completas)
+   - API docs para api.anchor23.mx (depende de: API pública implementada)
+   - Configuración de dominios wildcard (depende de: dominio setup)
+   - Guías de despliegue y testing (depende de: sistema completo)
 
 ---
 

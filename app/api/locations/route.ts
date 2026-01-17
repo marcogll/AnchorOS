@@ -1,6 +1,9 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { supabaseAdmin } from '@/lib/supabase/client'
 
+/**
+ * @description Retrieves all active locations
+ */
 export async function GET(request: NextRequest) {
   try {
     const { data: locations, error } = await supabaseAdmin

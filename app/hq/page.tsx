@@ -10,62 +10,30 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Badge } from '@/components/ui/badge'
 import { format } from 'date-fns'
 import { Calendar, Clock, MapPin, Users, CheckCircle, XCircle, AlertCircle } from 'lucide-react'
+import type { Location, Staff, Booking } from '@/lib/db/types'
 
-interface Booking {
-  id: string
-  short_id: string
-  status: string
-  start_time_utc: string
-  end_time_utc: string
-  notes: string | null
-  is_paid: boolean
-  customer: {
-    id: string
-    email: string
-    first_name: string | null
-    last_name: string | null
-    phone: string | null
-  }
-  service: {
-    id: string
-    name: string
-    duration_minutes: number
-    base_price: number
-  }
-  resource?: {
-    id: string
-    name: string
-    type: string
-  }
-  staff: {
-    id: string
-    display_name: string
-  }
-  location: {
-    id: string
-    name: string
-  }
-}
-
-interface Location {
-  id: string
-  name: string
-}
-
-interface Staff {
+type ApiStaff = {
   staff_id: string
   staff_name: string
   role: string
-  work_hours_start: string | null
-  work_hours_end: string | null
-  work_days: string | null
-  location_id: string
+  work_hours_start?: string
+  work_hours_end?: string
 }
 
+type ApiBooking = Omit<Booking, 'status'> & {
+  status: string
+  service?: any
+  customer?: any
+  staff?: any
+  location?: any
+  resource?: any
+}
+
+/** @description HQ operations dashboard component for managing bookings, staff availability, and location operations. */
 export default function HQDashboard() {
   const [locations, setLocations] = useState<Location[]>([])
-  const [staffList, setStaffList] = useState<Staff[]>([])
-  const [bookings, setBookings] = useState<Booking[]>([])
+  const [staffList, setStaffList] = useState<ApiStaff[]>([])
+  const [bookings, setBookings] = useState<ApiBooking[]>([])
   const [selectedLocation, setSelectedLocation] = useState<string>('')
   const [selectedDate, setSelectedDate] = useState(format(new Date(), 'yyyy-MM-dd'))
   const [loading, setLoading] = useState(false)
@@ -117,11 +85,11 @@ export default function HQDashboard() {
       })
       const data = await response.json()
       if (data.bookings) {
-        const filtered = data.bookings.filter((b: Booking) => {
+        const filtered = data.bookings.filter((b: any) => {
           const bookingDate = new Date(b.start_time_utc)
           return bookingDate >= new Date(startDate) && bookingDate < new Date(endDate)
         })
-        setBookings(filtered)
+        setBookings(filtered as Booking[])
       }
     } catch (error) {
       console.error('Failed to fetch bookings:', error)
@@ -267,14 +235,14 @@ export default function HQDashboard() {
                                   {format(new Date(booking.start_time_utc), 'HH:mm')} - {format(new Date(booking.end_time_utc), 'HH:mm')}
                                 </span>
                               </div>
-                              <h3 className="font-semibold text-lg">{booking.service.name}</h3>
+                              <h3 className="font-semibold text-lg">{booking.service?.name || 'Service'}</h3>
                               <p className="text-sm text-gray-600 mt-1">
-                                {booking.customer.first_name} {booking.customer.last_name} ({booking.customer.email})
+                                {booking.customer?.first_name} {booking.customer?.last_name} ({booking.customer?.email})
                               </p>
                               <div className="flex items-center gap-4 mt-2 text-sm text-gray-500">
                                 <div className="flex items-center gap-1">
                                   <Users className="w-4 h-4" />
-                                  {booking.staff.display_name}
+                                  {booking.staff?.display_name || 'Staff'}
                                 </div>
                                 <div className="flex items-center gap-1">
                                   <MapPin className="w-4 h-4" />
@@ -289,10 +257,10 @@ export default function HQDashboard() {
                             </div>
                             <div className="text-right">
                               <p className="text-lg font-semibold">
-                                ${booking.service.base_price.toFixed(2)}
+                                ${booking.service?.base_price?.toFixed(2) || '0.00'}
                               </p>
-                              <p className="text-xs text-gray-500">
-                                {booking.service.duration_minutes} min
+                              <p className="text-sm text-gray-500">
+                                {booking.service?.duration_minutes || 0} min
                               </p>
                             </div>
                           </div>
@@ -329,9 +297,9 @@ export default function HQDashboard() {
                               </Badge>
                               {getStatusBadge(booking.status)}
                             </div>
-                            <h3 className="font-semibold">{booking.service.name}</h3>
+                            <h3 className="font-semibold">{booking.service?.name || 'Service'}</h3>
                             <p className="text-sm text-gray-600">
-                              {booking.customer.first_name} {booking.customer.last_name}
+                              {booking.customer?.first_name} {booking.customer?.last_name}
                             </p>
                           </div>
                           <div className="text-right">
@@ -339,7 +307,7 @@ export default function HQDashboard() {
                               {format(new Date(booking.start_time_utc), 'HH:mm')}
                             </p>
                             <p className="text-sm text-gray-500">
-                              {booking.staff.display_name}
+                              {booking.staff?.display_name || 'Staff'}
                             </p>
                           </div>
                         </div>

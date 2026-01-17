@@ -1,3 +1,4 @@
+/** @description Company history and philosophy page component explaining the brand's foundation and values. */
 export default function HistoriaPage() {
   return (
     <div className="section">

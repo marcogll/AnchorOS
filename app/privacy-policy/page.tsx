@@ -1,3 +1,4 @@
+/** @description Privacy policy page component explaining data collection, usage, and user rights. */
 export default function PrivacyPolicyPage() {
   return (
     <div className="section">

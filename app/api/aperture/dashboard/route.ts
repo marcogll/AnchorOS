@@ -1,6 +1,9 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { supabaseAdmin } from '@/lib/supabase/client'
 
+/**
+ * @description Fetches bookings with filters for dashboard view
+ */
 export async function GET(request: NextRequest) {
   try {
     const { searchParams } = new URL(request.url)

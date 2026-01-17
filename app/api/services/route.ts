@@ -1,6 +1,9 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { supabaseAdmin } from '@/lib/supabase/client'
 
+/**
+ * @description Retrieves active services, optionally filtered by location
+ */
 export async function GET(request: NextRequest) {
   try {
     const { searchParams } = new URL(request.url)

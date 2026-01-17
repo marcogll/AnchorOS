@@ -1,6 +1,9 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { supabaseAdmin } from '@/lib/supabase/client'
 
+/**
+ * Validates kiosk API key and returns kiosk info if valid
+ */
 async function validateKiosk(request: NextRequest) {
   const apiKey = request.headers.get('x-kiosk-api-key')
   
@@ -18,6 +21,9 @@ async function validateKiosk(request: NextRequest) {
   return kiosk
 }
 
+/**
+ * @description Creates a walk-in booking for kiosk
+ */
 export async function POST(request: NextRequest) {
   try {
     const kiosk = await validateKiosk(request)
@@ -45,6 +51,7 @@ export async function POST(request: NextRequest) {
       )
     }
 
+    // Validate service exists and is active
     const { data: service, error: serviceError } = await supabaseAdmin
       .from('services')
       .select('*')
@@ -75,6 +82,7 @@ export async function POST(request: NextRequest) {
 
     const assignedStaff = availableStaff[0]
 
+    // For walk-ins, booking starts immediately
     const startTime = new Date()
     const endTime = new Date(startTime)
     endTime.setMinutes(endTime.getMinutes() + service.duration_minutes)

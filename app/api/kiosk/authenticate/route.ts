@@ -2,6 +2,9 @@ import { NextRequest, NextResponse } from 'next/server'
 import { supabaseAdmin } from '@/lib/supabase/client'
 import { Kiosk } from '@/lib/db/types'
 
+/**
+ * @description Authenticates a kiosk using API key
+ */
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json()

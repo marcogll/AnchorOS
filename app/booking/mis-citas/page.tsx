@@ -7,6 +7,7 @@ import { Calendar, Clock, MapPin, User, DollarSign } from 'lucide-react'
 import { format } from 'date-fns'
 import { es } from 'date-fns/locale'
 
+/** @description Customer appointments management page component for viewing and managing existing bookings. */
 export default function MisCitasPage() {
   const [bookings, setBookings] = useState<any[]>([])
   const [loading, setLoading] = useState(false)

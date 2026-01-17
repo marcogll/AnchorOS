@@ -2,6 +2,9 @@ import * as React from "react"
 
 import { cn } from "@/lib/utils"
 
+/**
+ * Card component that renders a container with border, background, and shadow.
+ */
 const Card = React.forwardRef<
   HTMLDivElement,
   React.HTMLAttributes<HTMLDivElement>
@@ -17,6 +20,9 @@ const Card = React.forwardRef<
 ))
 Card.displayName = "Card"
 
+/**
+ * CardHeader component for the header section of a card.
+ */
 const CardHeader = React.forwardRef<
   HTMLDivElement,
   React.HTMLAttributes<HTMLDivElement>
@@ -29,6 +35,9 @@ const CardHeader = React.forwardRef<
 ))
 CardHeader.displayName = "CardHeader"
 
+/**
+ * CardTitle component for the title within a card header.
+ */
 const CardTitle = React.forwardRef<
   HTMLParagraphElement,
   React.HTMLAttributes<HTMLHeadingElement>
@@ -44,6 +53,9 @@ const CardTitle = React.forwardRef<
 ))
 CardTitle.displayName = "CardTitle"
 
+/**
+ * CardDescription component for the description text in a card.
+ */
 const CardDescription = React.forwardRef<
   HTMLParagraphElement,
   React.HTMLAttributes<HTMLParagraphElement>
@@ -56,6 +68,9 @@ const CardDescription = React.forwardRef<
 ))
 CardDescription.displayName = "CardDescription"
 
+/**
+ * CardContent component for the main content area of a card.
+ */
 const CardContent = React.forwardRef<
   HTMLDivElement,
   React.HTMLAttributes<HTMLDivElement>
@@ -64,6 +79,9 @@ const CardContent = React.forwardRef<
 ))
 CardContent.displayName = "CardContent"
 
+/**
+ * CardFooter component for the footer section of a card.
+ */
 const CardFooter = React.forwardRef<
   HTMLDivElement,
   React.HTMLAttributes<HTMLDivElement>

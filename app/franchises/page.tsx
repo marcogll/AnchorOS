@@ -3,6 +3,7 @@
 import { useState } from 'react'
 import { Building2, Map, CheckCircle, Mail, Phone } from 'lucide-react'
 
+/** @description Franchise information and application page component for potential franchise partners. */
 export default function FranchisesPage() {
   const [formData, setFormData] = useState({
     nombre: '',

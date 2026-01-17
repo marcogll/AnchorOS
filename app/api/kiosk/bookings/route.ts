@@ -18,6 +18,9 @@ async function validateKiosk(request: NextRequest) {
   return kiosk
 }
 
+/**
+ * @description Retrieves pending/confirmed bookings for kiosk
+ */
 export async function GET(request: NextRequest) {
   try {
     const kiosk = await validateKiosk(request)
@@ -72,6 +75,9 @@ export async function GET(request: NextRequest) {
   }
 }
 
+/**
+ * @description Creates a new booking for kiosk
+ */
 export async function POST(request: NextRequest) {
   try {
     const kiosk = await validateKiosk(request)

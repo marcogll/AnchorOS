@@ -7,6 +7,7 @@ import { CheckCircle2, Calendar, Clock, MapPin, User, Mail } from 'lucide-react'
 import { format } from 'date-fns'
 import { es } from 'date-fns/locale'
 
+/** @description Booking confirmation page component displaying appointment details and important information after successful booking. */
 export default function ConfirmacionPage() {
   const [bookingDetails, setBookingDetails] = useState<any>(null)
   const [loading, setLoading] = useState(true)

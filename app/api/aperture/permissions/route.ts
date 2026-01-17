@@ -37,6 +37,9 @@ const mockPermissions = [
   }
 ]
 
+/**
+ * @description Retrieves permissions data for different roles
+ */
 export async function GET() {
   return NextResponse.json({
     success: true,
@@ -44,6 +47,9 @@ export async function GET() {
   })
 }
 
+/**
+ * @description Toggles a specific permission for a role
+ */
 export async function POST(request: NextRequest) {
   const { roleId, permId } = await request.json()
 

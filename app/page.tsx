@@ -1,3 +1,4 @@
+/** @description Home page component for the salon website, featuring hero section, services preview, and testimonials. */
 export default function HomePage() {
   return (
     <>

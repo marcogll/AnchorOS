@@ -4,6 +4,11 @@ import { supabaseAdmin } from '@/lib/supabase/client'
 
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!)
 
+/**
+ * @description Creates a Stripe payment intent for booking deposit (50% of service price, max $200)
+ * @param {NextRequest} request - Request containing booking details
+ * @returns {NextResponse} Payment intent client secret and amount
+ */
 export async function POST(request: NextRequest) {
   try {
     const {

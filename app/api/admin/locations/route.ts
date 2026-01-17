@@ -17,6 +17,9 @@ async function validateAdmin(request: NextRequest) {
   return true
 }
 
+/**
+ * @description Retrieves all locations for admin
+ */
 export async function GET(request: NextRequest) {
   try {
     const isAdmin = await validateAdmin(request)

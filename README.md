@@ -267,8 +267,8 @@ El sitio estará disponible en **http://localhost:2311**
 **Fase 2 — Motor de Agendamiento**: 80% completado
 - Disponibilidad dual capa: 100%
 - API de reservas: 100%
-- The Boutique: 100% (completo con pagos)
-- Integración Pagos (Stripe): 100%
+- The Boutique: 90% (frontend completo, autenticación y pagos parcialmente implementados)
+- Integración Pagos (Stripe): 90% (depósitos implementados, webhooks pendientes)
 - Integración Calendar: 20% (en progreso)
 - Aperture Backend: 100%
 
@@ -280,7 +280,47 @@ El sitio estará disponible en **http://localhost:2311**
 
 ---
 
-## 11. anchor23.mx - Frontend Institucional
+## 11. Deployment y Producción
+
+### Requisitos para Producción
+- VPS o cloud provider (Vercel recomendado para Next.js)
+- Base de datos Supabase production
+- Configuración de dominios wildcard (`*.anchor23.mx`)
+- SSL certificates automáticos
+- Monitoring y logging (Sentry recomendado)
+
+### Variables de Entorno de Producción
+Además de las variables locales, configurar:
+```
+# Producción
+NEXT_PUBLIC_APP_URL=https://anchor23.mx
+NEXT_PUBLIC_BOOKING_URL=https://booking.anchor23.mx
+NEXT_PUBLIC_KIOSK_URL=https://kiosk.anchor23.mx
+NEXT_PUBLIC_APERTURE_URL=https://aperture.anchor23.mx
+
+# Webhooks Stripe
+STRIPE_WEBHOOK_ENDPOINT_SECRET=
+
+# Google Calendar (opcional para producción)
+GOOGLE_CALENDAR_ID=
+```
+
+### Pasos de Deployment
+1. Configurar Supabase production con RLS habilitado
+2. Ejecutar migraciones: `supabase db push`
+3. Configurar dominios y SSL
+4. Desplegar en Vercel con build settings personalizados
+5. Configurar webhooks de Stripe para pagos
+6. Probar autenticación y bookings end-to-end
+
+### Monitoreo
+- Logs de Supabase para queries lentas
+- Alertas de Stripe para fallos de pago
+- Uptime monitoring para dominios críticos
+
+---
+
+## 12. anchor23.mx - Frontend Institucional
 
 Dominio institucional. Contenido estático, marca, narrativa y conversión inicial.
 
@@ -342,7 +382,7 @@ Ver documentación completa en `API.md` para todos los endpoints disponibles.
 
 ---
 
-## 12. Sistema de Kiosko
+## 13. Sistema de Kiosko
 
 El sistema de kiosko permite a los clientes interactuar con el salón mediante pantallas táctiles en la entrada.
 
@@ -367,7 +407,7 @@ https://kiosk.anchor23.mx/{location-id}
 
 ---
 
-## 13. Filosofía Operativa
+## 14. Filosofía Operativa
 
 SalonOS no busca volumen.
 

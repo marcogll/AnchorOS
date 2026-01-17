@@ -1,6 +1,9 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { supabaseAdmin } from '@/lib/supabase/client'
 
+/**
+ * @description Fetches payroll report for staff based on recent bookings
+ */
 export async function GET() {
   try {
     // Get staff and their bookings this week

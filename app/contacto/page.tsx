@@ -3,6 +3,7 @@
 import { useState } from 'react'
 import { MapPin, Phone, Mail, Clock } from 'lucide-react'
 
+/** @description Contact page component with contact information and contact form for inquiries. */
 export default function ContactoPage() {
   const [formData, setFormData] = useState({
     nombre: '',

@@ -8,6 +8,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { Label } from '@/components/ui/label'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 
+/** @description Admin enrollment system component for creating and managing staff members and kiosk devices. */
 export default function EnrollmentPage() {
   const [adminKey, setAdminKey] = useState('')
   const [isAuthenticated, setIsAuthenticated] = useState(false)

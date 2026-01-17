@@ -12,6 +12,7 @@ import { format } from 'date-fns'
 import { es } from 'date-fns/locale'
 import { useAuth } from '@/lib/auth/context'
 
+/** @description Booking confirmation and payment page component for completing appointment reservations. */
 export default function CitaPage() {
   const { user, loading: authLoading } = useAuth()
   const router = useRouter()

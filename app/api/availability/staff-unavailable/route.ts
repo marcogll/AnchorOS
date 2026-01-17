@@ -17,6 +17,9 @@ async function validateAdminOrStaff(request: NextRequest) {
   return true
 }
 
+/**
+ * @description Marks staff as unavailable for a time period
+ */
 export async function POST(request: NextRequest) {
   try {
     const hasAccess = await validateAdminOrStaff(request)
@@ -119,6 +122,9 @@ export async function POST(request: NextRequest) {
   }
 }
 
+/**
+ * @description Retrieves staff unavailability records
+ */
 export async function GET(request: NextRequest) {
   try {
     const hasAccess = await validateAdminOrStaff(request)

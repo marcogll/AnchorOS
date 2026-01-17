@@ -18,6 +18,9 @@ async function validateKiosk(request: NextRequest) {
   return kiosk
 }
 
+/**
+ * @description Confirms a pending booking by short ID for kiosk
+ */
 export async function POST(
   request: NextRequest,
   { params }: { params: { shortId: string } }

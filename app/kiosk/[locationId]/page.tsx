@@ -7,6 +7,7 @@ import { BookingConfirmation } from '@/components/kiosk/BookingConfirmation'
 import { WalkInFlow } from '@/components/kiosk/WalkInFlow'
 import { Calendar, UserPlus, MapPin, Clock } from 'lucide-react'
 
+/** @description Kiosk interface component for location-based check-in confirmations and walk-in booking creation. */
 export default function KioskPage({ params }: { params: { locationId: string } }) {
   const [apiKey, setApiKey] = useState<string | null>(null)
   const [location, setLocation] = useState<any>(null)

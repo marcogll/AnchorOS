@@ -3,6 +3,7 @@
 import { useState } from 'react'
 import { Crown, Star, Award, Diamond } from 'lucide-react'
 
+/** @description Membership tiers page component displaying exclusive membership options and application forms. */
 export default function MembresiasPage() {
   const [selectedTier, setSelectedTier] = useState<string | null>(null)
   const [formData, setFormData] = useState({

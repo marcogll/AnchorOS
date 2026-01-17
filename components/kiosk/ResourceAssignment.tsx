@@ -16,6 +16,9 @@ interface ResourceAssignmentProps {
   end_time: string
 }
 
+/**
+ * ResourceAssignment component that displays available resources for booking.
+ */
 export function ResourceAssignment({ resources, start_time, end_time }: ResourceAssignmentProps) {
   const formatDateTime = (dateTime: string) => {
     const date = new Date(dateTime)

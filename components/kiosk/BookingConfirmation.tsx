@@ -11,6 +11,9 @@ interface BookingConfirmationProps {
   onCancel: () => void
 }
 
+/**
+ * BookingConfirmation component that allows confirming a booking by short ID.
+ */
 export function BookingConfirmation({ apiKey, onConfirm, onCancel }: BookingConfirmationProps) {
   const [shortId, setShortId] = useState('')
   const [loading, setLoading] = useState(false)

@@ -17,6 +17,9 @@ async function validateAdmin(request: NextRequest) {
   return true
 }
 
+/**
+ * @description Retrieves staff users with filters for admin
+ */
 export async function GET(request: NextRequest) {
   try {
     const isAdmin = await validateAdmin(request)
@@ -78,6 +81,9 @@ export async function GET(request: NextRequest) {
   }
 }
 
+/**
+ * @description Creates a new staff user
+ */
 export async function POST(request: NextRequest) {
   try {
     const isAdmin = await validateAdmin(request)

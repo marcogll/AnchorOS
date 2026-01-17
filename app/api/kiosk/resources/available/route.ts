@@ -18,6 +18,9 @@ async function validateKiosk(request: NextRequest) {
   return kiosk
 }
 
+/**
+ * @description Retrieves available resources for kiosk, filtered by time and service
+ */
 export async function GET(request: NextRequest) {
   try {
     const kiosk = await validateKiosk(request)

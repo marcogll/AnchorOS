@@ -13,6 +13,9 @@ interface WalkInFlowProps {
   onCancel: () => void
 }
 
+/**
+ * WalkInFlow component that manages the walk-in booking process in steps.
+ */
 export function WalkInFlow({ apiKey, onComplete, onCancel }: WalkInFlowProps) {
   const [step, setStep] = useState<'services' | 'customer' | 'confirm' | 'success'>('services')
   const [loading, setLoading] = useState(false)

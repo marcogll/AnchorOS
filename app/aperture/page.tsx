@@ -9,6 +9,7 @@ import { format } from 'date-fns'
 import { es } from 'date-fns/locale'
 import { useAuth } from '@/lib/auth/context'
 
+/** @description Admin dashboard component for managing salon operations including bookings, staff, resources, reports, and permissions. */
 export default function ApertureDashboard() {
   const { user, loading: authLoading, signOut } = useAuth()
   const router = useRouter()

@@ -2,6 +2,9 @@ import { NextRequest, NextResponse } from 'next/server'
 import { supabaseAdmin } from '@/lib/supabase/client'
 import { generateShortId } from '@/lib/utils/short-id'
 
+/**
+ * @description Creates a new booking
+ */
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json()
@@ -70,6 +73,7 @@ export async function POST(request: NextRequest) {
 
     const endTimeUtc = endTime.toISOString()
 
+    // Check staff availability for the requested time slot
     const { data: availableStaff, error: staffError } = await supabaseAdmin.rpc('get_available_staff', {
       p_location_id: location_id,
       p_start_time_utc: start_time_utc,
@@ -93,6 +97,7 @@ export async function POST(request: NextRequest) {
 
     const assignedStaff = availableStaff[0]
 
+    // Check resource availability with service priority
     const { data: availableResources, error: resourcesError } = await supabaseAdmin.rpc('get_available_resources_with_priority', {
       p_location_id: location_id,
       p_start_time: start_time_utc,
@@ -117,6 +122,7 @@ export async function POST(request: NextRequest) {
 
     const assignedResource = availableResources[0]
 
+    // Create or find customer based on email
     const { data: customer, error: customerError } = await supabaseAdmin
       .from('customers')
       .upsert({
@@ -141,6 +147,7 @@ export async function POST(request: NextRequest) {
 
     const shortId = await generateShortId()
 
+    // Create the booking record with all assigned resources
     const { data: booking, error: bookingError } = await supabaseAdmin
       .from('bookings')
       .insert({
@@ -208,6 +215,9 @@ export async function POST(request: NextRequest) {
   }
 }
 
+/**
+ * @description Retrieves bookings with filters
+ */
 export async function GET(request: NextRequest) {
   try {
     const { searchParams } = new URL(request.url)

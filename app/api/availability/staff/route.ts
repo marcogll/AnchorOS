@@ -1,6 +1,9 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { supabaseAdmin } from '@/lib/supabase/client'
 
+/**
+ * @description Retrieves available staff for a time range
+ */
 export async function GET(request: NextRequest) {
   try {
     const { searchParams } = new URL(request.url)

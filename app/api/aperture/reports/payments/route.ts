@@ -1,6 +1,9 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { supabaseAdmin } from '@/lib/supabase/client'
 
+/**
+ * @description Fetches recent payments report
+ */
 export async function GET() {
   try {
     // Get recent payments (assuming bookings with payment_intent_id are paid)
