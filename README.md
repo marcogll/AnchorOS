@@ -46,10 +46,26 @@ No contiene:
 
 Este proyecto se rige por los siguientes documentos:
 
-* **PRD (Documento Maestro)** → Definición de producto y reglas de negocio.
-* **README (este archivo)** → Guía técnica y operativa del repo.
-* **API.md** → Documentación completa de APIs y endpoints.
-* **TASKS.md** → Plan de ejecución por fases y estado actual.
+### Documentos Principales (Raíz)
+* **[README.md](./README.md)** (este archivo) → Guía técnica y operativa del repo.
+* **[TASKS.md](./TASKS.md)** → Plan de ejecución por fases y estado actual.
+
+### Documentación Especializada (docs/)
+* **[docs/PRD.md](./docs/PRD.md)** → Definición de producto y reglas de negocio.
+* **[docs/API.md](./docs/API.md)** → Documentación completa de APIs y endpoints.
+* **[docs/STRIPE_SETUP.md](./docs/STRIPE_SETUP.md)** → Guía de integración de pagos con Stripe.
+* **[docs/site_requirements.md](./docs/site_requirements.md)** → Requisitos técnicos del proyecto.
+* **[docs/ANCHOR23_FRONTEND.md](./docs/ANCHOR23_FRONTEND.md)** → Documentación del frontend institucional.
+* **[docs/DOMAIN_CONFIGURATION.md](./docs/DOMAIN_CONFIGURATION.md)** → Configuración de dominios y subdominios.
+* **[docs/KIOSK_SYSTEM.md](./docs/KIOSK_SYSTEM.md)** → Documentación completa del sistema de kiosko.
+* **[docs/KIOSK_IMPLEMENTATION.md](./docs/KIOSK_IMPLEMENTATION.md)** → Guía rápida de implementación del kiosko.
+* **[docs/ENROLLMENT_SYSTEM.md](./docs/ENROLLMENT_SYSTEM.md)** → Sistema de enrollment de kioskos.
+* **[docs/RESOURCES_UPDATE.md](./docs/RESOURCES_UPDATE.md)** → Documentación de actualización de recursos.
+* **[docs/OPERATIONAL_PROCEDURES.md](./docs/OPERATIONAL_PROCEDURES.md)** → Procedimientos operativos.
+* **[docs/STAFF_TRAINING.md](./docs/STAFF_TRAINING.md)** → Guía de capacitación del staff.
+* **[docs/TROUBLESHOOTING.md](./docs/TROUBLESHOOTING.md)** → Guía de solución de problemas.
+* **[docs/CLIENT_ONBOARDING.md](./docs/CLIENT_ONBOARDING.md)** → Proceso de onboarding de clientes.
+* **[docs/PROJECT_UPDATE_JAN_2026.md](./docs/PROJECT_UPDATE_JAN_2026.md)** → Actualizaciones del proyecto Enero 2026.
 
 El PRD es la fuente de verdad funcional. El README es la guía de ejecución.
 
@@ -345,10 +361,45 @@ Dominio institucional. Contenido estático, marca, narrativa y conversión inici
 
 **booking.anchor23.mx**
 - `/booking/servicios` - Página de selección de servicios con calendario
-- `/booking/cita` - Página de confirmación de reserva con formulario de cliente y pagos
+- `/booking/cita` - Flujo de reserva en pasos:
+  1. Búsqueda de cliente por email/telefono
+  2. Confirmación de datos personales
+  3. Pago del depósito (mock actualmente)
+- `/booking/registro` - Registro de nuevos clientes con:
+  - Nombre y apellido
+  - Email y teléfono
+  - Fecha de nacimiento
+  - Ocupación (lista desplegable)
 - `/booking/login` - Autenticación con magic links
 - `/booking/perfil` - Perfil de cliente con historial de citas
 - `/booking/mis-citas` - Gestión de citas
+
+### Sistema de Horarios de Negocio
+Cada ubicación tiene horarios de apertura personalizados por día de la semana almacenados en la columna `business_hours` (JSONB):
+
+**Formato de estructura:**
+```json
+{
+  "monday": {"open": "10:00", "close": "19:00", "is_closed": false},
+  "tuesday": {"open": "10:00", "close": "19:00", "is_closed": false},
+  "wednesday": {"open": "10:00", "close": "19:00", "is_closed": false},
+  "thursday": {"open": "10:00", "close": "19:00", "is_closed": false},
+  "friday": {"open": "10:00", "close": "19:00", "is_closed": false},
+  "saturday": {"open": "10:00", "close": "18:00", "is_closed": false},
+  "sunday": {"is_closed": true}
+}
+```
+
+**Horarios por defecto (actualizados vía migración):**
+- Lunes a Viernes: 10:00 AM - 7:00 PM
+- Sábado: 10:00 AM - 6:00 PM
+- Domingo: Cerrado
+
+**Implementación:**
+- Función PostgreSQL `get_detailed_availability()` respeta horarios de cada día
+- Solo se muestran slots dentro del horario de apertura
+- Días marcados como `is_closed: true` no muestran disponibilidad
+- Los horarios se pueden personalizar por ubicación individualmente
 
 **aperture.anchor23.mx** (Backend administrativo)
 - `/aperture` - Dashboard con estadísticas y gestión

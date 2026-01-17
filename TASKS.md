@@ -13,6 +13,155 @@ Este documento define las tareas ejecutables del proyecto **AnchorOS**, alineada
 
 ---
 
+## Estructura de Documentación
+
+El proyecto mantiene una estructura de documentación organizada para facilitar navegación y mantenimiento:
+
+### Documentos Principales (Raíz)
+* **README.md** → Guía técnica y operativa del repositorio. Punto de entrada principal.
+* **TASKS.md** (este documento) → Plan de ejecución por fases y estado actual del proyecto.
+
+### Documentación Especializada (docs/)
+Documentación detallada organizada por área funcional:
+
+**Documentación Base:**
+* **PRD.md** → Documento maestro de producto y reglas de negocio (fuente de verdad).
+* **API.md** → Documentación completa de APIs y endpoints.
+* **site_requirements.md** → Requisitos técnicos del proyecto.
+* **STRIPE_SETUP.md** → Guía de integración de pagos con Stripe.
+
+**Documentación de Dominios:**
+* **ANCHOR23_FRONTEND.md** → Documentación del frontend institucional (anchor23.mx).
+* **DOMAIN_CONFIGURATION.md** → Configuración de dominios y subdominios.
+* **PROJECT_UPDATE_JAN_2026.md** → Actualizaciones del proyecto Enero 2026.
+
+**Documentación de Sistemas:**
+* **KIOSK_SYSTEM.md** → Documentación completa del sistema de kiosko.
+* **KIOSK_IMPLEMENTATION.md** → Guía rápida de implementación del kiosko.
+* **ENROLLMENT_SYSTEM.md** → Sistema de enrollment de kioskos.
+* **RESOURCES_UPDATE.md** → Documentación de actualización de recursos.
+
+**Documentación Operativa:**
+* **OPERATIONAL_PROCEDURES.md** → Procedimientos operativos.
+* **STAFF_TRAINING.md** → Guía de capacitación del staff.
+* **CLIENT_ONBOARDING.md** → Proceso de onboarding de clientes.
+* **TROUBLESHOOTING.md** → Guía de solución de problemas.
+
+**Reglas de Mantenimiento:**
+* Cuando se agrega nueva funcionalidad: actualizar TASKS.md y documentación relevante en docs/
+* Cuando se modifica lógica de negocio: actualizar PRD.md primero
+* Cuando se crea nuevo endpoint: actualizar API.md
+* Cuando se implementa nuevo dominio: crear o actualizar documentación en docs/
+* README.md debe tener siempre links actualizados a toda la documentación
+
+---
+
+## Convenciones de Código
+
+Para mantener el código base mantenible y auto-documentado, se seguirán estas convenciones:
+
+### Comentarios en Funciones PostgreSQL
+
+Todas las funciones PostgreSQL deben incluir:
+```sql
+/**
+ * @description Breve descripción de qué hace la función
+ * @param {tipo} nombre_parametro - Descripción del parámetro
+ * @returns {tipo} - Descripción del valor de retorno
+ * @example SELECT funcion_de_ejemplo(param1, param2);
+ */
+```
+
+**Ejemplo:**
+```sql
+/**
+ * @description Verifica disponibilidad completa del staff validando horario laboral, reservas existentes y bloques manuales
+ * @param {UUID} p_staff_id - ID del staff a verificar
+ * @param {TIMESTAMPTZ} p_start_time_utc - Hora de inicio en UTC
+ * @param {TIMESTAMPTZ} p_end_time_utc - Hora de fin en UTC
+ * @param {UUID} p_exclude_booking_id - (Opcional) ID de reserva a excluir en verificación
+ * @returns {BOOLEAN} - true si el staff está disponible, false en caso contrario
+ * @example SELECT check_staff_availability('uuid...', NOW(), NOW() + INTERVAL '1 hour', NULL);
+ */
+CREATE OR REPLACE FUNCTION check_staff_availability(...)
+```
+
+### Comentarios en TypeScript/JavaScript
+
+Todas las funciones deben tener JSDoc:
+```typescript
+/**
+ * @description Breve descripción de la función
+ * @param {tipo} nombreParametro - Descripción del parámetro
+ * @returns {tipo} - Descripción del valor de retorno
+ * @example funcionDeEjemplo(param1, param2)
+ */
+```
+
+**Ejemplo:**
+```typescript
+/**
+ * @description Genera un short ID único de 6 caracteres para bookings
+ * @param {number} maxAttempts - Máximo número de intentos antes de lanzar error
+ * @returns {Promise<string>} - Short ID único de 6 caracteres
+ * @example generateShortId(5)
+ */
+export async function generateShortId(maxAttempts: number = 5): Promise<string>
+```
+
+### Comentarios en API Routes
+
+Cada endpoint debe documentar:
+```typescript
+/**
+ * @description Descripción de qué hace este endpoint
+ * @param {NextRequest} request - Objeto de request de Next.js
+ * @returns {NextResponse} - Response con estructura { success, data/error }
+ */
+export async function GET(request: NextRequest) {
+  // Implementación
+}
+```
+
+### Reglas de Nombres
+
+* **Funciones**: camelCase (`checkStaffAvailability`, `generateShortId`)
+* **Constantes**: UPPER_SNAKE_CASE (`MAX_RETRY_ATTEMPTS`, `DEFAULT_TIMEZONE`)
+* **Tablas**: snake_case (`bookings`, `customer_profiles`)
+* **Columnas**: snake_case (`created_at`, `updated_at`, `first_name`)
+* **Componentes**: PascalCase (`BookingForm`, `CustomerSearch`)
+* **Archivos**: kebab-case (`booking-page.tsx`, `api-bookings.ts`)
+
+### SQL Migrations
+
+Cada migración debe incluir:
+```sql
+-- ============================================
+-- Nombre descriptivo de la migración
+-- Fecha: AAAAMMDD
+-- Autor: Nombre del desarrollador
+-- Ticket/Issue: Referencia al ticket o issue (opcional)
+-- ============================================
+
+-- Descripción breve de qué cambia esta migración
+-- Ejemplo: Agrega columna business_hours a locations para horarios personalizados
+```
+
+### Comentarios de Auditoría
+
+Para acciones que requieren logging en `audit_logs`:
+```typescript
+// Log action for audit trail
+await supabaseAdmin.from('audit_logs').insert({
+  entity_type: 'booking',
+  entity_id: bookingId,
+  action: 'create',
+  new_values: { customer_id: customerId, start_time: startTime }
+});
+```
+
+---
+
 ## FASE 1 — Cimientos y CRM ✅ COMPLETADA
 
 ### 1.1 Infraestructura Base ✅
@@ -328,14 +477,19 @@ Validación Staff (rol Staff):
 ### 🚧 En Progreso
 - 🚧 The Boutique - Frontend de reservas (booking.anchor23.mx)
   - ✅ Página de selección de servicios (/booking/servicios)
-  - ✅ Página de confirmación de reserva (/booking/cita)
+  - ✅ Página de búsqueda de clientes (/booking/cita - paso 1)
+  - ✅ Página de registro de clientes (/booking/registro)
+  - ✅ Página de confirmación de reserva (/booking/cita - pasos 2-3)
   - ✅ Página de confirmación por código (/booking/confirmacion)
   - ✅ Layout específico con navbar personalizado
   - ✅ API para obtener servicios (/api/services)
   - ✅ API para obtener ubicaciones (/api/locations)
+  - ✅ API para buscar clientes (/api/customers - GET)
+  - ✅ API para registrar clientes (/api/customers - POST)
+  - ✅ Sistema de horarios de negocio por ubicación
+  - ✅ Componente de pagos mock para pruebas
   - ⏳ Configuración de dominios wildcard en producción
-  - ⏳ Autenticación de clientes
-  - ⏳ Integración con Stripe
+  - ⏳ Integración con Stripe real
 
 - 🚧 Aperture - Backend para staff/manager/admin (aperture.anchor23.mx)
   - ✅ API para obtener staff disponible (/api/aperture/staff)

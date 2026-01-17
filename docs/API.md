@@ -23,8 +23,12 @@ AnchorOS is a comprehensive salon management system built with Next.js, Supabase
 - `GET /api/availability/time-slots` - Get available time slots for booking
 - `POST /api/availability/staff-unavailable` - Mark staff unavailable (Staff auth required)
 
+#### Customers
+- `GET /api/customers` - Search customer by email or phone
+- `POST /api/customers` - Register new customer
+
 #### Bookings (Public)
-- `POST /api/bookings` - Create new booking
+- `POST /api/bookings` - Create new booking (supports customer_id or customer info)
 - `GET /api/bookings/[id]` - Get booking details
 - `PUT /api/bookings/[id]` - Update booking
 
@@ -76,14 +80,33 @@ AnchorOS is a comprehensive salon management system built with Next.js, Supabase
 - `kiosk` - Kiosk devices
 
 ### Key Tables
-- `locations` - Salon locations
+- `locations` - Salon locations with business hours (JSONB)
 - `staff` - Staff members
-- `services` - Available services
+- `services` - Available services with category
 - `resources` - Physical resources (stations)
 - `customers` - Customer profiles
 - `bookings` - Service bookings
 - `kiosks` - Kiosk devices
 - `audit_logs` - System audit trail
+
+### Business Hours Structure
+Locations table includes `business_hours` JSONB column with format:
+```json
+{
+  "monday": {"open": "10:00", "close": "19:00", "is_closed": false},
+  "tuesday": {"open": "10:00", "close": "19:00", "is_closed": false},
+  "wednesday": {"open": "10:00", "close": "19:00", "is_closed": false},
+  "thursday": {"open": "10:00", "close": "19:00", "is_closed": false},
+  "friday": {"open": "10:00", "close": "19:00", "is_closed": false},
+  "saturday": {"open": "10:00", "close": "18:00", "is_closed": false},
+  "sunday": {"is_closed": true}
+}
+```
+
+Default business hours (updated via migration):
+- Monday-Friday: 10:00 AM - 7:00 PM
+- Saturday: 10:00 AM - 6:00 PM
+- Sunday: Closed
 
 ## Environment Variables
 
@@ -119,11 +142,24 @@ AnchorOS is a comprehensive salon management system built with Next.js, Supabase
 
 ### Core Functionality
 - Multi-location salon management
-- Real-time availability system
-- Integrated payment processing
+- Real-time availability system with business hours
+- Customer registration and lookup by email/phone
+- Location-specific opening/closing times
+- Automated payment processing (currently mock)
 - Staff scheduling and payroll
 - Customer relationship management
 - Kiosk system for walk-ins
+
+### Booking Flow
+1. Customer selects service and location
+2. Customer chooses date and time slot
+3. Customer searches by email or phone:
+   - If found: Pre-fill data and proceed
+   - If not found: Redirect to registration
+4. Customer completes registration if needed
+5. Customer confirms personal details
+6. Customer pays deposit (mock currently)
+7. Booking confirmed with email confirmation
 
 ### Advanced Features
 - Role-based access control
