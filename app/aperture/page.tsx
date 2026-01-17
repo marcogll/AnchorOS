@@ -15,6 +15,7 @@ import CalendarView from '@/components/calendar-view'
 import StaffManagement from '@/components/staff-management'
 import ResourcesManagement from '@/components/resources-management'
 import PayrollManagement from '@/components/payroll-management'
+import POSSystem from '@/components/pos-system'
 
 /**
  * @description Admin dashboard component for managing salon operations including bookings, staff, resources, reports, and permissions.
@@ -22,7 +23,7 @@ import PayrollManagement from '@/components/payroll-management'
 export default function ApertureDashboard() {
   const { user, signOut } = useAuth()
   const router = useRouter()
-  const [activeTab, setActiveTab] = useState<'dashboard' | 'calendar' | 'staff' | 'payroll' | 'resources' | 'reports' | 'permissions'>('dashboard')
+  const [activeTab, setActiveTab] = useState<'dashboard' | 'calendar' | 'staff' | 'payroll' | 'pos' | 'resources' | 'reports' | 'permissions'>('dashboard')
   const [reportType, setReportType] = useState<'sales' | 'payments' | 'payroll'>('sales')
   const [bookings, setBookings] = useState<any[]>([])
   const [staff, setStaff] = useState<any[]>([])
@@ -271,6 +272,13 @@ export default function ApertureDashboard() {
               Nómina
             </Button>
             <Button
+              variant={activeTab === 'pos' ? 'default' : 'outline'}
+              onClick={() => setActiveTab('pos')}
+            >
+              <DollarSign className="w-4 h-4 mr-2" />
+              POS
+            </Button>
+            <Button
               variant={activeTab === 'resources' ? 'default' : 'outline'}
               onClick={() => setActiveTab('resources')}
             >
@@ -420,6 +428,10 @@ export default function ApertureDashboard() {
 
         {activeTab === 'payroll' && (
           <PayrollManagement />
+        )}
+
+        {activeTab === 'pos' && (
+          <POSSystem />
         )}
 
         {activeTab === 'resources' && (

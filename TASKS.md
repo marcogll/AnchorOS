@@ -606,10 +606,19 @@ Validación Staff (rol Staff):
       - ⏳ Resize de bloques dinámico (opcional)
     - **FASE 4**: Miembros del Equipo y Nómina (~20-25 horas) ✅ EN PROGRESO
       - ✅ Gestión de Staff (CRUD completo con APIs funcionales)
-      - ✅ APIs de Nómina (`/api/aperture/payroll` con cálculos automáticos)
-      - ✅ Cálculo de Nómina (Sueldo Base + Comisiones + Propinas)
-      - ✅ Configuración de Comisiones (% por servicio basado en revenue)
-      - ⏳ Calendario de Turnos (próxima iteración - tabla staff_availability existe)
+    - ✅ APIs de Nómina (`/api/aperture/payroll` con cálculos automáticos)
+    - ✅ Cálculo de Nómina (Sueldo Base + Comisiones + Propinas)
+    - ✅ Configuración de Comisiones (% por servicio basado en revenue)
+    - ✅ Calendario de Turnos (implementado en APIs de staff con horarios)
+
+### 4.6 Ventas, Pagos y Facturación ✅ COMPLETADO
+* ✅ **POS completo** (`/api/aperture/pos` con múltiples métodos de pago)
+* ✅ **Métodos de pago**: Efectivo, tarjeta, transferencias, giftcards, membresías
+* ✅ **Cierre de caja** (`/api/aperture/pos/close-day` con reconciliación)
+* ✅ **Interface POS**: Carrito, selección de productos/servicios, pagos múltiples
+* ✅ **Recibos digitales**: Generación automática con impresión
+* ✅ **Reportes de ventas**: Diarios con breakdown por método de pago
+* ⏳ Conexión con Stripe real (próxima - webhooks pendientes)
       - ✅ APIs: `/api/aperture/staff` (GET/POST/PUT/DELETE), `/api/aperture/payroll`
    - **FASE 5**: Clientes y Fidelización (Loyalty) (~20-25 horas)
      - CRM de Clientes (búsqueda fonética, histórico, notas técnicas)
