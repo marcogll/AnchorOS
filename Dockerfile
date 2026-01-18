@@ -22,8 +22,11 @@ ENV NODE_ENV production
 ENV NEXT_PUBLIC_SUPABASE_URL=https://placeholder.supabase.co
 ENV NEXT_PUBLIC_SUPABASE_ANON_KEY=placeholder-anon-key
 ENV SUPABASE_SERVICE_ROLE_KEY=placeholder-service-role-key
-ENV STRIPE_SECRET_KEY=sk_test_placeholder_key
-ENV RESEND_API_KEY=re_placeholder_key
+ENV STRIPE_SECRET_KEY=<REDACTED>
+ENV RESEND_API_KEY=<REDACTED>
+
+# Aumentar memoria disponible para Node.js durante el build
+ENV NODE_OPTIONS=--max-old-space-size=4096
 
 # Build optimizado
 RUN npm run build
