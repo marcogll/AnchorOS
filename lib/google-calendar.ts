@@ -53,11 +53,13 @@ class GoogleCalendarService {
       } catch (jsonError) {
         console.error('GoogleCalendar: Failed to parse GOOGLE_SERVICE_ACCOUNT_JSON', jsonError);
         console.error('GoogleCalendar: Service account JSON value:', serviceAccountJson);
-        throw new Error('Invalid GOOGLE_SERVICE_ACCOUNT_JSON format. Please check environment variable.');
+        // Don't throw error - just warn and continue with Google Calendar disabled
+        return;
       }
 
       if (!credentials.type || !credentials.project_id || !credentials.private_key) {
-        throw new Error('Invalid GOOGLE_SERVICE_ACCOUNT_JSON: Missing required fields');
+        console.warn('GoogleCalendar: Invalid GOOGLE_SERVICE_ACCOUNT_JSON - missing required fields. Calendar sync disabled.');
+        return;
       }
 
       const auth = new google.auth.GoogleAuth({
@@ -72,7 +74,8 @@ class GoogleCalendarService {
       console.log('GoogleCalendar: Service initialized successfully');
     } catch (error) {
       console.error('GoogleCalendar: Initialization failed', error);
-      throw error;
+      // Don't throw - just warn to allow build to continue
+      console.warn('GoogleCalendar: Continuing with Google Calendar disabled');
     }
   }
 
