@@ -5,7 +5,13 @@ import { format } from 'date-fns'
 import { es } from 'date-fns/locale'
 import { Resend } from 'resend'
 
-const resend = new Resend(process.env.RESEND_API_KEY!)
+function getResendClient() {
+  const apiKey = process.env.RESEND_API_KEY
+  if (!apiKey || apiKey === 'placeholder' || apiKey === '<REDACTED>') {
+    return null
+  }
+  return new Resend(apiKey)
+}
 
 /** @description Send receipt email for booking */
 export async function POST(
@@ -104,6 +110,12 @@ export async function POST(
         </body>
       </html>
     `
+
+    const resend = getResendClient()
+    if (!resend) {
+      console.error('RESEND_API_KEY not configured')
+      return NextResponse.json({ error: 'Email service not configured' }, { status: 500 })
+    }
 
     const { data: emailResult, error: emailError } = await resend.emails.send({
       from: 'ANCHOR:23 <noreply@anchor23.mx>',
