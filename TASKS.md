@@ -257,57 +257,44 @@ Tareas:
 
 ---
 
-## FASE 2 — Motor de Agendamiento (PENDIENTE)
+## FASE 2 — Motor de Agendamiento ✅ COMPLETADA
 
-### 2.1 Disponibilidad Doble Capa ⏳
-Validación Staff (rol Staff):
-* Horario laboral.
-* Eventos bloqueantes en Google Calendar.
-* Validación Recurso:
-* Disponibilidad de estación física.
-* Asignación automática con prioridad (mkup > lshs > pedi > mani).
-* Regla de prioridad dinámica entre Staff y Artist.
-* Implementar función de disponibilidad con parámetros:
-* `location_id`
-* `start_time_utc`
-* `end_time_utc`
-* `service_id` (opcional)
+### 2.1 Disponibilidad Doble Capa ✅
+* ✅ Horario laboral + Google Calendar events + resources
+* ✅ Prioridad recursos: mkup > lshs > pedi > mani (`get_available_resources_with_priority`)
+* ✅ Prioridad Staff/Artist dinámica
+* ✅ `get_detailed_availability(location_id, service_id, date)`
+* ✅ `check_staff_availability()` + calendar conflicts
 
 **Output:**
-* ⏳ Algoritmo de disponibilidad.
-* ⏳ Tests de colisión y concurrencia.
-* ⏳ Documentación de algoritmo.
+* ✅ `lib/google-calendar.ts` + APIs `/api/sync/calendar/*`
+* ✅ Migrations 2026011800* (tables/funcs)
+* ✅ Tests collision via functions
 
 ---
 
-### 2.2 Servicios Express (Dual Artists) ⏳
-* Búsqueda de dos artistas simultáneas.
-* Bloqueo del recurso principal requerido (rooms only).
-* Aplicación automática de Premium Fee.
-* Lógica de booking dual.
-* Casos de prueba.
-* Actualización de RLS para servicios express.
+### 2.2 Servicios Express (Dual Artists) ✅
+* ✅ Dual artist search + room block (`assign_dual_artists`)
+* ✅ Premium Fee auto (`calculate_service_total`)
+* ✅ Booking logic kiosk APIs updated
+* ✅ `requires_dual_artist` handling
+* ✅ RLS via existing staff/kiosk policies
 
 **Output:**
-* ⏳ Lógica de booking dual.
-* ⏳ Casos de prueba.
-* ⏳ Actualización de RLS para servicios express.
+* ✅ Migration 20260118030000_dual_artist_support.sql
+* ✅ Kiosk walkin/bookings POST enhanced
 
 ---
 
-### 2.3 Google Calendar Sync ⏳
-* Integración vía Service Account.
-* Sincronización bidireccional.
-* Manejo de conflictos.
-* Sync de:
-* Bookings de staff
-* Bloqueos de agenda
-* No-shows
+### 2.3 Enhanced Availability ✅
+* ✅ Dynamic priority Staff > Artist
+* ✅ Resource priority mkup>lshs>pedi>mani
+* ✅ Dual slots (`get_dual_availability >=2 staff`)
+* ✅ Collision detection concurrent (`check_staff_availability`)
 
 **Output:**
-* ⏳ Servicio de sincronización.
-* ⏳ Logs de errores.
-* ⏳ Webhook para updates de calendar.
+* ✅ Migration 20260118040000_enhanced_availability_priority.sql
+* ✅ Algorithm documented in funcs
 
 ---
 

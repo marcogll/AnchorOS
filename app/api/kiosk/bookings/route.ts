@@ -125,21 +125,46 @@ export async function POST(request: NextRequest) {
     const endTime = new Date(startTime)
     endTime.setMinutes(endTime.getMinutes() + service.duration_minutes)
 
-    const { data: availableResources } = await supabaseAdmin
-      .rpc('get_available_resources_with_priority', {
-        p_location_id: kiosk.location_id,
-        p_start_time: startTime.toISOString(),
-        p_end_time: endTime.toISOString()
-      })
+    let staff_id_final: string = staff_id
+    let secondary_artist_id: string | null = null
+    let resource_id: string
 
-    if (!availableResources || availableResources.length === 0) {
-      return NextResponse.json(
-        { error: 'No resources available for the selected time' },
-        { status: 400 }
-      )
+    if (service.requires_dual_artist) {
+      const { data: assignment } = await supabaseAdmin
+        .rpc('assign_dual_artists', {
+          p_location_id: kiosk.location_id,
+          p_start_time_utc: startTime.toISOString(),
+          p_end_time_utc: endTime.toISOString(),
+          p_service_id: service.id
+        })
+
+      if (!assignment || !assignment.success) {
+        return NextResponse.json(
+          { error: assignment?.error || 'No dual artists or room available' },
+          { status: 400 }
+        )
+      }
+
+      staff_id_final = assignment.primary_artist
+      secondary_artist_id = assignment.secondary_artist
+      resource_id = assignment.room_resource
+    } else {
+      const { data: availableResources } = await supabaseAdmin
+        .rpc('get_available_resources_with_priority', {
+          p_location_id: kiosk.location_id,
+          p_start_time: startTime.toISOString(),
+          p_end_time: endTime.toISOString()
+        })
+
+      if (!availableResources || availableResources.length === 0) {
+        return NextResponse.json(
+          { error: 'No resources available for the selected time' },
+          { status: 400 }
+        )
+      }
+
+      resource_id = availableResources[0].resource_id
     }
-
-    const assignedResource = availableResources[0]
 
     const { data: customer, error: customerError } = await supabaseAdmin
       .from('customers')
@@ -161,19 +186,22 @@ export async function POST(request: NextRequest) {
       )
     }
 
+    const { data: total } = await supabaseAdmin.rpc('calculate_service_total', { p_service_id: service.id })
+
     const { data: booking, error: bookingError } = await supabaseAdmin
       .from('bookings')
       .insert({
         customer_id: customer.id,
-        staff_id,
+        staff_id: staff_id_final,
+        secondary_artist_id,
         location_id: kiosk.location_id,
-        resource_id: assignedResource.resource_id,
+        resource_id,
         service_id,
         start_time_utc: startTime.toISOString(),
         end_time_utc: endTime.toISOString(),
         status: 'pending',
         deposit_amount: 0,
-        total_amount: service.base_price,
+        total_amount: total ?? service.base_price,
         is_paid: false,
         notes
       })
@@ -199,12 +227,36 @@ export async function POST(request: NextRequest) {
       console.error('Failed to send receipt email:', emailError)
     }
 
+    const { data: resourceData } = await supabaseAdmin
+      .from('resources')
+      .select('name, type')
+      .eq('id', resource_id)
+      .single()
+
+    let secondary_staff_name = ''
+    if (secondary_artist_id) {
+      const { data: secondaryData } = await supabaseAdmin
+        .from('staff')
+        .select('display_name')
+        .eq('id', secondary_artist_id)
+        .single()
+      secondary_staff_name = secondaryData?.display_name || ''
+    }
+
+    const { data: staffData } = await supabaseAdmin
+      .from('staff')
+      .select('display_name')
+      .eq('id', staff_id_final)
+      .single()
+
     return NextResponse.json({
       success: true,
       booking,
       service_name: service.name,
-      resource_name: assignedResource.resource_name,
-      resource_type: assignedResource.resource_type
+      resource_name: resourceData?.name || '',
+      resource_type: resourceData?.type || '',
+      staff_name: staffData?.display_name || '',
+      secondary_staff_name
     }, { status: 201 })
   } catch (error) {
     console.error('Kiosk bookings POST error:', error)
