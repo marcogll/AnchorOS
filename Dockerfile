@@ -1,14 +1,14 @@
 # Dockerfile optimizado para Next.js production
 FROM node:18-alpine AS base
 
-# Instalar dependencias solo para producción
+# Instalar dependencias para build
 FROM base AS deps
 RUN apk add --no-cache libc6-compat
 WORKDIR /app
 
 # Copiar archivos de dependencias
 COPY package.json package-lock.json ./
-RUN npm ci --only=production --ignore-scripts && npm cache clean --force
+RUN npm ci --ignore-scripts && npm cache clean --force
 
 # Build stage
 FROM base AS builder

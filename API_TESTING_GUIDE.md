@@ -83,6 +83,74 @@
 - `POST /api/cron/reset-invitations` - Reset diario
   - Buscar: Invitaciones expiradas reseteadas
 
+### **📧 Webhooks (Formularios Públicos)**
+- `POST https://flows.soul23.cloud/webhook-test/4YZ7RPfo1GT` - Webhook test
+  - Body: Payload completo con form type
+  - Buscar: 200 OK + acknowledgment
+- `POST https://flows.soul23.cloud/webhook/4YZ7RPfo1GT` - Webhook prod
+  - Body: Payload completo con form type
+  - Buscar: 200 OK + acknowledgment
+
+**Form Types disponibles:**
+- `contact` - Formulario de contacto
+- `franchise` - Solicitud de franquicia
+- `membership` - Solicitud de membresía
+
+**Payload Base:**
+```json
+{
+  "form": "contact|franchise|membership",
+  "timestamp_utc": "2026-01-18T04:26:30.187Z",
+  "device_type": "mobile|desktop|unknown"
+}
+```
+
+**Contact Payload:**
+```json
+{
+  "form": "contact",
+  "nombre": "Nombre Completo",
+  "email": "email@example.com",
+  "telefono": "+52 844 123 4567",
+  "motivo": "cita|membresia|franquicia|servicios|pago|resena|otro",
+  "mensaje": "Texto del mensaje",
+  "timestamp_utc": "2026-01-18T04:26:30.187Z",
+  "device_type": "mobile"
+}
+```
+
+**Franchise Payload:**
+```json
+{
+  "form": "franchise",
+  "nombre": "Nombre Completo",
+  "email": "email@example.com",
+  "telefono": "+52 844 123 4567",
+  "ciudad": "Monterrey",
+  "estado": "Nuevo León",
+  "socios": 2,
+  "experiencia_sector": "1-3-anos",
+  "experiencia_belleza": true,
+  "mensaje": "Mensaje adicional",
+  "timestamp_utc": "2026-01-18T04:26:30.187Z",
+  "device_type": "desktop"
+}
+```
+
+**Membership Payload:**
+```json
+{
+  "form": "membership",
+  "membership_id": "vip",
+  "nombre": "Nombre Completo",
+  "email": "email@example.com",
+  "telefono": "+52 844 123 4567",
+  "mensaje": "Pregunta específica",
+  "timestamp_utc": "2026-01-18T04:26:30.187Z",
+  "device_type": "mobile"
+}
+```
+
 ## 🔍 **Qué Buscar en Cada Respuesta**
 
 ### **✅ Éxito**

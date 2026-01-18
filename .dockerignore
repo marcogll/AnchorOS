@@ -34,8 +34,9 @@ deploy.sh
 
 # Documentation
 *.md
-API_TESTING_GUIDE.md
-DEPLOYMENT_README.md
+# Keep deployment guides in production image
+!DEPLOYMENT_README.md
+!API_TESTING_GUIDE.md
 
 # Testing
 coverage

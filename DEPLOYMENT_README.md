@@ -25,6 +25,16 @@ NEXT_PUBLIC_SUPABASE_ANON_KEY=eyJxxxxx
 SUPABASE_SERVICE_ROLE_KEY=eyJxxxxx
 RESEND_API_KEY=re_xxxxx
 NEXT_PUBLIC_APP_URL=https://tu-dominio.com
+
+# Formbricks (opcional - encuestas)
+NEXT_PUBLIC_FORMBRICKS_ENVIRONMENT_ID=your-environment-id
+NEXT_PUBLIC_FORMBRICKS_API_HOST=https://app.formbricks.com
+
+# Optional: Redis para caching
+REDIS_URL=redis://redis:6379
+
+# Optional: Analytics
+NEXT_PUBLIC_GA_ID=G-XXXXXXXXXX
 ```
 
 ### 3. **SSL Certificates**
@@ -164,6 +174,83 @@ docker-compose -f docker-compose.prod.yml restart
 - Conexión pool
 - Query optimization
 - Redis caching (opcional)
+
+## 📝 **Formbricks Integration**
+
+### **Configuración de Encuestas**
+```bash
+# Activar Formbricks para recolección de feedback
+NEXT_PUBLIC_FORMBRICKS_ENVIRONMENT_ID=clxxxxxxxx
+NEXT_PUBLIC_FORMBRICKS_API_HOST=https://app.formbricks.com
+```
+
+### **Webhooks**
+```bash
+# Endpoints de webhook para formularios
+# Test: https://flows.soul23.cloud/webhook-test/4YZ7RPfo1GT
+# Prod: https://flows.soul23.cloud/webhook/4YZ7RPfo1GT
+
+# Formularios que envían a webhooks:
+# - contact (Contacto)
+# - franchise (Franquicias)
+# - membership (Membresías)
+
+# Payload structure:
+{
+  "form": "contact|franchise|membership",
+  "timestamp_utc": "ISO-8601",
+  "device_type": "mobile|desktop|unknown",
+  "...": "campos específicos del formulario"
+}
+```
+
+### **Form Types y Campos**
+
+**Contact (contacto)**
+```json
+{
+  "form": "contact",
+  "nombre": "string",
+  "email": "string",
+  "telefono": "string",
+  "motivo": "cita|membresia|franquicia|servicios|pago|resena|otro",
+  "mensaje": "string",
+  "timestamp_utc": "string",
+  "device_type": "string"
+}
+```
+
+**Franchise (franquicias)**
+```json
+{
+  "form": "franchise",
+  "nombre": "string",
+  "email": "string",
+  "telefono": "string",
+  "ciudad": "string",
+  "estado": "string",
+  "socios": "number",
+  "experiencia_sector": "string",
+  "experiencia_belleza": "boolean",
+  "mensaje": "string",
+  "timestamp_utc": "string",
+  "device_type": "string"
+}
+```
+
+**Membership (membresías)**
+```json
+{
+  "form": "membership",
+  "membership_id": "gold|black|vip",
+  "nombre": "string",
+  "email": "string",
+  "telefono": "string",
+  "mensaje": "string",
+  "timestamp_utc": "string",
+  "device_type": "string"
+}
+```
 
 ## 🔒 **Seguridad**
 

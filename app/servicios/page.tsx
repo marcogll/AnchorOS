@@ -1,14 +1,10 @@
-import { AnimatedLogo } from '@/components/animated-logo'
-import { RollingPhrases } from '@/components/rolling-phrases'
-
-/** @description Services page with home page style structure */
 'use client'
 
+import { useState, useEffect } from 'react'
 import { AnimatedLogo } from '@/components/animated-logo'
 import { RollingPhrases } from '@/components/rolling-phrases'
 
 /** @description Services page with home page style structure */
-import { useState, useEffect } from 'react'
 
 interface Service {
   id: string

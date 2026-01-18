@@ -154,7 +154,30 @@ public/images/gallery/
 
 ---
 
-## 8. Logo SVG Original (@src/logo.svg)
+## 8. Nuevos Componentes (@src/components/)
+
+**Ubicación sugerida:** `components/`
+
+**Componentes agregados:**
+- `animated-logo.tsx` - Logo SVG animado con fade-in
+- `rolling-phrases.tsx` - Frases rotativas para hero sections
+- `formbricks-provider.tsx` - Provider para encuestas Formbricks
+- `webhook-form.tsx` - Formulario unificado para webhooks
+- `app-wrapper.tsx` - Wrapper de aplicación con contexto
+- `loading-screen.tsx` - Pantalla de carga con animación
+- `pattern-overlay.tsx` - Overlay de patrones decorativos
+- `responsive-nav.tsx` - Navegación responsiva con menú móvil
+
+**Iconos adicionales:**
+- Diamond (check, success states)
+- Crown (VIP tier)
+
+**Colores actualizados:**
+- `--charcoal-brown`: #3f362e (marrón oscuro elegante)
+- `--deep-earth`: #6f5e4f (marrón medio)
+- `--mocha-taupe`: #b8a89a (beige cálido)
+
+## 9. Logo SVG Original (@src/logo.svg)
 
 **Ruta:** `src/logo.svg`
 
@@ -332,6 +355,30 @@ public/images/gallery/
 
 ---
 
+## 📋 21. Formbricks Integration
+
+**Ubicación:** `components/formbricks-provider.tsx`
+
+**Configuración:**
+- Environment ID para surveys
+- API Host URL
+- Device detection (mobile/desktop)
+- Route change tracking
+
+**Variables de entorno:**
+```bash
+NEXT_PUBLIC_FORMBRICKS_ENVIRONMENT_ID=your-id
+NEXT_PUBLIC_FORMBRICKS_API_HOST=https://app.formbricks.com
+```
+
+**Uso previsto:**
+- Encuestas post-experiencia
+- Feedback de clientes
+- NPS (Net Promoter Score)
+- Estudios de satisfacción
+
+---
+
 ## 📋 Checklist de Implementación
 
 | Tarea                                     | Estado   | Prioridad |
@@ -340,6 +387,17 @@ public/images/gallery/
 | Optimizar imágenes A23_VIA_*               | pending   | alta       |
 | Implementar logo SVG en Hero sin animación | completed | alta       |
 | Implementar logo SVG en Loading sin fade-in| completed | alta       |
+| Crear componente animated-logo.tsx         | completed | alta       |
+| Crear componente rolling-phrases.tsx       | completed | alta       |
+| Crear componente webhook-form.tsx          | completed | alta       |
+| Crear componente formbricks-provider.tsx    | completed | media      |
+| Crear componente responsive-nav.tsx         | completed | alta       |
+| Actualizar colores a #3E352E              | completed | alta       |
+| Agregar campo motivo en contacto            | completed | alta       |
+| Agregar campos estado/ciudad/socios en franchise | pending | alta |
+| Agregar check experiencia belleza en franchise  | pending | alta       |
+| Actualizar info franchise a $100k            | completed | alta       |
+| Agregar link Contacto en nav/footer         | completed | alta       |
 | Agregar imágenes Hero/Fundamento      | pending   | media      |
 | Agregar imágenes Historia                | pending   | media      |
 | Agregar testimonios                     | pending   | media      |
@@ -359,6 +417,12 @@ public/images/gallery/
 - **Loading barra:** #E9E1D8 (Mismo que logo)
 - **Background Loading:** #3F362E (Marrón oscuro elegante)
 - **Gradient (alternativo):** #6f5e4f → #8B4513 → #5a4a3a
+
+### Colores de Botones
+- **Botón primario:** #3E352E (Marrón elegante) - reemplaza --deep-earth
+- **Botón secundario:** Gradiente --bone-white → --soft-cream
+- **Tarjetas featured:** #3E352E (Marrón elegante)
+- **Hover effects:** #3E352E/90 (90% opacidad)
 
 ### Fondos de Secciones
 - **Hero:** #F5F5DC (Bone White)
