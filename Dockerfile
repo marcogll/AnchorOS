@@ -1,5 +1,5 @@
 # Dockerfile optimizado para Next.js production
-FROM node:18-alpine AS base
+FROM node:20-alpine AS base
 
 # Instalar dependencias para build
 FROM base AS deps
