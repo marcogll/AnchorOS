@@ -16,15 +16,9 @@ WORKDIR /app
 COPY --from=deps /app/node_modules ./node_modules
 COPY . .
 
-# Variables de entorno para build
+# Variables de entorno para build - Coolify inyectará las reales en runtime
 ENV NEXT_TELEMETRY_DISABLED=1
 ENV NODE_ENV=production
-ENV NEXT_PUBLIC_SUPABASE_URL=https://placeholder.supabase.co
-ENV NEXT_PUBLIC_SUPABASE_ANON_KEY=placeholder-anon-key
-ENV SUPABASE_SERVICE_ROLE_KEY=placeholder-service-role-key
-ENV STRIPE_SECRET_KEY=placeholder
-ENV RESEND_API_KEY=""
-ENV GOOGLE_SERVICE_ACCOUNT_JSON=""
 ENV NODE_OPTIONS="--max-old-space-size=16384"
 ENV NEXT_ESLINT_IGNORE_DURING_BUILDS=true
 ENV NEXT_PRIVATE_WORKERS=1
