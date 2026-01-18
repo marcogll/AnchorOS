@@ -1,12 +1,12 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { supabaseAdmin } from '@/lib/supabase/admin'
+import { supabase } from '@/lib/supabase/client'
 
 /**
  * @description Retrieves all active locations
  */
 export async function GET(request: NextRequest) {
   try {
-    const { data: locations, error } = await supabaseAdmin
+    const { data: locations, error } = await supabase
       .from('locations')
       .select('*')
       .eq('is_active', true)

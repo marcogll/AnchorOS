@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { supabaseAdmin } from '@/lib/supabase/admin'
+import { supabase } from '@/lib/supabase/client'
 
 /**
  * @description Retrieves active services, optionally filtered by location
@@ -9,7 +9,7 @@ export async function GET(request: NextRequest) {
     const { searchParams } = new URL(request.url)
     const locationId = searchParams.get('location_id')
 
-    let query = supabaseAdmin
+    let query = supabase
       .from('services')
       .select('id, name, description, duration_minutes, base_price, requires_dual_artist, premium_fee_enabled, category, is_active, created_at, updated_at')
       .eq('is_active', true)
