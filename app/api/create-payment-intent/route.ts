@@ -2,8 +2,6 @@ import { NextRequest, NextResponse } from 'next/server'
 import Stripe from 'stripe'
 import { supabaseAdmin } from '@/lib/supabase/admin'
 
-const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!)
-
 /**
  * @description Creates a Stripe payment intent for booking deposit (50% of service price, max $200)
  * @param {NextRequest} request - Request containing booking details
@@ -11,6 +9,14 @@ const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!)
  */
 export async function POST(request: NextRequest) {
   try {
+    const stripeSecretKey = process.env.STRIPE_SECRET_KEY
+
+    if (!stripeSecretKey) {
+      return NextResponse.json({ error: 'Stripe not configured' }, { status: 500 })
+    }
+
+    const stripe = new Stripe(stripeSecretKey)
+
     const {
       customer_email,
       customer_phone,

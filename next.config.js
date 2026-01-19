@@ -14,7 +14,7 @@ const nextConfig = {
       {
         protocol: 'https',
         hostname: '**.supabase.co',
-      },
+  }
     ],
   },
   env: {
@@ -23,4 +23,7 @@ const nextConfig = {
   },
   compiler: {
     removeConsole: false, // Temporarily enable logs for debugging 500 errors
+  }
+}
+
 module.exports = nextConfig
