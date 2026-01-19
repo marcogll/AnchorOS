@@ -262,7 +262,7 @@ export async function GET(request: NextRequest) {
                         <div class="card">
                             <div>
                                 <span class="method ${api.method.toLowerCase()}">${api.method}</span>
-                                ${api.name.includes('FASE') ? `<span class="badge ${api.name.includes('FASE 5') ? 'phase-5' : 'phase-6'}">${api.name.match(/FASE \d+/)[0]}</span>` : ''}
+                                ${api.name.includes('FASE') ? `<span class="badge ${api.name.includes('FASE 5') ? 'phase-5' : 'phase-6'}">${api.name.match(/FASE \d+/)?.[0] || 'FASE'}</span>` : ''}
                             </div>
                             <h3>${api.name}</h3>
                             <a href="${baseUrl}${api.url}" target="_blank">${baseUrl}${api.url}</a>
