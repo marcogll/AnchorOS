@@ -395,9 +395,134 @@ Tareas:
 
 ---
 
-## FASE 5 — Automatización y Lanzamiento (PENDIENTE)
+## FASE 5 — Clientes y Fidelización ✅ COMPLETADO
 
-### 5.1 Notificaciones ⏳
+### 5.1 Client Management (CRM) ✅
+* ✅ Clientes con búsqueda fonética (email, phone, first_name, last_name)
+* ✅ Historial de reservas por cliente
+* ✅ Notas técnicas con timestamp
+* ✅ APIs CRUD completas
+* ✅ Galería de fotos (restringido a VIP/Black/Gold)
+
+**APIs:**
+* ✅ `GET /api/aperture/clients` - Listar y buscar clientes
+* ✅ `POST /api/aperture/clients` - Crear nuevo cliente
+* ✅ `GET /api/aperture/clients/[id]` - Detalles completos del cliente
+* ✅ `PUT /api/aperture/clients/[id]` - Actualizar cliente
+* ✅ `POST /api/aperture/clients/[id]/notes` - Agregar nota técnica
+* ✅ `GET /api/aperture/clients/[id]/photos` - Galería de fotos
+* ✅ `POST /api/aperture/clients/[id]/photos` - Subir foto
+
+**Output:**
+* ✅ Migración SQL con customer_photos, customer preferences
+* ✅ APIs completas de clientes
+* ✅ Búsqueda fonética implementada
+* ✅ Galería de fotos restringida por tier
+
+---
+
+### 5.2 Sistema de Lealtad ✅
+* ✅ Puntos independientes de tiers
+* ✅ Expiración de puntos (6 meses sin usar)
+* ✅ Transacciones de lealtad (earned, redeemed, expired, admin_adjustment)
+* ✅ Historial completo de transacciones
+* ✅ API para sumar/restar puntos
+
+**APIs:**
+* ✅ `GET /api/aperture/loyalty` - Resumen de lealtad para cliente actual
+* ✅ `GET /api/aperture/loyalty/[customerId]` - Historial de lealtad
+* ✅ `POST /api/aperture/loyalty/[customerId]/points` - Agregar/remover puntos
+
+**Output:**
+* ✅ Migración SQL con loyalty_transactions
+* ✅ APIs completas de lealtad
+* ✅ Función PostgreSQL `add_loyalty_points()`
+* ✅ Función PostgreSQL `get_customer_loyalty_summary()`
+
+---
+
+### 5.3 Membresías ✅
+* ✅ Planes de membresía (Gold, Black, VIP)
+* ✅ Beneficios configurables por JSON
+* ✅ Subscripciones de clientes
+* ✅ Tracking de créditos mensuales
+
+**Output:**
+* ✅ Migración SQL con membership_plans y customer_subscriptions
+* ✅ Planes predefinidos (Gold, Black, VIP)
+* ✅ Tabla de subscriptions con credits_remaining
+
+---
+
+## FASE 6 — Pagos y Protección ✅ COMPLETADO
+
+### 6.1 Stripe Webhooks ✅
+* ✅ `payment_intent.succeeded` - Pago completado
+* ✅ `payment_intent.payment_failed` - Pago fallido
+* ✅ `charge.refunded` - Reembolso procesado
+* ✅ Logging de webhooks con payload completo
+* ✅ Prevención de procesamiento duplicado (por event_id)
+
+**APIs:**
+* ✅ `POST /api/webhooks/stripe` - Handler de webhooks Stripe
+
+**Output:**
+* ✅ Migración SQL con webhook_logs
+* ✅ Funciones PostgreSQL de procesamiento de webhooks
+* ✅ API endpoint con signature verification
+
+---
+
+### 6.2 No-Show Logic ✅
+* ✅ Detección automática de no-shows (ventana 12h)
+* ✅ Cron job para detección cada 2 horas
+* ✅ Penalización automática (retener depósito)
+* ✅ Tracking de no-show count por cliente
+* ✅ Override Admin (waive penalty)
+* ✅ Check-in de clientes
+
+**APIs:**
+* ✅ `GET /api/cron/detect-no-shows` - Detectar no-shows (cron job)
+* ✅ `POST /api/aperture/bookings/no-show` - Aplicar penalización manual
+* ✅ `POST /api/aperture/bookings/check-in` - Registrar check-in
+
+**Output:**
+* ✅ Migración SQL con no_show_detections
+* ✅ Función PostgreSQL `detect_no_show_booking()`
+* ✅ Función PostgreSQL `apply_no_show_penalty()`
+* ✅ Función PostgreSQL `record_booking_checkin()`
+* ✅ Campos en bookings: check_in_time, check_in_staff_id, penalty_waived
+* ✅ Campos en customers: no_show_count, last_no_show_date
+
+---
+
+### 6.3 Finanzas y Reportes ✅
+* ✅ Tracking de gastos por categoría
+* ✅ Reportes financieros (revenue, expenses, profit)
+* ✅ Daily closing reports con PDF
+* ✅ Reportes de performance de staff
+* ✅ Breakdown de pagos por método
+
+**APIs:**
+* ✅ `GET /api/aperture/finance` - Resumen financiero
+* ✅ `POST /api/aperture/finance/daily-closing` - Generar reporte diario
+* ✅ `GET /api/aperture/finance/daily-closing` - Listar reportes
+* ✅ `GET /api/aperture/finance/expenses` - Listar gastos
+* ✅ `POST /api/aperture/finance/expenses` - Crear gasto
+* ✅ `GET /api/aperture/finance/staff-performance` - Performance de staff
+
+**Output:**
+* ✅ Migración SQL con expenses y daily_closing_reports
+* ✅ Función PostgreSQL `get_financial_summary()`
+* ✅ Función PostgreSQL `get_staff_performance_report()`
+* ✅ Función PostgreSQL `generate_daily_closing_report()`
+* ✅ Categorías de gastos: supplies, maintenance, utilities, rent, salaries, marketing, other
+
+---
+
+## FASE 7 — Automatización y Lanzamiento (PENDIENTE)
+
+### 7.1 Notificaciones ⏳
 * Confirmaciones por WhatsApp.
 * Recordatorios de citas:
 * 24h antes
@@ -569,9 +694,23 @@ Tareas:
      - `POST /api/availability/staff`
      - `POST /api/kiosk/walkin`
 
+### ✅ COMPLETADO
+- FASE 5 - Clientes y Fidelización
+  - ✅ Client Management (CRM) con búsqueda fonética
+  - ✅ Sistema de Lealtad con puntos y expiración
+  - ✅ Membresías (Gold, Black, VIP) con beneficios
+  - ✅ Galería de fotos restringida por tier
+- FASE 6 - Pagos y Protección
+  - ✅ Stripe Webhooks (payment_intent.succeeded, payment_failed, charge.refunded)
+  - ✅ No-Show Logic con detección automática y penalización
+  - ✅ Finanzas y Reportes (expenses, daily closing, staff performance)
+  - ✅ Check-in de clientes
+
+---
+
 ### 🟢 MEDIA - Componentes y Features (Timeline: 4-6 semanas restantes)
 
-7. **Rediseñar Aperture completo con Radix UI** - ~136-171 horas
+8. **Rediseñar Aperture completo con Radix UI** - ~136-171 horas
    - **FASE 0**: Documentación y Configuración (~6 horas)
    - **FASE 1**: Componentes Base con Radix UI (~20-25 horas)
      - Instalar Radix UI
@@ -619,7 +758,7 @@ Tareas:
      - Cierre de Caja (resumen diario, PDF automático)
      - Finanzas (gastos, margen neto)
      - APIs: `/api/aperture/pos`, `/api/aperture/finance`
-   - **FASE 7**: Marketing y Configuración (~10-15 horas)
+    - **FASE 7**: Marketing y Configuración (~10-15 horas) ⏳ PENDIENTE
      - Campañas (promociones masivas Email/WhatsApp)
      - Precios Inteligentes (configurables por servicio, aplicables ambos canales)
      - Integraciones Placeholder (Google, Instagram/FB Shopping) - Good to have, no priority
@@ -627,35 +766,35 @@ Tareas:
 
 ### 🟢 BAJA - Integraciones Pendientes (Timeline: 1-2 meses)
 
-8. **Implementar Google Calendar Sync** - ~6-8 horas
+9. **Implementar Google Calendar Sync** - ~6-8 horas
     - Sincronización bidireccional
     - Manejo de conflictos
     - Webhook para updates de calendar
 
-9. **Implementar Notificaciones WhatsApp** - ~4-6 horas
+10. **Implementar Notificaciones WhatsApp** - ~4-6 horas
     - Integración con Twilio/Meta WhatsApp API
     - Templates de mensajes (confirmación, recordatorios, alertas no-show)
     - Sistema de envío programado
 
-10. **Implementar Recibos digitales** - ~3-4 horas
+11. **Implementar Recibos digitales** - ~3-4 horas
     - Generador de PDFs
     - Sistema de emails (SendGrid, AWS SES, etc.)
     - Dashboard de transacciones
 
-11. **Crear Landing page Believers** - ~4-5 horas
+12. **Crear Landing page Believers** - ~4-5 horas
     - Página pública de booking
     - Calendario simplificado para clientes
     - Captura de datos básicos
 
-12. **Implementar Tests Unitarios** - ~5-7 horas
+13. **Implementar Tests Unitarios** - ~5-7 horas
     - Unit tests para generador de Short ID
     - Tests para disponibilidad
 
-13. **Archivos SEO** - ~30 min
+14. **Archivos SEO** - ~30 min
     - `public/robots.txt`
     - `public/sitemap.xml`
 
-14. **Calendario - Funcionalidades Avanzadas** - ~8-10 horas (Próximas)
+15. **Calendario - Funcionalidades Avanzadas** - ~8-10 horas (Próximas)
     - Resize dinámico de bloques de tiempo
     - Creación de citas desde calendario (click en slot vacío)
     - Vista semanal/mensual adicional

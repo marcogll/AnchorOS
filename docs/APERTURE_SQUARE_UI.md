@@ -662,7 +662,416 @@ Antes de considerar un componente como "completado":
 
 ---
 
-## 21. Changelog
+## 21. Ejemplos de Uso de Radix UI con Square UI Styling
+
+### 21.1 Button Component (Radix UI)
+
+```typescript
+// components/ui/button.tsx
+'use client'
+import * as React from 'react'
+import * as ButtonPrimitive from '@radix-ui/react-slot'
+import { cva, type VariantProps } from 'class-variance-authority'
+
+const buttonVariants = cva(
+  'inline-flex items-center justify-center rounded-lg text-sm font-medium transition-all duration-200 ease-out focus:outline-none focus:ring-2 focus:ring-offset-2 disabled:pointer-events-none disabled:opacity-50',
+  {
+    variants: {
+      variant: {
+        default: 'bg-[#006AFF] text-white hover:bg-[#005ED6] active:translate-y-0',
+        secondary: 'bg-white text-[#24292E] border border-[#E1E4E8] hover:bg-[#F3F4F6]',
+        ghost: 'text-[#24292E] hover:bg-[#F3F4F6]',
+        danger: 'bg-[#D73A49] text-white hover:bg-[#B91C3C]',
+        success: 'bg-[#28A745] text-white hover:bg-[#218838]',
+      },
+      size: {
+        sm: 'h-8 px-3 text-xs',
+        md: 'h-10 px-4 text-sm',
+        lg: 'h-12 px-6 text-base',
+        icon: 'h-10 w-10',
+      },
+    },
+    defaultVariants: {
+      variant: 'default',
+      size: 'md',
+    },
+  }
+)
+
+export interface ButtonProps
+  extends React.ButtonHTMLAttributes<HTMLButtonElement>,
+    VariantProps<typeof buttonVariants> {}
+
+const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
+  ({ className, variant, size, ...props }, ref) => {
+    return (
+      <button
+        className={cn(buttonVariants({ variant, size, className }))}
+        ref={ref}
+        {...props}
+      />
+    )
+  }
+)
+Button.displayName = 'Button'
+
+export { Button, buttonVariants }
+```
+
+**Uso:**
+```typescript
+<Button variant="default" size="md">
+  Save Changes
+</Button>
+
+<Button variant="secondary" size="sm">
+  Cancel
+</Button>
+
+<Button variant="danger" size="lg">
+  Delete
+</Button>
+```
+
+---
+
+### 21.2 Dialog Component (Radix UI)
+
+```typescript
+// components/ui/dialog.tsx
+'use client'
+import * as React from 'react'
+import * as DialogPrimitive from '@radix-ui/react-dialog'
+import { X } from 'lucide-react'
+
+const Dialog = DialogPrimitive.Root
+const DialogTrigger = DialogPrimitive.Trigger
+const DialogPortal = DialogPrimitive.Portal
+const DialogClose = DialogPrimitive.Close
+
+const DialogOverlay = React.forwardRef<
+  React.ElementRef<typeof DialogPrimitive.Overlay>,
+  React.ComponentPropsWithoutRef<typeof DialogPrimitive.Overlay>
+>(({ className, ...props }, ref) => (
+  <DialogPrimitive.Overlay
+    ref={ref}
+    className="fixed inset-0 z-50 bg-black/50 backdrop-blur-sm data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0"
+    {...props}
+  />
+))
+DialogOverlay.displayName = DialogPrimitive.Overlay.displayName
+
+const DialogContent = React.forwardRef<
+  React.ElementRef<typeof DialogPrimitive.Content>,
+  React.ComponentPropsWithoutRef<typeof DialogPrimitive.Content>
+>(({ className, children, ...props }, ref) => (
+  <DialogPortal>
+    <DialogOverlay />
+    <DialogPrimitive.Content
+      ref={ref}
+      className="fixed left-[50%] top-[50%] z-50 grid w-full max-w-lg translate-x-[-50%] translate-y-[-50%] gap-4 border border-[#E1E4E8] bg-white p-6 shadow-xl duration-200 data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95 data-[state=closed]:slide-out-to-left-1/2 data-[state=closed]:slide-out-to-top-[48%] data-[state=open]:slide-in-from-left-1/2 data-[state=open]:slide-in-from-top-[48%] sm:rounded-xl"
+      {...props}
+    >
+      {children}
+      <DialogPrimitive.Close className="absolute right-4 top-4 rounded-sm opacity-70 ring-offset-white transition-opacity hover:opacity-100 focus:outline-none focus:ring-2 focus:ring-[#006AFF] focus:ring-offset-2 disabled:pointer-events-none data-[state=open]:bg-gray-100">
+        <X className="h-4 w-4" />
+        <span className="sr-only">Close</span>
+      </DialogPrimitive.Close>
+    </DialogPrimitive.Content>
+  </DialogPortal>
+))
+DialogContent.displayName = DialogPrimitive.Content.displayName
+
+const DialogHeader = ({ className, ...props }: React.HTMLAttributes<HTMLDivElement>) => (
+  <div className="flex flex-col space-y-1.5 text-center sm:text-left" {...props} />
+)
+DialogHeader.displayName = 'DialogHeader'
+
+const DialogTitle = React.forwardRef<
+  React.ElementRef<typeof DialogPrimitive.Title>,
+  React.ComponentPropsWithoutRef<typeof DialogPrimitive.Title>
+>(({ className, ...props }, ref) => (
+  <DialogPrimitive.Title
+    ref={ref}
+    className="text-lg font-semibold leading-none tracking-tight"
+    {...props}
+  />
+))
+DialogTitle.displayName = DialogPrimitive.Title.displayName
+
+export { Dialog, DialogTrigger, DialogContent, DialogHeader, DialogTitle, DialogClose }
+```
+
+**Uso:**
+```typescript
+<Dialog>
+  <DialogTrigger asChild>
+    <Button>Open Dialog</Button>
+  </DialogTrigger>
+  <DialogContent>
+    <DialogHeader>
+      <DialogTitle>Confirm Action</DialogTitle>
+    </DialogHeader>
+    <p>Are you sure you want to proceed?</p>
+    <div className="flex gap-2 justify-end">
+      <DialogClose asChild>
+        <Button variant="secondary">Cancel</Button>
+      </DialogClose>
+      <Button variant="danger">Confirm</Button>
+    </div>
+  </DialogContent>
+</Dialog>
+```
+
+---
+
+### 21.3 Select Component (Radix UI)
+
+```typescript
+// components/ui/select.tsx
+'use client'
+import * as React from 'react'
+import * as SelectPrimitive from '@radix-ui/react-select'
+import { Check, ChevronDown } from 'lucide-react'
+
+const Select = SelectPrimitive.Root
+const SelectGroup = SelectPrimitive.Group
+const SelectValue = SelectPrimitive.Value
+
+const SelectTrigger = React.forwardRef<
+  React.ElementRef<typeof SelectPrimitive.Trigger>,
+  React.ComponentPropsWithoutRef<typeof SelectPrimitive.Trigger>
+>(({ className, children, ...props }, ref) => (
+  <SelectPrimitive.Trigger
+    ref={ref}
+    className="flex h-10 w-full items-center justify-between rounded-lg border border-[#E1E4E8] bg-white px-3 py-2 text-sm placeholder:text-[#8B949E] focus:outline-none focus:ring-2 focus:ring-[#006AFF] focus:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 [&>span]:line-clamp-1"
+    {...props}
+  >
+    {children}
+    <SelectPrimitive.Icon asChild>
+      <ChevronDown className="h-4 w-4 opacity-50" />
+    </SelectPrimitive.Icon>
+  </SelectPrimitive.Trigger>
+))
+SelectTrigger.displayName = SelectPrimitive.Trigger.displayName
+
+const SelectContent = React.forwardRef<
+  React.ElementRef<typeof SelectPrimitive.Content>,
+  React.ComponentPropsWithoutRef<typeof SelectPrimitive.Content>
+>(({ className, children, position = 'popper', ...props }, ref) => (
+  <SelectPrimitive.Portal>
+    <SelectPrimitive.Content
+      ref={ref}
+      className="relative z-50 max-h-96 min-w-[8rem] overflow-hidden rounded-lg border border-[#E1E4E8] bg-white text-[#24292E] shadow-md data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95 data-[side=bottom]:slide-in-from-top-2 data-[side=left]:slide-in-from-right-2 data-[side=right]:slide-in-from-left-2 data-[side=top]:slide-in-from-bottom-2"
+      position={position}
+      {...props}
+    >
+      <SelectPrimitive.Viewport className="p-1">
+        {children}
+      </SelectPrimitive.Viewport>
+    </SelectPrimitive.Content>
+  </SelectPrimitive.Portal>
+))
+SelectContent.displayName = SelectPrimitive.Content.displayName
+
+const SelectItem = React.forwardRef<
+  React.ElementRef<typeof SelectPrimitive.Item>,
+  React.ComponentPropsWithoutRef<typeof SelectPrimitive.Item>
+>(({ className, children, ...props }, ref) => (
+  <SelectPrimitive.Item
+    ref={ref}
+    className="relative flex w-full cursor-default select-none items-center rounded-sm py-1.5 pl-8 pr-2 text-sm outline-none focus:bg-[#F3F4F6] focus:text-[#24292E] data-[disabled]:pointer-events-none data-[disabled]:opacity-50"
+    {...props}
+  >
+    <span className="absolute left-2 flex h-3.5 w-3.5 items-center justify-center">
+      <SelectPrimitive.ItemIndicator>
+        <Check className="h-4 w-4" />
+      </SelectPrimitive.ItemIndicator>
+    </span>
+    <SelectPrimitive.ItemText>{children}</SelectPrimitive.ItemText>
+  </SelectPrimitive.Item>
+))
+SelectItem.displayName = SelectPrimitive.Item.displayName
+
+export { Select, SelectGroup, SelectValue, SelectTrigger, SelectContent, SelectItem }
+```
+
+**Uso:**
+```typescript
+<Select>
+  <SelectTrigger className="w-[180px]">
+    <SelectValue placeholder="Select a fruit" />
+  </SelectTrigger>
+  <SelectContent>
+    <SelectItem value="apple">Apple</SelectItem>
+    <SelectItem value="banana">Banana</SelectItem>
+    <SelectItem value="orange">Orange</SelectItem>
+  </SelectContent>
+</Select>
+```
+
+---
+
+### 21.4 Tabs Component (Radix UI)
+
+```typescript
+// components/ui/tabs.tsx
+'use client'
+import * as React from 'react'
+import * as TabsPrimitive from '@radix-ui/react-tabs'
+
+const Tabs = TabsPrimitive.Root
+const TabsList = React.forwardRef<
+  React.ElementRef<typeof TabsPrimitive.List>,
+  React.ComponentPropsWithoutRef<typeof TabsPrimitive.List>
+>(({ className, ...props }, ref) => (
+  <TabsPrimitive.List
+    ref={ref}
+    className="inline-flex h-10 items-center justify-center rounded-lg bg-[#F6F8FA] p-1 text-[#586069]"
+    {...props}
+  />
+))
+TabsList.displayName = TabsPrimitive.List.displayName
+
+const TabsTrigger = React.forwardRef<
+  React.ElementRef<typeof TabsPrimitive.Trigger>,
+  React.ComponentPropsWithoutRef<typeof TabsPrimitive.Trigger>
+>(({ className, ...props }, ref) => (
+  <TabsPrimitive.Trigger
+    ref={ref}
+    className="inline-flex items-center justify-center whitespace-nowrap rounded-md px-3 py-1.5 text-sm font-medium ring-offset-white transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#006AFF] focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 data-[state=active]:bg-white data-[state=active]:text-[#24292E] data-[state=active]:shadow-sm"
+    {...props}
+  />
+))
+TabsTrigger.displayName = TabsPrimitive.Trigger.displayName
+
+const TabsContent = React.forwardRef<
+  React.ElementRef<typeof TabsPrimitive.Content>,
+  React.ComponentPropsWithoutRef<typeof TabsPrimitive.Content>
+>(({ className, ...props }, ref) => (
+  <TabsPrimitive.Content
+    ref={ref}
+    className="mt-2 ring-offset-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#006AFF] focus-visible:ring-offset-2"
+    {...props}
+  />
+))
+TabsContent.displayName = TabsPrimitive.Content.displayName
+
+export { Tabs, TabsList, TabsTrigger, TabsContent }
+```
+
+**Uso:**
+```typescript
+<Tabs defaultValue="account">
+  <TabsList>
+    <TabsTrigger value="account">Account</TabsTrigger>
+    <TabsTrigger value="password">Password</TabsTrigger>
+  </TabsList>
+  <TabsContent value="account">
+    <div>Account settings...</div>
+  </TabsContent>
+  <TabsContent value="password">
+    <div>Password settings...</div>
+  </TabsContent>
+</Tabs>
+```
+
+---
+
+### 21.5 Accesibilidad con Radix UI
+
+**ARIA Attributes Automáticos:**
+```typescript
+// Radix UI agrega automáticamente:
+// - role="button" para botones
+// - aria-expanded para dropdowns
+// - aria-selected para tabs
+// - aria-checked para checkboxes
+// - aria-invalid para inputs con error
+// - aria-describedby para errores de formulario
+
+// Ejemplo con manejo de errores:
+<Select>
+  <SelectTrigger aria-invalid={hasError} aria-describedby={errorMessage ? 'error-message' : undefined}>
+    <SelectValue />
+  </SelectTrigger>
+  {errorMessage && (
+    <p id="error-message" className="text-sm text-[#D73A49]">
+      {errorMessage}
+    </p>
+  )}
+</Select>
+```
+
+**Keyboard Navigation:**
+```typescript
+// Radix UI soporta automáticamente:
+// - Tab: Navigate focusable elements
+// - Enter/Space: Activate buttons, select options
+// - Escape: Close modals, dropdowns
+// - Arrow keys: Navigate within components (lists, menus)
+// - Home/End: Jump to start/end of list
+
+// Para keyboard shortcuts personalizados:
+useEffect(() => {
+  const handleKeyDown = (e: KeyboardEvent) => {
+    if ((e.metaKey || e.ctrlKey) && e.key === 'k') {
+      e.preventDefault()
+      // Open search modal
+    }
+  }
+  window.addEventListener('keydown', handleKeyDown)
+  return () => window.removeEventListener('keydown', handleKeyDown)
+}, [])
+```
+
+---
+
+## 22. Guía de Migración a Radix UI
+
+### 22.1 Componentes que Migrar
+
+**De Headless UI a Radix UI:**
+- `<Dialog />` → `@radix-ui/react-dialog`
+- `<Menu />` → `@radix-ui/react-dropdown-menu`
+- `<Tabs />` → `@radix-ui/react-tabs`
+- `<Switch />` → `@radix-ui/react-switch`
+
+**Componentes Custom a Mantener:**
+- `<Card />` - No existe en Radix
+- `<Table />` - No existe en Radix
+- `<Avatar />` - No existe en Radix
+- `<Badge />` - No existe en Radix
+
+### 22.2 Patrones de Migración
+
+```typescript
+// ANTES (Headless UI)
+<Dialog open={isOpen} onClose={() => setIsOpen(false)}>
+  <DialogPanel>
+    <DialogTitle>Title</DialogTitle>
+    <DialogContent>...</DialogContent>
+  </DialogPanel>
+</Dialog>
+
+// DESPUÉS (Radix UI)
+<Dialog open={isOpen} onOpenChange={setIsOpen}>
+  <DialogContent>
+    <DialogTitle>Title</DialogTitle>
+    <DialogContent>...</DialogContent>
+  </DialogContent>
+</Dialog>
+```
+
+---
+
+## 23. Changelog
+
+### 2026-01-18
+- Agregada sección 21: Ejemplos de uso de Radix UI con Square UI styling
+- Agregados ejemplos completos de Button, Dialog, Select, Tabs
+- Agregada guía de accesibilidad con Radix UI
+- Agregada guía de migración de Headless UI a Radix UI
 
 ### 2026-01-17
 - Documento inicial creado

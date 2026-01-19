@@ -69,6 +69,14 @@ AnchorOS is a comprehensive salon management system built with Next.js, Supabase
 - `GET /api/aperture/reports/payments` - Payment reports
 - `GET /api/aperture/reports/payroll` - Payroll reports
 
+#### POS (Point of Sale)
+- `POST /api/aperture/pos` - Create sale transaction (cart, payments, receipt)
+- `POST /api/aperture/pos/close-day` - Close day and generate daily report with PDF
+
+#### Payroll
+- `GET /api/aperture/payroll` - Calculate payroll for staff (base salary + commission + tips)
+- `GET /api/aperture/payroll/[staffId]` - Get payroll details for specific staff
+
 #### Permissions
 - `GET /api/aperture/permissions` - Get role permissions
 - `POST /api/aperture/permissions` - Update permissions
@@ -81,12 +89,31 @@ AnchorOS is a comprehensive salon management system built with Next.js, Supabase
 - `PUT /api/kiosk/bookings/[shortId]/confirm` - Confirm booking
 
 ### Payment APIs
-- `POST /api/create-payment-intent` - Create Stripe payment intent
+- `POST /api/create-payment-intent` - Create Stripe payment intent for booking deposit
+- `POST /api/webhooks/stripe` - Stripe webhook handler (payment_intent.succeeded, payment_intent.payment_failed, charge.refunded)
 
 ### Admin APIs
 - `GET /api/admin/locations` - List locations (Admin key required)
 - `POST /api/admin/users` - Create staff/user
 - `POST /api/admin/kiosks` - Create kiosk
+
+### Cron Jobs
+- `GET /api/cron/reset-invitations` - Reset weekly invitation quotas for Gold tier (Monday 00:00 UTC)
+- `GET /api/cron/detect-no-shows` - Detect and mark no-show bookings (every 2 hours)
+
+### Client Management (FASE 5 - Pending Implementation)
+- `GET /api/aperture/clients` - List and search clients (phonetic search, history, technical notes)
+- `POST /api/aperture/clients` - Create new client
+- `GET /api/aperture/clients/[id]` - Get client details
+- `PUT /api/aperture/clients/[id]` - Update client information
+- `POST /api/aperture/clients/[id]/notes` - Add technical note to client
+- `GET /api/aperture/clients/[id]/photos` - Get client photo gallery (VIP/Black/Gold only)
+
+### Loyalty System (FASE 5 - Pending Implementation)
+- `GET /api/aperture/loyalty` - Get loyalty points and rewards
+- `POST /api/aperture/loyalty/redeem` - Redeem loyalty points
+- `GET /api/aperture/loyalty/[customerId]` - Get customer loyalty history
+- `POST /api/aperture/loyalty/[customerId]/points` - Add/remove loyalty points
 
 ## Data Models
 
