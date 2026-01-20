@@ -27,7 +27,7 @@ AUTO_COMMIT=true
 # Runtime options
 SKIP_TESTS=false
 SKIP_LINT=false
-AI_ENGINE="claude"  # claude, opencode, cursor, codex, qwen, or droid
+AI_ENGINE="opencode"  # claude, opencode, cursor, codex, qwen, or droid
 DRY_RUN=false
 MAX_ITERATIONS=0  # 0 = unlimited
 MAX_RETRIES=3
@@ -475,9 +475,12 @@ $never_touch
 "
   fi
 
-  # Add the task
-  prompt+="## Task
+   # Add the task
+   prompt+="## Task
 $task
+
+## Progress
+$(cat "$PROGRESS_FILE")
 
 ## Instructions
 1. Implement the task described above
@@ -1413,10 +1416,18 @@ $never_touch
   # Add context based on PRD source
   case "$PRD_SOURCE" in
     markdown)
-      prompt="@${PRD_FILE} @$PROGRESS_FILE"
+      prompt="## PRD
+$(cat "$PRD_FILE")
+
+## Progress
+$(cat "$PROGRESS_FILE")"
       ;;
     yaml)
-      prompt="@${PRD_FILE} @$PROGRESS_FILE"
+      prompt="## Tasks
+$(cat "$PRD_FILE")
+
+## Progress
+$(cat "$PROGRESS_FILE")"
       ;;
     github)
       # For GitHub issues, we include the issue body
@@ -1429,7 +1440,8 @@ $never_touch
 Issue Description:
 $issue_body
 
-@$PROGRESS_FILE"
+## Progress
+$(cat "$PROGRESS_FILE")"
       ;;
   esac
   
