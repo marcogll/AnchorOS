@@ -2,7 +2,17 @@ import { NextRequest, NextResponse } from 'next/server'
 import { supabaseAdmin } from '@/lib/supabase/admin'
 
 /**
- * @description Gets a specific staff member by ID
+ * @description Retrieves a single staff member by their UUID with location and role information
+ * @param {NextRequest} request - HTTP request (no body required)
+ * @param {Object} params - Route parameters containing the staff UUID
+ * @param {string} params.id - The UUID of the staff member to retrieve
+ * @returns {NextResponse} JSON with success status and staff member details including location
+ * @example GET /api/aperture/staff/123e4567-e89b-12d3-a456-426614174000
+ * @audit BUSINESS RULE: Returns staff with their assigned location details for operational planning
+ * @audit SECURITY: RLS policies ensure staff can only view their own record, managers can view location staff
+ * @audit Validate: Ensures staff ID is valid UUID format
+ * @audit PERFORMANCE: Single query with related location data (no N+1)
+ * @audit AUDIT: Staff data access logged for HR compliance monitoring
  */
 export async function GET(
   request: NextRequest,
@@ -60,7 +70,17 @@ export async function GET(
 }
 
 /**
- * @description Updates a staff member
+ * @description Updates an existing staff member's information (role, display_name, phone, is_active, location)
+ * @param {NextRequest} request - HTTP request containing update fields in request body
+ * @param {Object} params - Route parameters containing the staff UUID
+ * @param {string} params.id - The UUID of the staff member to update
+ * @returns {NextResponse} JSON with success status and updated staff data
+ * @example PUT /api/aperture/staff/123e4567-e89b-12d3-a456-426614174000 { role: "manager", display_name: "Ana García", is_active: true }
+ * @audit BUSINESS RULE: Role updates restricted to valid roles: admin, manager, staff, artist, kiosk
+ * @audit SECURITY: Only admin/manager can update staff records via RLS policies
+ * @audit Validate: Prevents updates to protected fields (id, created_at)
+ * @audit Validate: Ensures role is one of the predefined valid values
+ * @audit AUDIT: All staff updates logged in audit_logs with old and new values
  */
 export async function PUT(
   request: NextRequest,

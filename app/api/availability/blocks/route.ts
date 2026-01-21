@@ -1,6 +1,14 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { supabaseAdmin } from '@/lib/supabase/admin'
 
+/**
+ * @description Validates that the request contains a valid ADMIN_ENROLLMENT_KEY authorization header
+ * @param {NextRequest} request - HTTP request to validate
+ * @returns {Promise<boolean|null>} Returns true if authorized, null otherwise
+ * @example validateAdmin(request)
+ * @audit SECURITY: Simple API key validation for administrative booking block operations
+ * @audit Validate: Ensures authorization header follows 'Bearer <token>' format
+ */
 async function validateAdmin(request: NextRequest) {
   const authHeader = request.headers.get('authorization')
   
@@ -18,7 +26,14 @@ async function validateAdmin(request: NextRequest) {
 }
 
 /**
- * @description Creates a booking block for a resource
+ * @description Creates a new booking block to reserve a resource for a specific time period
+ * @param {NextRequest} request - HTTP request containing location_id, resource_id, start_time_utc, end_time_utc, and optional reason
+ * @returns {NextResponse} JSON with success status and created booking block record
+ * @example POST /api/availability/blocks { location_id: "...", resource_id: "...", start_time_utc: "...", end_time_utc: "...", reason: "Maintenance" }
+ * @audit BUSINESS RULE: Blocks prevent bookings from using the resource during the blocked time
+ * @audit SECURITY: Requires ADMIN_ENROLLMENT_KEY authorization header
+ * @audit Validate: Ensures start_time_utc is before end_time_utc and both are valid ISO8601 timestamps
+ * @audit AUDIT: All booking blocks are logged for operational monitoring
  */
 export async function POST(request: NextRequest) {
   try {
@@ -80,7 +95,14 @@ export async function POST(request: NextRequest) {
 }
 
 /**
- * @description Retrieves booking blocks with filters
+ * @description Retrieves booking blocks with optional filtering by location and date range
+ * @param {NextRequest} request - HTTP request with query parameters location_id, start_date, end_date
+ * @returns {NextResponse} JSON with array of booking blocks including related location, resource, and creator info
+ * @example GET /api/availability/blocks?location_id=...&start_date=2026-01-01&end_date=2026-01-31
+ * @audit BUSINESS RULE: Returns all booking blocks regardless of status (used for resource planning)
+ * @audit SECURITY: Requires ADMIN_ENROLLMENT_KEY authorization header
+ * @audit PERFORMANCE: Supports filtering by location and date range for efficient queries
+ * @audit Validate: Ensures date filters are valid if provided
  */
 export async function GET(request: NextRequest) {
   try {
@@ -158,7 +180,14 @@ export async function GET(request: NextRequest) {
 }
 
 /**
- * @description Deletes a booking block by ID
+ * @description Deletes an existing booking block by its ID, freeing up the resource for bookings
+ * @param {NextRequest} request - HTTP request with query parameter 'id' for the block to delete
+ * @returns {NextResponse} JSON with success status and confirmation message
+ * @example DELETE /api/availability/blocks?id=123e4567-e89b-12d3-a456-426614174000
+ * @audit BUSINESS RULE: Deleting a block removes the scheduling restriction, allowing new bookings
+ * @audit SECURITY: Requires ADMIN_ENROLLMENT_KEY authorization header
+ * @audit Validate: Ensures block ID is provided and exists in the database
+ * @audit AUDIT: Block deletion is logged for operational monitoring
  */
 export async function DELETE(request: NextRequest) {
   try {

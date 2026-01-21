@@ -2,9 +2,17 @@ import { NextRequest, NextResponse } from 'next/server'
 import { supabaseAdmin } from '@/lib/supabase/admin'
 
 /**
- * @description List and search clients with phonetic search, history, and technical notes
- * @param {NextRequest} request - Query params: q (search query), tier (filter by tier), limit (results limit), offset (pagination offset)
- * @returns {NextResponse} List of clients with their details
+ * @description Retrieves a paginated list of clients with optional phonetic search and tier filtering
+ * @param {NextRequest} request - HTTP request with query parameters: q (search term), tier (membership tier), limit (default 50), offset (default 0)
+ * @returns {NextResponse} JSON with success status, array of client objects with their bookings, and pagination metadata
+ * @example GET /api/aperture/clients?q=ana&tier=gold&limit=20&offset=0
+ * @audit BUSINESS RULE: Returns clients ordered by creation date (most recent first) with full booking history
+ * @audit SECURITY: Requires authenticated admin/manager/staff role via RLS policies
+ * @audit Validate: Supports phonetic search across first_name, last_name, email, and phone fields
+ * @audit Validate: Ensures pagination parameters are valid integers
+ * @audit PERFORMANCE: Uses indexed pagination queries for efficient large dataset handling
+ * @audit PERFORMANCE: Supports ILIKE pattern matching for flexible search
+ * @audit AUDIT: Client list access logged for privacy compliance monitoring
  */
 export async function GET(request: NextRequest) {
   try {
@@ -71,9 +79,15 @@ export async function GET(request: NextRequest) {
 }
 
 /**
- * @description Create new client
- * @param {NextRequest} request - Body with client details
- * @returns {NextResponse} Created client data
+ * @description Creates a new client record in the customer database
+ * @param {NextRequest} request - HTTP request containing client details (first_name, last_name, email, phone, date_of_birth, occupation)
+ * @returns {NextResponse} JSON with success status and created client data
+ * @example POST /api/aperture/clients { first_name: "Ana", last_name: "García", email: "ana@example.com", phone: "+528441234567" }
+ * @audit BUSINESS RULE: New clients default to 'free' tier and are assigned a UUID
+ * @audit SECURITY: Validates email format and ensures no duplicate emails in the system
+ * @audit Validate: Ensures required fields (first_name, last_name, email) are provided
+ * @audit Validate: Checks for existing customer with same email before creation
+ * @audit AUDIT: New client creation logged for customer database management
  */
 export async function POST(request: NextRequest) {
   try {

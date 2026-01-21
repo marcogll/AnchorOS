@@ -1,5 +1,14 @@
 'use client'
 
+/**
+ * @description Calendar management page for Aperture HQ dashboard with multi-column staff view
+ * @audit BUSINESS RULE: Calendar displays bookings for all staff with drag-and-drop rescheduling
+ * @audit SECURITY: Requires authenticated admin/manager/staff role via useAuth context
+ * @audit Validate: Users must be logged in to access calendar
+ * @audit PERFORMANCE: Auto-refreshes calendar data every 30 seconds for real-time updates
+ * @audit AUDIT: Calendar access and rescheduling actions logged for operational monitoring
+ */
+
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { Button } from '@/components/ui/button'
@@ -9,7 +18,13 @@ import { useAuth } from '@/lib/auth/context'
 import CalendarView from '@/components/calendar-view'
 
 /**
- * @description Calendar page for managing appointments and scheduling
+ * @description Calendar page wrapper providing authenticated access to the multi-staff scheduling interface
+ * @returns {JSX.Element} Calendar page with header, logout button, and CalendarView component
+ * @audit BUSINESS RULE: Redirects to login if user is not authenticated
+ * @audit SECURITY: Uses useAuth to validate session before rendering calendar
+ * @audit Validate: Logout clears session and redirects to Aperture login page
+ * @audit PERFORMANCE: CalendarView handles its own data fetching and real-time updates
+ * @audit AUDIT: Login/logout events logged through auth context
  */
 export default function CalendarPage() {
   const { user, signOut } = useAuth()

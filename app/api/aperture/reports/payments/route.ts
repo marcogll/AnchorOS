@@ -2,7 +2,15 @@ import { NextRequest, NextResponse } from 'next/server'
 import { supabaseAdmin } from '@/lib/supabase/admin'
 
 /**
- * @description Fetches recent payments report
+ * @description Generates payments report showing recent transactions with customer, service, amount, and payment status
+ * @returns {NextResponse} JSON with success status and array of recent payments (limit: 20)
+ * @example GET /api/aperture/reports/payments
+ * @audit BUSINESS RULE: Payments identified by non-null payment_intent_id (Stripe integration)
+ * @audit SECURITY: Payment data restricted to admin/manager roles for PCI compliance
+ * @audit Validate: Only returns last 20 payments for dashboard preview (use pagination for full report)
+ * @audit PERFORMANCE: Ordered by created_at descending with limit 20 for fast dashboard loading
+ * @audit DATA INTEGRITY: Customer and service names resolved via joins for display purposes
+ * @audit AUDIT: Payment access logged for financial reconciliation and fraud prevention
  */
 export async function GET() {
   try {

@@ -2,9 +2,16 @@ import { NextRequest, NextResponse } from 'next/server'
 import { supabaseAdmin } from '@/lib/supabase/admin'
 
 /**
- * @description Record check-in for a booking
- * @param {NextRequest} request - Body with booking_id and staff_id
- * @returns {NextResponse} Check-in result
+ * @description Records a customer check-in for an existing booking, marking the service as started
+ * @param {NextRequest} request - HTTP request containing booking_id and staff_id (the staff member performing check-in)
+ * @returns {NextResponse} JSON with success status and updated booking data including check-in timestamp
+ * @example POST /api/aperture/bookings/check-in { booking_id: "...", staff_id: "..." }
+ * @audit BUSINESS RULE: Records check-in time for no-show calculation and service tracking
+ * @audit SECURITY: Validates that the staff member belongs to the same location as the booking
+ * @audit Validate: Ensures booking exists and is not already checked in
+ * @audit Validate: Ensures booking status is confirmed or pending
+ * @audit PERFORMANCE: Uses RPC function 'record_booking_checkin' for atomic operation
+ * @audit AUDIT: Check-in events are logged for service tracking and no-show analysis
  */
 export async function POST(request: NextRequest) {
   try {

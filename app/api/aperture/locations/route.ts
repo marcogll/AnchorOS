@@ -2,7 +2,15 @@ import { NextRequest, NextResponse } from 'next/server'
 import { supabaseAdmin } from '@/lib/supabase/admin'
 
 /**
- * @description Gets all active locations
+ * @description Retrieves all active salon locations with their details for dropdown/selection UI
+ * @param {NextRequest} request - HTTP request (no body required)
+ * @returns {NextResponse} JSON with success status and array of active locations sorted by name
+ * @example GET /api/aperture/locations
+ * @audit BUSINESS RULE: Only active locations returned for booking availability
+ * @audit SECURITY: Location data is public-facing but RLS policies still applied
+ * @audit Validate: No query parameters - returns all active locations
+ * @audit PERFORMANCE: Indexed query on is_active and name columns for fast retrieval
+ * @audit DATA INTEGRITY: Timezone field critical for appointment scheduling conversions
  */
 export async function GET(request: NextRequest) {
   try {

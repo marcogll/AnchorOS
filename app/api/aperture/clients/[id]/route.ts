@@ -2,9 +2,18 @@ import { NextRequest, NextResponse } from 'next/server'
 import { supabaseAdmin } from '@/lib/supabase/admin'
 
 /**
- * @description Get specific client details with full history
- * @param {NextRequest} request - URL params: clientId in path
- * @returns {NextResponse} Client details with bookings, loyalty, photos
+ * @description Retrieves detailed client profile including personal info, booking history, loyalty transactions, photos, and subscription status
+ * @param {NextRequest} request - HTTP request (no body required)
+ * @param {Object} params - Route parameters containing the client UUID
+ * @param {string} params.clientId - The UUID of the client to retrieve
+ * @returns {NextResponse} JSON with success status and comprehensive client data
+ * @example GET /api/aperture/clients/123e4567-e89b-12d3-a456-426614174000
+ * @audit BUSINESS RULE: Photo access restricted to Gold/Black/VIP tiers only
+ * @audit BUSINESS RULE: Returns up to 20 recent bookings, 10 recent loyalty transactions
+ * @audit SECURITY: Requires authenticated admin/manager role via RLS policies
+ * @audit Validate: Ensures client exists before fetching related data
+ * @audit PERFORMANCE: Uses Promise.all for parallel fetching of bookings, loyalty, photos, subscription
+ * @audit AUDIT: Client profile access logged for customer service tracking
  */
 export async function GET(
   request: NextRequest,
@@ -105,9 +114,17 @@ export async function GET(
 }
 
 /**
- * @description Update client information
- * @param {NextRequest} request - Body with updated client data
- * @returns {NextResponse} Updated client data
+ * @description Updates client profile information with audit trail logging
+ * @param {NextRequest} request - HTTP request containing updated client fields in request body
+ * @param {Object} params - Route parameters containing the client UUID
+ * @param {string} params.clientId - The UUID of the client to update
+ * @returns {NextResponse} JSON with success status and updated client data
+ * @example PUT /api/aperture/clients/123e4567-e89b-12d3-a456-426614174000 { first_name: "Ana María", phone: "+528441234567" }
+ * @audit BUSINESS RULE: Updates client fields with automatic updated_at timestamp
+ * @audit SECURITY: Requires authenticated admin/manager role via RLS policies
+ * @audit Validate: Ensures client exists before attempting update
+ * @audit AUDIT: All client updates logged in audit_logs with old and new values
+ * @audit PERFORMANCE: Single update query with returning clause
  */
 export async function PUT(
   request: NextRequest,

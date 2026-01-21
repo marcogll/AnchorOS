@@ -2,9 +2,15 @@ import { NextRequest, NextResponse } from 'next/server'
 import { supabaseAdmin } from '@/lib/supabase/admin'
 
 /**
- * @description Get daily closing reports
- * @param {NextRequest} request - Query params: location_id, start_date, end_date, status
- * @returns {NextResponse} List of daily closing reports
+ * @description Retrieves paginated list of daily closing reports with optional filtering by location, date range, and status
+ * @param {NextRequest} request - HTTP request with query parameters: location_id, start_date, end_date, status, limit (default 50), offset (default 0)
+ * @returns {NextResponse} JSON with success status, array of closing reports, and pagination metadata
+ * @example GET /api/aperture/finance/daily-closing?location_id=...&start_date=2026-01-01&end_date=2026-01-31&status=completed
+ * @audit BUSINESS RULE: Daily closing reports contain financial reconciliation data for each business day
+ * @audit SECURITY: Requires authenticated admin/manager role via RLS policies
+ * @audit Validate: Supports filtering by report status (pending, completed, reconciled)
+ * @audit PERFORMANCE: Uses indexed queries on report_date and location_id
+ * @audit AUDIT: Daily closing reports are immutable financial records for compliance
  */
 export async function GET(request: NextRequest) {
   try {

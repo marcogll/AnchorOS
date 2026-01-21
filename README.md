@@ -238,7 +238,7 @@ npm install
 
 3. Configurar variables de entorno
 
-* Crear `.env.local`.
+* Copiar `.env.template` a `.env.local` y configurar las variables requeridas.
 
 4. Levantar entorno local
 
@@ -266,7 +266,7 @@ El sitio estará disponible en **http://localhost:2311**
 - **FASE 1**: 100% ✅ Completada
 - **FASE 2**: 100% ✅ Completada
 - **FASE 3**: 100% ✅ Completada
-- **FASE 4**: 95% ✅ En Progreso
+- **FASE 4**: 100% ✅ COMPLETADA
 - **FASE 5**: 100% ✅ Completada
 - **FASE 6**: 100% ✅ Completada
 - **FASE 7**: 5% ⏳ Pendiente
@@ -357,9 +357,19 @@ El sitio estará disponible en **http://localhost:2311**
   - ✅ **Documentación de Correcciones**: Documento completo con detalles técnicos
     - docs/RECENT_FIXES_JAN_2026.md con análisis de problemas y soluciones
     - Ejemplos de código antes/después
-    - Validación y testing notes
-    - Commit: `88ea79f`
-  - ✅ **Test Links Page**: Página centralizada con enlaces a todas las páginas y APIs del proyecto
+     - Validación y testing notes
+     - Commit: `88ea79f`
+   - ✅ **Calendario Aperture - Creación de Citas**: Nueva funcionalidad de crear citas desde slots vacíos
+     - Click en slot vacío abre modal de creación de cita
+     - Selección de cliente, servicio, ubicación y staff
+     - Validación de disponibilidad antes de crear
+     - API: `POST /api/bookings` para creación de citas
+     - Actualización: 2026-01-21
+   - ✅ **Fix check_staff_availability**: Corrección de llamadas a funciones auxiliares
+     - Migración: 20260121000000_fix_staff_availability_function_calls.sql
+     - Parámetros corregidos para check_staff_work_hours y check_calendar_blocking
+     - Actualización: 2026-01-21
+   - ✅ **Test Links Page**: Página centralizada con enlaces a todas las páginas y APIs del proyecto
 
  ### Fase Actual
 **Fase 1 — Cimientos y CRM**: 100% completado

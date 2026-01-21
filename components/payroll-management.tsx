@@ -1,5 +1,13 @@
 'use client'
 
+/**
+ * @description Payroll management interface for calculating and tracking staff compensation
+ * @audit BUSINESS RULE: Payroll includes base salary, service commissions (10%), and tips (5%)
+ * @audit SECURITY: Requires authenticated admin/manager role via useAuth hook
+ * @audit Validate: Payroll period must have valid start and end dates
+ * @audit AUDIT: Payroll calculations logged through /api/aperture/payroll endpoint
+ */
+
 import { useState, useEffect } from 'react'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
@@ -42,6 +50,16 @@ interface PayrollCalculation {
   hours_worked: number
 }
 
+/**
+ * @description Payroll management component with calculation, listing, and reporting features
+ * @returns {JSX.Element} Complete payroll interface with period selection, staff filtering, and calculation modal
+ * @audit BUSINESS RULE: Calculates payroll from completed bookings within the selected period
+ * @audit BUSINESS RULE: Commission is 10% of service revenue, tips are 5% of service revenue
+ * @audit SECURITY: Requires authenticated admin/manager role; staff cannot access payroll
+ * @audit Validate: Ensures period dates are valid before calculation
+ * @audit PERFORMANCE: Auto-sets default period to current month on mount
+ * @audit AUDIT: Payroll records stored and retrievable for financial reporting
+ */
 export default function PayrollManagement() {
   const { user } = useAuth()
   const [payrollRecords, setPayrollRecords] = useState<PayrollRecord[]>([])

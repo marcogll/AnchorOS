@@ -2,9 +2,18 @@ import { NextRequest, NextResponse } from 'next/server'
 import { supabaseAdmin } from '@/lib/supabase/admin'
 
 /**
- * @description Add technical note to client
- * @param {NextRequest} request - Body with note content
- * @returns {NextResponse} Updated customer with notes
+ * @description Adds a new technical note to the client's profile with timestamp
+ * @param {NextRequest} request - HTTP request containing note text in request body
+ * @param {Object} params - Route parameters containing the client UUID
+ * @param {string} params.clientId - The UUID of the client to add note to
+ * @returns {NextResponse} JSON with success status and updated client data including new note
+ * @example POST /api/aperture/clients/123e4567-e89b-12d3-a456-426614174000/notes { note: "Allergic to latex products" }
+ * @audit BUSINESS RULE: Notes are appended to existing technical_notes with ISO timestamp prefix
+ * @audit BUSINESS RULE: Technical notes used for service customization and allergy tracking
+ * @audit SECURITY: Requires authenticated admin/manager/staff role via RLS policies
+ * @audit Validate: Ensures note content is provided and client exists
+ * @audit AUDIT: Note additions logged as 'technical_note_added' action in audit_logs
+ * @audit PERFORMANCE: Single append operation on technical_notes field
  */
 export async function POST(
   request: NextRequest,

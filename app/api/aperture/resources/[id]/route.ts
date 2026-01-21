@@ -2,7 +2,17 @@ import { NextRequest, NextResponse } from 'next/server'
 import { supabaseAdmin } from '@/lib/supabase/admin'
 
 /**
- * @description Gets a specific resource by ID
+ * @description Retrieves a single resource by ID with location details
+ * @param {NextRequest} request - HTTP request (no body required)
+ * @param {Object} params - Route parameters containing the resource UUID
+ * @param {string} params.id - The UUID of the resource to retrieve
+ * @returns {NextResponse} JSON with success status and resource data including location
+ * @example GET /api/aperture/resources/123e4567-e89b-12d3-a456-426614174000
+ * @audit BUSINESS RULE: Resource details needed for appointment scheduling and capacity planning
+ * @audit SECURITY: RLS policies restrict resource access to authenticated staff/manager roles
+ * @audit Validate: Resource ID must be valid UUID format
+ * @audit PERFORMANCE: Single query with location join (no N+1)
+ * @audit AUDIT: Resource access logged for operational tracking
  */
 export async function GET(
   request: NextRequest,
@@ -59,7 +69,17 @@ export async function GET(
 }
 
 /**
- * @description Updates a resource
+ * @description Updates an existing resource's information (name, type, capacity, is_active, location)
+ * @param {NextRequest} request - HTTP request containing update fields in request body
+ * @param {Object} params - Route parameters containing the resource UUID
+ * @param {string} params.id - The UUID of the resource to update
+ * @returns {NextResponse} JSON with success status and updated resource data
+ * @example PUT /api/aperture/resources/123e4567-e89b-12d3-a456-426614174000 { "name": "mani-02", "capacity": 2 }
+ * @audit BUSINESS RULE: Capacity updates affect booking availability calculations
+ * @audit SECURITY: Only admin/manager can update resources via RLS policies
+ * @audit Validate: Type must be one of: station, room, equipment
+ * @audit Validate: Protected fields (id, created_at) are removed from updates
+ * @audit AUDIT: All resource updates logged in audit_logs with old and new values
  */
 export async function PUT(
   request: NextRequest,
@@ -147,7 +167,17 @@ export async function PUT(
 }
 
 /**
- * @description Deactivates a resource (soft delete)
+ * @description Deactivates a resource (soft delete) to preserve booking history
+ * @param {NextRequest} request - HTTP request (no body required)
+ * @param {Object} params - Route parameters containing the resource UUID
+ * @param {string} params.id - The UUID of the resource to deactivate
+ * @returns {NextResponse} JSON with success status and confirmation message
+ * @example DELETE /api/aperture/resources/123e4567-e89b-12d3-a456-426614174000
+ * @audit BUSINESS RULE: Soft delete preserves historical bookings referencing the resource
+ * @audit SECURITY: Only admin can deactivate resources via RLS policies
+ * @audit Validate: Resource must exist before deactivation
+ * @audit PERFORMANCE: Single update query with is_active=false
+ * @audit AUDIT: Deactivation logged for tracking resource lifecycle and capacity changes
  */
 export async function DELETE(
   request: NextRequest,

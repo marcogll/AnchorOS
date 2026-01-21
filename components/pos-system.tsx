@@ -1,5 +1,14 @@
 'use client'
 
+/**
+ * @description Point of Sale (POS) interface for processing service and product sales with multiple payment methods
+ * @audit BUSINESS RULE: POS handles service/product sales with cash, card, transfer, giftcard, and membership payments
+ * @audit SECURITY: Requires authenticated staff member (cashier) via useAuth hook
+ * @audit Validate: Payment amounts must match cart total before processing
+ * @audit AUDIT: All sales transactions logged through /api/aperture/pos endpoint
+ * @audit PERFORMANCE: Optimized for touch interface with large touch targets
+ */
+
 import { useState, useEffect } from 'react'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
@@ -39,6 +48,17 @@ interface SaleResult {
   receipt: any
 }
 
+/**
+ * @description Point of Sale component with cart management, customer selection, and multi-payment support
+ * @returns {JSX.Element} Complete POS interface with service/product catalog, cart, and payment processing
+ * @audit BUSINESS RULE: Cart items can be services or products with quantity management
+ * @audit BUSINESS RULE: Multiple partial payments supported (split payments)
+ * @audit SECURITY: Requires authenticated staff member; validates user permissions
+ * @audit Validate: Cart cannot be empty when processing payment
+ * @audit Validate: Payment total must equal or exceed cart subtotal
+ * @audit PERFORMANCE: Auto-fetches services, products, and customers on mount
+ * @audit AUDIT: Sales processed through /api/aperture/pos with full transaction logging
+ */
 export default function POSSystem() {
   const { user } = useAuth()
   const [cart, setCart] = useState<POSItem[]>([])

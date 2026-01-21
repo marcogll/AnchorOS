@@ -2,7 +2,15 @@ import { NextRequest, NextResponse } from 'next/server'
 import { supabaseAdmin } from '@/lib/supabase/admin'
 
 /**
- * @description Fetches sales report including total sales, completed bookings, average service price, and sales by service
+ * @description Generates sales report with metrics: total revenue, completed bookings, average price, and sales breakdown by service
+ * @returns {NextResponse} JSON with success status and comprehensive sales metrics
+ * @example GET /api/aperture/reports/sales
+ * @audit BUSINESS RULE: Only completed bookings (status='completed') counted in sales metrics
+ * @audit SECURITY: Sales data restricted to admin/manager roles for financial confidentiality
+ * @audit Validate: No query parameters required - returns all-time sales data
+ * @audit PERFORMANCE: Uses reduce operations on client side for aggregation (suitable for small-medium datasets)
+ * @audit PERFORMANCE: Consider adding date filters for larger datasets (current implementation scans all bookings)
+ * @audit AUDIT: Sales reports generated logged for financial compliance and auditing
  */
 export async function GET() {
   try {

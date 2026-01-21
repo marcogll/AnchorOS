@@ -1,5 +1,13 @@
 'use client'
 
+/**
+ * @description Kiosk booking confirmation interface for customers arriving with appointments
+ * @audit BUSINESS RULE: Customers confirm appointments by entering 6-character short ID
+ * @audit SECURITY: Authenticated via x-kiosk-api-key header for all API calls
+ * @audit Validate: Only pending bookings can be confirmed; already confirmed shows warning
+ * @audit PERFORMANCE: Large touch-friendly input optimized for self-service kiosks
+ */
+
 import { useState } from 'react'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
@@ -12,7 +20,17 @@ interface BookingConfirmationProps {
 }
 
 /**
- * BookingConfirmation component that allows confirming a booking by short ID.
+ * @description Booking confirmation component for kiosk self-service check-in
+ * @param {string} apiKey - Kiosk API key for authentication
+ * @param {Function} onConfirm - Callback when booking is successfully confirmed
+ * @param {Function} onCancel - Callback when customer cancels the process
+ * @returns {JSX.Element} Input form for 6-character booking code with confirmation options
+ * @audit BUSINESS RULE: Search by short_id (6 characters) for quick customer lookup
+ * @audit BUSINESS RULE: Only pending bookings can be confirmed; other statuses show error
+ * @audit SECURITY: All API calls require valid kiosk API key in header
+ * @audit Validate: Short ID must be exactly 6 characters
+ * @audit PERFORMANCE: Single API call to fetch booking by short_id
+ * @audit AUDIT: Booking confirmations logged through /api/kiosk/bookings/[shortId]/confirm
  */
 export function BookingConfirmation({ apiKey, onConfirm, onCancel }: BookingConfirmationProps) {
   const [shortId, setShortId] = useState('')

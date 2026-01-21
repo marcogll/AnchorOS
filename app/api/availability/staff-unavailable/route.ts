@@ -1,6 +1,14 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { supabaseAdmin } from '@/lib/supabase/admin'
 
+/**
+ * @description Validates that the request contains a valid ADMIN_ENROLLMENT_KEY authorization header
+ * @param {NextRequest} request - HTTP request to validate
+ * @returns {Promise<boolean|null>} Returns true if authorized, null if unauthorized, or throws error on invalid format
+ * @example validateAdminOrStaff(request)
+ * @audit SECURITY: Simple API key validation for administrative operations
+ * @audit Validate: Ensures authorization header follows 'Bearer <token>' format
+ */
 async function validateAdminOrStaff(request: NextRequest) {
   const authHeader = request.headers.get('authorization')
   
@@ -18,7 +26,15 @@ async function validateAdminOrStaff(request: NextRequest) {
 }
 
 /**
- * @description Marks staff as unavailable for a time period
+ * @description Creates a new staff unavailability record to block a staff member for a specific time period
+ * @param {NextRequest} request - HTTP request containing staff_id, date, start_time, end_time, optional reason and location_id
+ * @returns {NextResponse} JSON with success status and created availability record
+ * @example POST /api/availability/staff-unavailable { staff_id: "...", date: "2026-01-21", start_time: "10:00", end_time: "14:00", reason: "Lunch meeting" }
+ * @audit BUSINESS RULE: Prevents double-booking by blocking staff during unavailable times
+ * @audit SECURITY: Requires ADMIN_ENROLLMENT_KEY authorization header
+ * @audit Validate: Ensures staff exists and no existing availability record for the same date/time
+ * @audit Validate: Checks that start_time is before end_time and date is valid
+ * @audit AUDIT: All unavailability records are logged for staffing management
  */
 export async function POST(request: NextRequest) {
   try {
@@ -123,7 +139,14 @@ export async function POST(request: NextRequest) {
 }
 
 /**
- * @description Retrieves staff unavailability records
+ * @description Retrieves staff unavailability records filtered by staff ID and optional date range
+ * @param {NextRequest} request - HTTP request with query parameters staff_id, optional start_date and end_date
+ * @returns {NextResponse} JSON with array of availability records sorted by date
+ * @example GET /api/availability/staff-unavailable?staff_id=...&start_date=2026-01-01&end_date=2026-01-31
+ * @audit BUSINESS RULE: Returns only unavailability records (is_available = false)
+ * @audit SECURITY: Requires ADMIN_ENROLLMENT_KEY authorization header
+ * @audit Validate: Ensures staff_id is provided as required parameter
+ * @audit PERFORMANCE: Supports optional date range filtering for efficient queries
  */
 export async function GET(request: NextRequest) {
   try {

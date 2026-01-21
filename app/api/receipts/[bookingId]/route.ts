@@ -4,7 +4,19 @@ import jsPDF from 'jspdf'
 import { format } from 'date-fns'
 import { es } from 'date-fns/locale'
 
-/** @description Generate PDF receipt for booking */
+/**
+ * @description Generates a PDF receipt for a completed booking
+ * @param {NextRequest} request - HTTP request (no body required for GET)
+ * @param {Object} params - Route parameters containing booking UUID
+ * @param {string} params.bookingId - The UUID of the booking to generate receipt for
+ * @returns {NextResponse} PDF file as binary response with Content-Type application/pdf
+ * @example GET /api/receipts/123e4567-e89b-12d3-a456-426614174000
+ * @audit BUSINESS RULE: Generates receipt with booking details, service info, pricing, and branding
+ * @audit SECURITY: Validates booking exists and user has access to view receipt
+ * @audit Validate: Ensures booking data is complete before PDF generation
+ * @audit PERFORMANCE: Single query fetches all related booking data (customer, service, staff, location)
+ * @audit AUDIT: Receipt generation is logged for audit trail
+ */
 export async function GET(
   request: NextRequest,
   { params }: { params: { bookingId: string } }

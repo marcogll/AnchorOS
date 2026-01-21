@@ -1,5 +1,5 @@
 /**
- * @description Calendar view component with drag-and-drop rescheduling functionality
+ * @description Calendar view component with drag-and-drop rescheduling and booking creation
  * @audit BUSINESS RULE: Calendar shows only bookings for selected date and filters
  * @audit SECURITY: Component requires authenticated admin/manager user context
  * @audit PERFORMANCE: Auto-refresh every 30 seconds for real-time updates
@@ -16,7 +16,10 @@ import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { Badge } from '@/components/ui/badge'
-import { Calendar, ChevronLeft, ChevronRight, Clock, User, MapPin } from 'lucide-react'
+import { Input } from '@/components/ui/input'
+import { Label } from '@/components/ui/label'
+import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '@/components/ui/dialog'
+import { Calendar, ChevronLeft, ChevronRight, Clock, User, MapPin, Plus } from 'lucide-react'
 import {
   DndContext,
   closestCenter,
@@ -36,6 +39,7 @@ import {
   useSortable,
 } from '@dnd-kit/sortable'
 import { CSS } from '@dnd-kit/utilities'
+import { checkStaffCanPerformService, checkForConflicts, rescheduleBooking } from '@/lib/calendar-utils'
 
 interface Booking {
   id: string
@@ -68,6 +72,7 @@ interface Staff {
   id: string
   display_name: string
   role: string
+  location_id: string
 }
 
 interface Location {
@@ -163,9 +168,10 @@ interface TimeSlotProps {
   bookings: Booking[]
   staffId: string
   onBookingDrop?: (bookingId: string, newTime: string, staffId: string) => void
+  onSlotClick?: (time: Date, staffId: string) => void
 }
 
-function TimeSlot({ time, bookings, staffId, onBookingDrop }: TimeSlotProps) {
+function TimeSlot({ time, bookings, staffId, onBookingDrop, onSlotClick }: TimeSlotProps) {
   const timeBookings = bookings.filter(booking =>
     booking.staff.id === staffId &&
     parseISO(booking.startTime).getHours() === time.getHours() &&
@@ -173,7 +179,15 @@ function TimeSlot({ time, bookings, staffId, onBookingDrop }: TimeSlotProps) {
   )
 
   return (
-    <div className="border-r border-gray-200 min-h-[60px] relative">
+    <div 
+      className="border-r border-gray-200 min-h-[60px] relative"
+      onClick={() => onSlotClick && timeBookings.length === 0 && onSlotClick(time, staffId)}
+    >
+      {timeBookings.length === 0 && onSlotClick && (
+        <div className="absolute inset-0 hover:bg-blue-50 cursor-pointer transition-colors flex items-center justify-center opacity-0 hover:opacity-100">
+          <Plus className="w-6 h-6 text-blue-400" />
+        </div>
+      )}
       {timeBookings.map(booking => (
         <SortableBooking
           key={booking.id}
@@ -190,33 +204,11 @@ interface StaffColumnProps {
   bookings: Booking[]
   businessHours: { start: string, end: string }
   onBookingDrop?: (bookingId: string, newTime: string, staffId: string) => void
+  onSlotClick?: (time: Date, staffId: string) => void
 }
 
-function StaffColumn({ staff, date, bookings, businessHours, onBookingDrop }: StaffColumnProps) {
+function StaffColumn({ staff, date, bookings, businessHours, onBookingDrop, onSlotClick }: StaffColumnProps) {
   const staffBookings = bookings.filter(booking => booking.staff.id === staff.id)
-
-  // Check for conflicts (overlapping bookings)
-  const conflicts = []
-  for (let i = 0; i < staffBookings.length; i++) {
-    for (let j = i + 1; j < staffBookings.length; j++) {
-      const booking1 = staffBookings[i]
-      const booking2 = staffBookings[j]
-
-      const start1 = parseISO(booking1.startTime)
-      const end1 = parseISO(booking1.endTime)
-      const start2 = parseISO(booking2.startTime)
-      const end2 = parseISO(booking2.endTime)
-
-      // Check if bookings overlap
-      if (start1 < end2 && start2 < end1) {
-        conflicts.push({
-          booking1: booking1.id,
-          booking2: booking2.id,
-          time: Math.min(start1.getTime(), start2.getTime())
-        })
-      }
-    }
-  }
 
   const timeSlots = []
 
@@ -231,7 +223,7 @@ function StaffColumn({ staff, date, bookings, businessHours, onBookingDrop }: St
 
   while (currentTime < endTime) {
     timeSlots.push(new Date(currentTime))
-    currentTime = addMinutes(currentTime, 15) // 15-minute slots
+    currentTime = addMinutes(currentTime, 15)
   }
 
   return (
@@ -247,15 +239,6 @@ function StaffColumn({ staff, date, bookings, businessHours, onBookingDrop }: St
       </div>
 
       <div className="relative">
-        {/* Conflict indicator */}
-        {conflicts.length > 0 && (
-          <div className="absolute top-2 right-2 z-10">
-            <div className="bg-red-500 text-white text-xs px-2 py-1 rounded-full flex items-center gap-1">
-              ⚠️ {conflicts.length} conflicto{conflicts.length > 1 ? 's' : ''}
-            </div>
-          </div>
-        )}
-
         {timeSlots.map((timeSlot, index) => (
           <div key={index} className="border-b border-gray-100 min-h-[60px]">
             <TimeSlot
@@ -263,6 +246,7 @@ function StaffColumn({ staff, date, bookings, businessHours, onBookingDrop }: St
               bookings={staffBookings}
               staffId={staff.id}
               onBookingDrop={onBookingDrop}
+              onSlotClick={onSlotClick}
             />
           </div>
         ))}
@@ -287,6 +271,121 @@ export default function CalendarView() {
   const [selectedLocations, setSelectedLocations] = useState<string[]>([])
   const [rescheduleError, setRescheduleError] = useState<string | null>(null)
   const [lastUpdated, setLastUpdated] = useState<Date | null>(null)
+
+  const [showCreateBooking, setShowCreateBooking] = useState(false)
+  const [createBookingData, setCreateBookingData] = useState<{
+    time: Date | null
+    staffId: string | null
+    customerId: string
+    serviceId: string
+    locationId: string
+    notes: string
+  }>({
+    time: null,
+    staffId: null,
+    customerId: '',
+    serviceId: '',
+    locationId: '',
+    notes: ''
+  })
+  const [createBookingError, setCreateBookingError] = useState<string | null>(null)
+  const [services, setServices] = useState<any[]>([])
+  const [customers, setCustomers] = useState<any[]>([])
+
+  const fetchServices = async () => {
+    try {
+      const response = await fetch('/api/services')
+      const data = await response.json()
+      if (data.success) {
+        setServices(data.services || [])
+      }
+    } catch (error) {
+      console.error('Error fetching services:', error)
+    }
+  }
+
+  const fetchCustomers = async () => {
+    try {
+      const response = await fetch('/api/customers')
+      const data = await response.json()
+      if (data.success) {
+        setCustomers(data.customers || [])
+      }
+    } catch (error) {
+      console.error('Error fetching customers:', error)
+    }
+  }
+
+  useEffect(() => {
+    fetchServices()
+    fetchCustomers()
+  }, [])
+
+  const handleSlotClick = (time: Date, staffId: string) => {
+    const locationId = selectedLocations.length > 0 ? selectedLocations[0] : (calendarData?.locations[0]?.id || '')
+    setCreateBookingData({
+      time,
+      staffId,
+      customerId: '',
+      serviceId: '',
+      locationId,
+      notes: ''
+    })
+    setShowCreateBooking(true)
+    setCreateBookingError(null)
+  }
+
+  const handleCreateBooking = async (e: React.FormEvent) => {
+    e.preventDefault()
+    setCreateBookingError(null)
+    
+    if (!createBookingData.time || !createBookingData.staffId || !createBookingData.customerId || !createBookingData.serviceId || !createBookingData.locationId) {
+      setCreateBookingError('Todos los campos son obligatorios')
+      return
+    }
+
+    try {
+      setLoading(true)
+      const startTimeUtc = createBookingData.time.toISOString()
+
+      const response = await fetch('/api/bookings', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          customer_id: createBookingData.customerId,
+          service_id: createBookingData.serviceId,
+          location_id: createBookingData.locationId,
+          start_time_utc: startTimeUtc,
+          staff_id: createBookingData.staffId,
+          notes: createBookingData.notes || null
+        }),
+      })
+
+      const result = await response.json()
+
+      if (result.success) {
+        setShowCreateBooking(false)
+        setCreateBookingData({
+          time: null,
+          staffId: null,
+          customerId: '',
+          serviceId: '',
+          locationId: '',
+          notes: ''
+        })
+        await fetchCalendarData()
+      } else {
+        setCreateBookingError(result.error || 'Error al crear la cita')
+      }
+    } catch (error) {
+      console.error('Error creating booking:', error)
+      setCreateBookingError('Error de conexión al crear la cita')
+    } finally {
+      setLoading(false)
+    }
+  }
 
   const fetchCalendarData = useCallback(async () => {
     setLoading(true)
@@ -325,11 +424,10 @@ export default function CalendarView() {
     fetchCalendarData()
   }, [fetchCalendarData])
 
-  // Auto-refresh every 30 seconds for real-time updates
   useEffect(() => {
     const interval = setInterval(() => {
       fetchCalendarData()
-    }, 30000) // 30 seconds
+    }, 30000)
 
     return () => clearInterval(interval)
   }, [fetchCalendarData])
@@ -353,34 +451,22 @@ export default function CalendarView() {
     setCurrentDate(new Date())
   }
 
-  const handleStaffFilter = (staffIds: string[]) => {
-    setSelectedStaff(staffIds)
-  }
-
   const handleDragEnd = async (event: DragEndEvent) => {
     const { active, over } = event
 
     if (!over) return
 
     const bookingId = active.id as string
-    const targetStaffId = over.id as string
+    const targetInfo = over.id as string
 
-    // Find the booking
-    const booking = calendarData?.bookings.find(b => b.id === bookingId)
-    if (!booking) return
-
-    // For now, we'll implement a simple time slot change
-    // In a real implementation, you'd need to calculate the exact time from drop position
-    // For demo purposes, we'll move to the next available slot
+    const [targetStaffId, targetTime] = targetInfo.includes('-') ? targetInfo.split('-') : [targetInfo, null]
 
     try {
       setRescheduleError(null)
 
-      // Calculate new start time (for demo, move to next hour)
-      const currentStart = parseISO(booking.startTime)
-      const newStartTime = new Date(currentStart.getTime() + (60 * 60 * 1000)) // +1 hour
+      const currentStart = parseISO(bookingId)
+      const newStartTime = new Date(currentStart.getTime() + (60 * 60 * 1000))
 
-      // Call the reschedule API
       const response = await fetch(`/api/aperture/bookings/${bookingId}/reschedule`, {
         method: 'POST',
         headers: {
@@ -389,14 +475,13 @@ export default function CalendarView() {
         body: JSON.stringify({
           bookingId,
           newStartTime: newStartTime.toISOString(),
-          newStaffId: targetStaffId !== booking.staff.id ? targetStaffId : undefined,
+          newStaffId: targetStaffId,
         }),
       })
 
       const result = await response.json()
 
       if (result.success) {
-        // Refresh calendar data
         await fetchCalendarData()
         setRescheduleError(null)
       } else {
@@ -423,7 +508,136 @@ export default function CalendarView() {
 
   return (
     <div className="space-y-4">
-      {/* Header Controls */}
+      <Dialog open={showCreateBooking} onOpenChange={setShowCreateBooking}>
+        <DialogContent className="sm:max-w-[600px]">
+          <DialogHeader>
+            <DialogTitle>Crear Nueva Cita</DialogTitle>
+            <DialogDescription>
+              {createBookingData.time && (
+                <span className="text-sm">
+                  {format(createBookingData.time, 'EEEE, d MMMM yyyy HH:mm', { locale: es })}
+                </span>
+              )}
+            </DialogDescription>
+          </DialogHeader>
+          
+          <form onSubmit={handleCreateBooking} className="space-y-4">
+            <div className="grid grid-cols-2 gap-4">
+              <div className="space-y-2">
+                <Label htmlFor="customer">Cliente</Label>
+                <Select
+                  value={createBookingData.customerId}
+                  onValueChange={(value) => setCreateBookingData({ ...createBookingData, customerId: value })}
+                >
+                  <SelectTrigger id="customer">
+                    <SelectValue placeholder="Seleccionar cliente" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {customers.map(customer => (
+                      <SelectItem key={customer.id} value={customer.id}>
+                        {customer.first_name} {customer.last_name}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+
+              <div className="space-y-2">
+                <Label htmlFor="service">Servicio</Label>
+                <Select
+                  value={createBookingData.serviceId}
+                  onValueChange={(value) => setCreateBookingData({ ...createBookingData, serviceId: value })}
+                >
+                  <SelectTrigger id="service">
+                    <SelectValue placeholder="Seleccionar servicio" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {services.filter(s => s.location_id === createBookingData.locationId).map(service => (
+                      <SelectItem key={service.id} value={service.id}>
+                        {service.name} ({service.duration_minutes} min) - ${service.base_price}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+            </div>
+
+            <div className="grid grid-cols-2 gap-4">
+              <div className="space-y-2">
+                <Label htmlFor="location">Ubicación</Label>
+                <Select
+                  value={createBookingData.locationId}
+                  onValueChange={(value) => setCreateBookingData({ ...createBookingData, locationId: value })}
+                >
+                  <SelectTrigger id="location">
+                    <SelectValue placeholder="Seleccionar ubicación" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {calendarData.locations.map(location => (
+                      <SelectItem key={location.id} value={location.id}>
+                        {location.name}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+
+              <div className="space-y-2">
+                <Label htmlFor="staff">Staff Asignado</Label>
+                <Select
+                  value={createBookingData.staffId || ''}
+                  onValueChange={(value) => setCreateBookingData({ ...createBookingData, staffId: value })}
+                >
+                  <SelectTrigger id="staff">
+                    <SelectValue placeholder="Seleccionar staff" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {calendarData.staff.filter(staffMember => staffMember.location_id === createBookingData.locationId).map(staffMember => (
+                      <SelectItem key={staffMember.id} value={staffMember.id}>
+                        {staffMember.display_name}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+            </div>
+
+            <div className="space-y-2">
+              <Label htmlFor="notes">Notas</Label>
+              <Input
+                id="notes"
+                value={createBookingData.notes}
+                onChange={(e) => setCreateBookingData({ ...createBookingData, notes: e.target.value })}
+                placeholder="Notas adicionales (opcional)"
+              />
+            </div>
+
+            {createBookingError && (
+              <div className="p-3 bg-red-50 border border-red-200 rounded-md">
+                <p className="text-red-800 text-sm">{createBookingError}</p>
+              </div>
+            )}
+
+            <DialogFooter>
+              <Button 
+                type="button" 
+                variant="outline" 
+                onClick={() => setShowCreateBooking(false)}
+                disabled={loading}
+              >
+                Cancelar
+              </Button>
+              <Button 
+                type="submit" 
+                disabled={loading}
+              >
+                {loading ? 'Creando...' : 'Crear Cita'}
+              </Button>
+            </DialogFooter>
+          </form>
+        </DialogContent>
+      </Dialog>
+
       <Card>
         <CardHeader>
           <div className="flex items-center justify-between">
@@ -459,11 +673,7 @@ export default function CalendarView() {
               <Select
                 value={selectedLocations.length === 0 ? 'all' : selectedLocations[0]}
                 onValueChange={(value) => {
-                  if (value === 'all') {
-                    setSelectedLocations([])
-                  } else {
-                    setSelectedLocations([value])
-                  }
+                  value === 'all' ? setSelectedLocations([]) : setSelectedLocations([value])
                 }}
               >
                 <SelectTrigger className="w-48">
@@ -485,11 +695,7 @@ export default function CalendarView() {
               <Select
                 value={selectedStaff.length === 0 ? 'all' : selectedStaff[0]}
                 onValueChange={(value) => {
-                  if (value === 'all') {
-                    setSelectedStaff([])
-                  } else {
-                    setSelectedStaff([value])
-                  }
+                  value === 'all' ? setSelectedStaff([]) : setSelectedStaff([value])
                 }}
               >
                 <SelectTrigger className="w-48">
@@ -515,7 +721,6 @@ export default function CalendarView() {
         </CardContent>
       </Card>
 
-      {/* Calendar Grid */}
       <Card>
         <CardContent className="p-0">
           <DndContext
@@ -524,7 +729,6 @@ export default function CalendarView() {
             onDragEnd={handleDragEnd}
           >
             <div className="flex">
-              {/* Time Column */}
               <div className="w-20 bg-gray-50 border-r">
                 <div className="p-3 border-b font-semibold text-sm text-center">
                   Hora
@@ -533,7 +737,7 @@ export default function CalendarView() {
                   const timeSlots = []
                   const [startHour] = calendarData.businessHours.start.split(':').map(Number)
                   const [endHour] = calendarData.businessHours.end.split(':').map(Number)
-
+                  
                   for (let hour = startHour; hour <= endHour; hour++) {
                     timeSlots.push(
                       <div key={hour} className="border-b border-gray-100 p-2 text-xs text-center min-h-[60px] flex items-center justify-center">
@@ -546,7 +750,6 @@ export default function CalendarView() {
                 })()}
               </div>
 
-              {/* Staff Columns */}
               <div className="flex flex-1 overflow-x-auto">
                 {calendarData.staff.map(staff => (
                   <StaffColumn
@@ -555,6 +758,7 @@ export default function CalendarView() {
                     date={currentDate}
                     bookings={calendarData.bookings}
                     businessHours={calendarData.businessHours}
+                    onSlotClick={handleSlotClick}
                   />
                 ))}
               </div>

@@ -1,9 +1,14 @@
 /**
- * @description Payroll management API with commission and tip calculations
- * @audit BUSINESS RULE: Payroll based on completed bookings, base salary, commissions, tips
- * @audit SECURITY: Only admin/manager can access payroll data via middleware
- * @audit Validate: Calculations use actual booking data and service revenue
- * @audit PERFORMANCE: Real-time calculations from booking history
+ * @description Retrieves payroll calculations for staff including base salary, commissions, tips, and hours worked
+ * @param {NextRequest} request - HTTP request with query parameters: staff_id, period_start (default 2026-01-01), period_end (default 2026-01-31), action (optional 'calculate')
+ * @returns {NextResponse} JSON with success status and payroll data including earnings breakdown
+ * @example GET /api/aperture/payroll?staff_id=...&period_start=2026-01-01&period_end=2026-01-31&action=calculate
+ * @audit BUSINESS RULE: Calculates payroll based on completed bookings within the specified period
+ * @audit BUSINESS RULE: Commission is 10% of service revenue, tips are 5% of service revenue
+ * @audit SECURITY: Requires authenticated admin/manager role via middleware
+ * @audit Validate: Ensures staff member exists and has completed bookings in the period
+ * @audit PERFORMANCE: Computes hours worked from booking start/end times
+ * @audit AUDIT: Payroll calculations logged for financial compliance and transparency
  */
 
 import { NextRequest, NextResponse } from 'next/server'

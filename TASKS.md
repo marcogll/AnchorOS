@@ -333,7 +333,7 @@ Tareas:
 
 ---
 
-## FASE 4 — HQ Dashboard (PENDIENTE)
+## FASE 4 — HQ Dashboard ✅ COMPLETADA
 
 ### 4.1 Calendario Multi-Columna ✅ COMPLETADO
 * ✅ Vista por staff en columnas.
@@ -341,14 +341,18 @@ Tareas:
 * ✅ Componente visual de citas con colores por estado.
 * ✅ API `/api/aperture/calendar` para datos del calendario.
 * ✅ API `/api/aperture/bookings/[id]/reschedule` para reprogramación.
-* ✅ Filtros por staff (ubicación próximamente).
-* ⏳ Drag & drop para reprogramar (framework listo, lógica pendiente).
-* ⏳ Validación de colisiones completa.
+* ✅ Filtros por staff y ubicación.
+* ✅ Drag & drop para reprogramar con validación de conflictos.
+* ✅ Creación de nuevas citas desde slots vacíos con modal.
+* ⏳ Resize dinámico de bloques (opcional).
+* ✅ Validación de colisiones completa.
 
 **Output:**
-* ⏳ Componente de calendario.
-* ⏳ Lógica de reprogramación.
-* ⏳ Validación de colisiones.
+* ✅ Componente de calendario (CalendarView) con modal de creación de citas.
+* ✅ Lógica de reprogramación (drag & drop).
+* ✅ Validación de colisiones completa.
+* ✅ Interfaz de creación de citas desde slots vacíos.
+* ⏳ Resize dinámico de bloques (opcional).
 
 ---
 
@@ -598,19 +602,19 @@ Tareas:
 
 ### 🚧 En Progreso
 - 🚧 Aperture - Backend para staff/manager/admin (aperture.anchor23.mx)
-  - ✅ API para obtener staff disponible (/api/aperture/staff)
-  - ✅ API para gestión de horarios (/api/aperture/staff/schedule)
-  - ✅ API para recursos (/api/aperture/resources)
-- ✅ API para dashboard (/api/aperture/dashboard) - FUNCIONANDO
-- ✅ API para calendario (/api/aperture/calendar) - FUNCIONANDO
-- ✅ API para reprogramación (/api/aperture/bookings/[id]/reschedule) - FUNCIONANDO
-- ✅ Componente CalendarioView con drag & drop framework
-- ✅ Página de calendario (/aperture/calendar) - FUNCIONANDO
-- ✅ Página principal de admin (/aperture)
-- ❌ API para estadísticas (/api/aperture/stats) - FALTA IMPLEMENTAR
-  - ✅ Autenticación de admin/staff/manager (Supabase Auth completo)
-  - ⏳ Gestión completa de staff (CRUD, horarios)
-  - ⏳ Gestión de recursos y asignación
+   - ✅ API para obtener staff disponible (/api/aperture/staff)
+   - ✅ API para gestión de horarios (/api/aperture/staff/schedule)
+   - ✅ API para recursos (/api/aperture/resources)
+   - ✅ API para dashboard (/api/aperture/dashboard) - FUNCIONANDO
+   - ✅ API para calendario (/api/aperture/calendar) - FUNCIONANDO
+   - ✅ API para reprogramación (/api/aperture/bookings/[id]/reschedule) - FUNCIONANDO
+   - ✅ Componente CalendarioView con drag & drop framework
+   - ✅ Página de calendario (/aperture/calendar) - FUNCIONANDO
+   - ✅ Página principal de admin (/aperture)
+   - ✅ Creación de citas desde slots vacíos
+   - ✅ Autenticación de admin/staff/manager (Supabase Auth completo)
+   - ✅ Gestión completa de staff (CRUD, horarios)
+   - ✅ Gestión de recursos y asignación
 
 ### ⏳ Pendiente
 - ✅ Implementar API pública (api.anchor23.mx) - Horarios, servicios, ubicaciones públicas
@@ -639,6 +643,29 @@ Tareas:
 ---
 
  ## CORRECCIONES RECIENTES ✅
+
+### Calendario Aperture - Creación de Citas (Enero 21, 2026) ✅
+**Nueva Funcionalidad:**
+- Click en slot vacío del calendario abre modal de creación de cita
+- Modal con selección de:
+  - Cliente (lista dropdown)
+  - Servicio (lista dropdown con duración y precio)
+  - Ubicación (lista dropdown)
+  - Staff (lista dropdown filtrado por ubicación)
+  - Notas (campo de texto opcional)
+- Validación de campos obligatorios antes de enviar
+- API: `POST /api/bookings` para crear nueva cita
+- Calendario se actualiza automáticamente después de creación exitosa
+
+**Archivos:**
+- `components/calendar-view.tsx` - Componente con modal de creación de citas
+
+**Backend:**
+- Funciones de disponibilidad validan correctamente timezones (UTC)
+- `check_staff_availability` con llamadas corregidas a funciones auxiliares
+- Migración: 20260121000000_fix_staff_availability_function_calls.sql
+
+---
 
 ### Corrección de Calendario (Enero 18, 2026) ✅
 **Problema:**
@@ -897,6 +924,23 @@ La migración de recursos eliminó todos los bookings existentes debido a CASCAD
 1. ¿Implementar Auth con Supabase Magic Links o SMS?
 2. ¿Usar Google Calendar API o Edge Functions para sync?
 3. ¿Proveedor de email para notificaciones (SendGrid, AWS SES, etc.)?
+
+---
+
+### Corrección de Horarios de Disponibilidad en Booking (Enero 21, 2026) ✅
+**Problema:**
+- Sistema de booking solo mostraba horarios de 22:00 y 23:00 en lugar de los horarios de atención correctos (10:00-19:00)
+- Función `get_detailed_availability` tenía problemas de conversión de timezone
+
+**Solución:**
+- Corregida función `check_staff_availability` para manejar correctamente los parámetros de timezone
+- Actualizada función `get_detailed_availability` para convertir correctamente de hora local (Monterrey UTC-6) a UTC
+- Creadas funciones auxiliares `check_staff_work_hours` y `check_calendar_blocking`
+
+**Resultado:**
+- ✅ Sistema ahora muestra horarios correctos: 10:00, 11:00, 12:00, 13:00, 14:00, 15:00, 16:00, 17:00, 18:00
+- ✅ Respeta horarios de atención por día de la semana
+- ✅ Maneja correctamente zonas horarias
 
 ---
 

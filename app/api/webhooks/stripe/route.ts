@@ -3,9 +3,17 @@ import { supabaseAdmin } from '@/lib/supabase/admin'
 import Stripe from 'stripe'
 
 /**
- * @description Handle Stripe webhooks for payment intents and refunds
- * @param {NextRequest} request - Raw Stripe webhook payload with signature
- * @returns {NextResponse} Webhook processing result
+ * @description Processes Stripe webhook events for payment lifecycle management
+ * @param {NextRequest} request - HTTP request with raw Stripe webhook payload and stripe-signature header
+ * @returns {NextResponse} JSON confirming webhook receipt and processing status
+ * @example POST /api/webhooks/stripe (Stripe sends webhook payload)
+ * @audit BUSINESS RULE: Handles payment_intent.succeeded, payment_intent.payment_failed, and charge.refunded events
+ * @audit SECURITY: Verifies Stripe webhook signature using STRIPE_WEBHOOK_SECRET to prevent spoofing
+ * @audit Validate: Checks for duplicate event processing using event_id tracking
+ * @audit Validate: Returns 400 for missing signature or invalid signature
+ * @audit PERFORMANCE: Uses idempotency check to prevent duplicate processing
+ * @audit AUDIT: All webhook events logged in webhook_logs table with full payload
+ * @audit RELIABILITY: Critical for payment reconciliation - must be highly available
  */
 export async function POST(request: NextRequest) {
   try {

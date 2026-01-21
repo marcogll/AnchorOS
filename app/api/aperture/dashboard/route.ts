@@ -2,7 +2,17 @@ import { NextRequest, NextResponse } from 'next/server'
 import { supabaseAdmin } from '@/lib/supabase/admin'
 
 /**
- * @description Fetches comprehensive dashboard data including bookings, top performers, and activity feed
+ * @description Fetches comprehensive dashboard data including bookings, top performers, activity feed, and KPIs
+ * @param {NextRequest} request - HTTP request with query parameters for filtering and data inclusion options
+ * @returns {NextResponse} JSON with bookings array, top performers, activity feed, and optional customer data
+ * @example GET /api/aperture/dashboard?location_id=...&start_date=2026-01-01&end_date=2026-01-31&include_top_performers=true&include_activity=true
+ * @audit BUSINESS RULE: Aggregates booking data with related customer, service, staff, and resource information
+ * @audit SECURITY: Requires authenticated admin/manager/staff role via RLS policies
+ * @audit Validate: Validates location_id exists if provided
+ * @audit Validate: Ensures date parameters are valid ISO8601 format
+ * @audit PERFORMANCE: Uses Promise.all for parallel fetching of related data to reduce latency
+ * @audit PERFORMANCE: Implements data mapping for O(1) lookups when combining related data
+ * @audit AUDIT: Dashboard access logged for operational monitoring
  */
 export async function GET(request: NextRequest) {
   try {

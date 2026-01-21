@@ -38,3 +38,22 @@ next-env.d.ts
 
 # ralphy
 ralphy.sh
+
+# Additional security - protect all env files
+.env*
+!.env.example
+!.env.template
+
+# Temporary files
+*.tmp
+*.bak
+*.old
+
+# Logs
+*.log
+dev.log
+server.log
+
+# Build artifacts
+.next/
+tsconfig.tsbuildinfo

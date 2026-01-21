@@ -18,7 +18,8 @@ import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, D
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table'
 import { Badge } from '@/components/ui/badge'
 import { Avatar } from '@/components/ui/avatar'
-import { Plus, Edit, Trash2, Phone, MapPin, Clock, Users } from 'lucide-react'
+import { Checkbox } from '@/components/ui/checkbox'
+import { Plus, Edit, Trash2, Phone, MapPin, Clock, Users, Scissors, X } from 'lucide-react'
 import { useAuth } from '@/lib/auth/context'
 
 interface StaffMember {
@@ -37,6 +38,16 @@ interface StaffMember {
     address: string
   }
   schedule?: any[]
+}
+
+interface Service {
+  id: string
+  name: string
+  category: string
+  duration_minutes: number
+  base_price: number
+  isAssigned?: boolean
+  proficiency?: number
 }
 
 interface Location {
@@ -60,6 +71,10 @@ export default function StaffManagement() {
   const [loading, setLoading] = useState(false)
   const [dialogOpen, setDialogOpen] = useState(false)
   const [editingStaff, setEditingStaff] = useState<StaffMember | null>(null)
+  const [servicesDialogOpen, setServicesDialogOpen] = useState(false)
+  const [selectedStaffForServices, setSelectedStaffForServices] = useState<StaffMember | null>(null)
+  const [services, setServices] = useState<Service[]>([])
+  const [loadingServices, setLoadingServices] = useState(false)
   const [formData, setFormData] = useState({
     location_id: '',
     role: '',
@@ -71,6 +86,63 @@ export default function StaffManagement() {
     fetchStaff()
     fetchLocations()
   }, [])
+
+  const fetchServices = async (staffId: string) => {
+    setLoadingServices(true)
+    try {
+      const response = await fetch(`/api/aperture/staff/${staffId}/services`)
+      const data = await response.json()
+      if (data.success) {
+        setServices(data.availableServices || [])
+      }
+    } catch (error) {
+      console.error('Error fetching services:', error)
+    } finally {
+      setLoadingServices(false)
+    }
+  }
+
+  const openServicesDialog = async (member: StaffMember) => {
+    setSelectedStaffForServices(member)
+    await fetchServices(member.id)
+    setServicesDialogOpen(true)
+  }
+
+  const toggleServiceAssignment = async (serviceId: string, isCurrentlyAssigned: boolean) => {
+    if (!selectedStaffForServices) return
+
+    try {
+      if (isCurrentlyAssigned) {
+        await fetch(`/api/aperture/staff/${selectedStaffForServices.id}/services?service_id=${serviceId}`, {
+          method: 'DELETE'
+        })
+      } else {
+        await fetch(`/api/aperture/staff/${selectedStaffForServices.id}/services`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ service_id: serviceId })
+        })
+      }
+      await fetchServices(selectedStaffForServices.id)
+    } catch (error) {
+      console.error('Error toggling service:', error)
+    }
+  }
+
+  const updateProficiency = async (serviceId: string, level: number) => {
+    if (!selectedStaffForServices) return
+
+    try {
+      await fetch(`/api/aperture/staff/${selectedStaffForServices.id}/services`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ service_id: serviceId, proficiency_level: level })
+      })
+      await fetchServices(selectedStaffForServices.id)
+    } catch (error) {
+      console.error('Error updating proficiency:', error)
+    }
+  }
 
   const fetchStaff = async () => {
     setLoading(true)
@@ -265,6 +337,16 @@ export default function StaffManagement() {
                     </TableCell>
                     <TableCell className="text-right">
                       <div className="flex items-center gap-2 justify-end">
+                        {member.role === 'artist' && (
+                          <Button
+                            variant="outline"
+                            size="sm"
+                            onClick={() => openServicesDialog(member)}
+                            title="Gestionar servicios"
+                          >
+                            <Scissors className="w-4 h-4" />
+                          </Button>
+                        )}
                         <Button
                           variant="outline"
                           size="sm"
@@ -366,6 +448,72 @@ export default function StaffManagement() {
               </Button>
             </DialogFooter>
           </form>
+        </DialogContent>
+      </Dialog>
+
+      <Dialog open={servicesDialogOpen} onOpenChange={setServicesDialogOpen}>
+        <DialogContent className="sm:max-w-[600px] max-h-[80vh] overflow-y-auto">
+          <DialogHeader>
+            <DialogTitle className="flex items-center gap-2">
+              <Scissors className="w-5 h-5" />
+              Servicios de {selectedStaffForServices?.display_name}
+            </DialogTitle>
+            <DialogDescription>
+              Selecciona los servicios que este artista puede realizar y su nivel de proficiency
+            </DialogDescription>
+          </DialogHeader>
+          {loadingServices ? (
+            <div className="text-center py-8">Cargando servicios...</div>
+          ) : (
+            <div className="space-y-4">
+              {services.length === 0 ? (
+                <div className="text-center py-4 text-gray-500">No hay servicios disponibles</div>
+              ) : (
+                services.map((service) => (
+                  <div key={service.id} className="flex items-center justify-between p-3 border rounded-lg">
+                    <div className="flex items-center gap-3">
+                      <Checkbox
+                        checked={service.isAssigned}
+                        onCheckedChange={() => toggleServiceAssignment(service.id, service.isAssigned || false)}
+                      />
+                      <div>
+                        <p className="font-medium">{service.name}</p>
+                        <p className="text-sm text-gray-500">
+                          {service.category} • {service.duration_minutes} min • ${service.base_price}
+                        </p>
+                      </div>
+                    </div>
+                    {service.isAssigned && (
+                      <div className="flex items-center gap-2">
+                        <Label className="text-xs">Nivel:</Label>
+                        <Select
+                          value={String(service.proficiency || 3)}
+                          onValueChange={(value) => updateProficiency(service.id, parseInt(value))}
+                        >
+                          <SelectTrigger className="w-24 h-8">
+                            <SelectValue />
+                          </SelectTrigger>
+                          <SelectContent>
+                            <SelectItem value="1">1 Principiante</SelectItem>
+                            <SelectItem value="2">2 Intermedio</SelectItem>
+                            <SelectItem value="3">3 Competente</SelectItem>
+                            <SelectItem value="4">4 Profesional</SelectItem>
+                            <SelectItem value="5">5 Experto</SelectItem>
+                          </SelectContent>
+                        </Select>
+                      </div>
+                    )}
+                  </div>
+                ))
+              )}
+            </div>
+          )}
+          <DialogFooter>
+            <Button onClick={() => setServicesDialogOpen(false)}>
+              <X className="w-4 h-4 mr-2" />
+              Cerrar
+            </Button>
+          </DialogFooter>
         </DialogContent>
       </Dialog>
     </div>

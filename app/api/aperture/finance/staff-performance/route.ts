@@ -2,9 +2,15 @@ import { NextRequest, NextResponse } from 'next/server'
 import { supabaseAdmin } from '@/lib/supabase/admin'
 
 /**
- * @description Get staff performance report for date range
- * @param {NextRequest} request - Query params: location_id, start_date, end_date
- * @returns {NextResponse} Staff performance metrics per staff member
+ * @description Generates staff performance report with metrics for a specific date range and location
+ * @param {NextRequest} request - HTTP request with query parameters: location_id, start_date, end_date (all required)
+ * @returns {NextResponse} JSON with success status and array of performance metrics per staff member
+ * @example GET /api/aperture/finance/staff-performance?location_id=...&start_date=2026-01-01&end_date=2026-01-31
+ * @audit BUSINESS RULE: Performance metrics include completed bookings, revenue generated, hours worked, and commissions
+ * @audit SECURITY: Requires authenticated admin/manager role via RLS policies
+ * @audit Validate: All three parameters (location_id, start_date, end_date) are required
+ * @audit PERFORMANCE: Uses RPC function 'get_staff_performance_report' for complex aggregation
+ * @audit AUDIT: Staff performance reports used for commission calculations and HR decisions
  */
 export async function GET(request: NextRequest) {
   try {

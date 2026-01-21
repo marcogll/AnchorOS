@@ -40,9 +40,10 @@ export default function CitaPage() {
     const date = searchParams.get('date')
     const time = searchParams.get('time')
     const customer_id = searchParams.get('customer_id')
+    const staff_id = searchParams.get('staff_id')
 
     if (service_id && location_id && date && time) {
-      fetchBookingDetails(service_id, location_id, date, time)
+      fetchBookingDetails(service_id, location_id, date, time, staff_id)
     }
 
     if (customer_id) {
@@ -70,7 +71,7 @@ export default function CitaPage() {
     }
   }
 
-  const fetchBookingDetails = async (serviceId: string, locationId: string, date: string, time: string) => {
+  const fetchBookingDetails = async (serviceId: string, locationId: string, date: string, time: string, staffId?: string | null) => {
     try {
       const response = await fetch(`/api/availability/time-slots?location_id=${locationId}&service_id=${serviceId}&date=${date}`)
       const data = await response.json()
@@ -86,7 +87,8 @@ export default function CitaPage() {
         location_id: locationId,
         date: date,
         time: time,
-        startTime: `${date}T${time}`
+        startTime: `${date}T${time}`,
+        staff_id: staffId || null
       })
     } catch (error) {
       console.error('Error fetching booking details:', error)
@@ -189,6 +191,7 @@ export default function CitaPage() {
           location_id: bookingDetails.location_id,
           start_time_utc: bookingDetails.startTime,
           notes: formData.notas,
+          staff_id: bookingDetails.staff_id,
           payment_method_id: 'mock_' + paymentMethod.cardNumber.slice(-4),
           deposit_amount: depositAmount
         })

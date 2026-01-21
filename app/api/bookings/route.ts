@@ -17,7 +17,8 @@ export async function POST(request: NextRequest) {
       service_id,
       location_id,
       start_time_utc,
-      notes
+      notes,
+      staff_id
     } = body
 
     if (!customer_id && (!customer_email || !customer_first_name || !customer_last_name)) {
@@ -81,29 +82,70 @@ export async function POST(request: NextRequest) {
 
     const endTimeUtc = endTime.toISOString()
 
-    // Check staff availability for the requested time slot
-    const { data: availableStaff, error: staffError } = await supabaseAdmin.rpc('get_available_staff', {
-      p_location_id: location_id,
-      p_start_time_utc: start_time_utc,
-      p_end_time_utc: endTimeUtc
-    })
+    let assignedStaffId: string | null = null
 
-    if (staffError) {
-      console.error('Error checking staff availability:', staffError)
-      return NextResponse.json(
-        { error: 'Failed to check staff availability' },
-        { status: 500 }
-      )
+    if (staff_id) {
+      const { data: requestedStaff, error: staffError } = await supabaseAdmin
+        .from('staff')
+        .select('id, display_name')
+        .eq('id', staff_id)
+        .eq('is_active', true)
+        .single()
+
+      if (staffError || !requestedStaff) {
+        return NextResponse.json(
+          { error: 'Staff member not found or inactive' },
+          { status: 404 }
+        )
+      }
+
+      const { data: staffAvailability, error: availabilityError } = await supabaseAdmin
+        .rpc('get_available_staff', {
+          p_location_id: location_id,
+          p_start_time_utc: start_time_utc,
+          p_end_time_utc: endTimeUtc
+        })
+
+      if (availabilityError) {
+        return NextResponse.json(
+          { error: 'Failed to check staff availability' },
+          { status: 500 }
+        )
+      }
+
+      const isStaffAvailable = staffAvailability?.some((s: any) => s.staff_id === staff_id)
+      if (!isStaffAvailable) {
+        return NextResponse.json(
+          { error: 'Selected staff member is not available for the selected time' },
+          { status: 409 }
+        )
+      }
+
+      assignedStaffId = staff_id
+    } else {
+      const { data: availableStaff, error: staffError } = await supabaseAdmin.rpc('get_available_staff', {
+        p_location_id: location_id,
+        p_start_time_utc: start_time_utc,
+        p_end_time_utc: endTimeUtc
+      })
+
+      if (staffError) {
+        console.error('Error checking staff availability:', staffError)
+        return NextResponse.json(
+          { error: 'Failed to check staff availability' },
+          { status: 500 }
+        )
+      }
+
+      if (!availableStaff || availableStaff.length === 0) {
+        return NextResponse.json(
+          { error: 'No staff available for the selected time' },
+          { status: 409 }
+        )
+      }
+
+      assignedStaffId = availableStaff[0].staff_id
     }
-
-    if (!availableStaff || availableStaff.length === 0) {
-      return NextResponse.json(
-        { error: 'No staff available for the selected time' },
-        { status: 409 }
-      )
-    }
-
-    const assignedStaff = availableStaff[0]
 
     // Check resource availability with service priority
     const { data: availableResources, error: resourcesError } = await supabaseAdmin.rpc('get_available_resources_with_priority', {
@@ -176,7 +218,7 @@ export async function POST(request: NextRequest) {
         customer_id: customer.id,
         service_id,
         location_id,
-        staff_id: assignedStaff.staff_id,
+        staff_id: assignedStaffId,
         resource_id: assignedResource.resource_id,
         short_id: shortId,
         status: 'pending',

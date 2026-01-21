@@ -10,6 +10,21 @@ interface DatePickerProps {
   disabled?: boolean
 }
 
+/**
+ * @description Custom date picker component for booking flow with month navigation and date selection
+ * @param {DatePickerProps} props - Component props including selected date, selection callback, and constraints
+ * @param {Date | null} props.selectedDate - Currently selected date value
+ * @param {(date: Date) => void} props.onDateSelect - Callback invoked when user selects a date
+ * @param {Date} props.minDate - Optional minimum selectable date (defaults to today if not provided)
+ * @param {boolean} props.disabled - Optional flag to disable all interactions
+ * @returns {JSX.Element} Interactive calendar grid with month navigation and date selection
+ * @audit BUSINESS RULE: Calendar starts on Monday (Spanish locale convention)
+ * @audit BUSINESS RULE: Disabled dates cannot be selected (past dates via minDate)
+ * @audit SECURITY: Client-side only component with no external data access
+ * @audit Validate: minDate is enforced via date comparison before selection
+ * @audit PERFORMANCE: Uses date-fns for efficient date calculations
+ * @audit UI: Today's date indicated with visual marker (dot indicator)
+ */
 export default function DatePicker({ selectedDate, onDateSelect, minDate, disabled }: DatePickerProps) {
   const [currentMonth, setCurrentMonth] = useState(selectedDate ? new Date(selectedDate) : new Date())
 

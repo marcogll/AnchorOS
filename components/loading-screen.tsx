@@ -2,7 +2,17 @@
 
 import React, { useState, useEffect } from 'react'
 
-/** @description Elegant loading screen with Anchor 23 branding */
+/**
+ * @description Elegant branded loading screen with Anchor:23 logo reveal animation
+ * @param {Object} props - Component props
+ * @param {() => void} props.onComplete - Callback invoked when loading animation completes
+ * @returns {JSX.Element} Full-screen loading overlay with animated logo and progress bar
+ * @audit BUSINESS RULE: Loading screen provides brand consistency during app initialization
+ * @audit SECURITY: Client-side only animation with no external data access
+ * @audit Validate: onComplete callback triggers app state transition to loaded
+ * @audit PERFORMANCE: Uses CSS animations for smooth GPU-accelerated transitions
+ * @audit UI: Features SVG logo with clip-path reveal animation and gradient progress bar
+ */
 export function LoadingScreen({ onComplete }: { onComplete: () => void }) {
   const [progress, setProgress] = useState(0)
   const [showLogo, setShowLogo] = useState(false)

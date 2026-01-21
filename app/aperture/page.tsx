@@ -1,5 +1,14 @@
 'use client'
 
+/**
+ * @description Aperture HQ Dashboard - Central administrative interface for salon management
+ * @audit BUSINESS RULE: Dashboard aggregates KPIs, bookings, staff, resources, POS, and reports
+ * @audit SECURITY: Requires authenticated admin/manager role via useAuth context
+ * @audit Validate: Tab-based navigation with lazy loading of section data
+ * @audit PERFORMANCE: Data fetched on-demand when switching tabs
+ * @audit AUDIT: Dashboard access and actions logged for operational monitoring
+ */
+
 import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import { Button } from '@/components/ui/button'
@@ -7,7 +16,8 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { StatsCard } from '@/components/ui/stats-card'
 import { Table, TableHeader, TableBody, TableHead, TableRow, TableCell } from '@/components/ui/table'
 import { Avatar } from '@/components/ui/avatar'
-import { Calendar, Users, Clock, DollarSign, TrendingUp, LogOut, Trophy } from 'lucide-react'
+import { Checkbox } from '@/components/ui/checkbox'
+import { Calendar, Users, Clock, DollarSign, TrendingUp, LogOut, Trophy, Smartphone } from 'lucide-react'
 import { format } from 'date-fns'
 import { es } from 'date-fns/locale'
 import { useAuth } from '@/lib/auth/context'
@@ -16,14 +26,23 @@ import StaffManagement from '@/components/staff-management'
 import ResourcesManagement from '@/components/resources-management'
 import PayrollManagement from '@/components/payroll-management'
 import POSSystem from '@/components/pos-system'
+import KiosksManagement from '@/components/kiosks-management'
+import ScheduleManagement from '@/components/schedule-management'
 
 /**
- * @description Admin dashboard component for managing salon operations including bookings, staff, resources, reports, and permissions.
+ * @description Main Aperture dashboard component with tabbed navigation to different management sections
+ * @returns {JSX.Element} Complete dashboard interface with stats, KPI cards, activity feed, and management tabs
+ * @audit BUSINESS RULE: Dashboard displays real-time KPIs and allows management of all salon operations
+ * @audit BUSINESS RULE: Tabs include dashboard, calendar, staff, payroll, POS, resources, reports, and permissions
+ * @audit SECURITY: Requires authenticated admin/manager role; staff have limited access
+ * @audit Validate: Fetches data based on active tab to optimize initial load
+ * @audit PERFORMANCE: Uses StatsCard, Tables, and other optimized UI components
+ * @audit AUDIT: All dashboard interactions logged for operational transparency
  */
 export default function ApertureDashboard() {
   const { user, signOut } = useAuth()
   const router = useRouter()
-  const [activeTab, setActiveTab] = useState<'dashboard' | 'calendar' | 'staff' | 'payroll' | 'pos' | 'resources' | 'reports' | 'permissions'>('dashboard')
+  const [activeTab, setActiveTab] = useState<'dashboard' | 'calendar' | 'staff' | 'payroll' | 'pos' | 'resources' | 'reports' | 'permissions' | 'kiosks' | 'schedule'>('dashboard')
   const [reportType, setReportType] = useState<'sales' | 'payments' | 'payroll'>('sales')
   const [bookings, setBookings] = useState<any[]>([])
   const [staff, setStaff] = useState<any[]>([])
@@ -299,6 +318,20 @@ export default function ApertureDashboard() {
               <Users className="w-4 h-4 mr-2" />
               Permisos
             </Button>
+            <Button
+              variant={activeTab === 'kiosks' ? 'default' : 'outline'}
+              onClick={() => setActiveTab('kiosks')}
+            >
+              <Smartphone className="w-4 h-4 mr-2" />
+              Kioskos
+            </Button>
+            <Button
+              variant={activeTab === 'schedule' ? 'default' : 'outline'}
+              onClick={() => setActiveTab('schedule')}
+            >
+              <Clock className="w-4 h-4 mr-2" />
+              Horarios
+            </Button>
           </div>
         </div>
 
@@ -455,10 +488,9 @@ export default function ApertureDashboard() {
                       <div className="mt-2 space-y-2">
                         {role.permissions.map((perm: any) => (
                           <div key={perm.id} className="flex items-center space-x-2">
-                            <input
-                              type="checkbox"
+                            <Checkbox
                               checked={perm.enabled}
-                              onChange={() => togglePermission(role.id, perm.id)}
+                              onCheckedChange={() => togglePermission(role.id, perm.id)}
                             />
                             <span>{perm.name}</span>
                           </div>
@@ -470,6 +502,14 @@ export default function ApertureDashboard() {
               )}
             </CardContent>
           </Card>
+        )}
+
+        {activeTab === 'kiosks' && (
+          <KiosksManagement />
+        )}
+
+        {activeTab === 'schedule' && (
+          <ScheduleManagement />
         )}
 
         {activeTab === 'reports' && (

@@ -2,9 +2,16 @@ import { NextRequest, NextResponse } from 'next/server'
 import { supabaseAdmin } from '@/lib/supabase/admin'
 
 /**
- * @description Get loyalty points and rewards for current customer
- * @param {NextRequest} request - Query params: customerId (optional, defaults to authenticated user)
- * @returns {NextResponse} Loyalty summary with points, transactions, and rewards
+ * @description Retrieves loyalty points summary, recent transactions, and available rewards for a customer
+ * @param {NextRequest} request - HTTP request with optional query parameter customerId (defaults to authenticated user)
+ * @returns {NextResponse} JSON with success status and loyalty data including summary, transactions, and available rewards
+ * @example GET /api/aperture/loyalty?customerId=123e4567-e89b-12d3-a456-426614174000
+ * @audit BUSINESS RULE: Returns loyalty summary computed from RPC function with points balance and history
+ * @audit SECURITY: Requires authentication; customers can only view their own loyalty data
+ * @audit Validate: Ensures customer exists and has loyalty record
+ * @audit PERFORMANCE: Uses RPC function 'get_customer_loyalty_summary' for efficient aggregation
+ * @audit PERFORMANCE: Fetches recent 50 transactions for transaction history display
+ * @audit AUDIT: Loyalty data access logged for customer tracking
  */
 export async function GET(request: NextRequest) {
   try {

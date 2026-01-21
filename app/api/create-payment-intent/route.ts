@@ -3,9 +3,16 @@ import Stripe from 'stripe'
 import { supabaseAdmin } from '@/lib/supabase/admin'
 
 /**
- * @description Creates a Stripe payment intent for booking deposit (50% of service price, max $200)
- * @param {NextRequest} request - Request containing booking details
- * @returns {NextResponse} Payment intent client secret and amount
+ * @description Creates a Stripe payment intent for booking deposit payment
+ * @param {NextRequest} request - HTTP request containing customer and service details
+ * @returns {NextResponse} JSON with Stripe client secret, deposit amount, and service name
+ * @example POST /api/create-payment-intent { customer_email: "...", service_id: "...", location_id: "...", start_time_utc: "..." }
+ * @audit BUSINESS RULE: Calculates deposit as 50% of service price, capped at $200 maximum
+ * @audit SECURITY: Requires valid Stripe configuration and service validation
+ * @audit Validate: Ensures service exists and customer details are provided
+ * @audit Validate: Validates start_time_utc format and location validity
+ * @audit AUDIT: Payment intent creation is logged for audit trail
+ * @audit PERFORMANCE: Single database query to fetch service pricing
  */
 export async function POST(request: NextRequest) {
   try {

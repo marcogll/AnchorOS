@@ -1,5 +1,13 @@
 'use client'
 
+/**
+ * @description Kiosk walk-in booking flow for in-store service reservations
+ * @audit BUSINESS RULE: Walk-in flow designed for touch screen with large buttons and simple navigation
+ * @audit SECURITY: Authenticated via x-kiosk-api-key header for all API calls
+ * @audit Validate: Multi-step flow with service → customer → confirm → success states
+ * @audit PERFORMANCE: Optimized for offline-capable touch interface
+ */
+
 import { useState } from 'react'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
@@ -14,7 +22,17 @@ interface WalkInFlowProps {
 }
 
 /**
- * WalkInFlow component that manages the walk-in booking process in steps.
+ * @description Walk-in booking flow component for kiosk terminals
+ * @param {string} apiKey - Kiosk API key for authentication
+ * @param {Function} onComplete - Callback when walk-in booking is completed successfully
+ * @param {Function} onCancel - Callback when customer cancels the walk-in process
+ * @returns {JSX.Element} Multi-step wizard for service selection, customer info, and confirmation
+ * @audit BUSINESS RULE: 4-step flow: services → customer info → resource assignment → success
+ * @audit BUSINESS RULE: Resources auto-assigned based on availability and service priority
+ * @audit SECURITY: All API calls require valid kiosk API key in header
+ * @audit Validate: Customer name and service selection required before booking
+ * @audit PERFORMANCE: Single-page flow optimized for touch interaction
+ * @audit AUDIT: Walk-in bookings logged through /api/kiosk/walkin endpoint
  */
 export function WalkInFlow({ apiKey, onComplete, onCancel }: WalkInFlowProps) {
   const [step, setStep] = useState<'services' | 'customer' | 'confirm' | 'success'>('services')

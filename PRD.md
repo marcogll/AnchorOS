@@ -206,7 +206,7 @@ AnchorOS implementa una arquitectura multi-dominio para separación clara de res
 
 ## 13. Estado Actual del Proyecto
 
-**Nivel de Completitud: ~95%**
+**Nivel de Completitud: ~97%**
 
 ### Fortalezas
 - Arquitectura sólida con separación clara de dominios
@@ -223,11 +223,10 @@ AnchorOS implementa una arquitectura multi-dominio para separación clara de res
 
 ---
 
-## 14. Trabajo Pendiente (5%)
+## 14. Trabajo Pendiente (3%)
 
-### Mejoras en Calendar Maestro
-- Redimensionamiento de bloques
-- Creación de reservas desde slots vacíos
+### Mejoras Opcionales en Calendar Maestro
+- Redimensionamiento de bloques (drag en el borde inferior)
 - Vistas semanales/mensuales adicionales
 
 ### The Vault (Opcional)
@@ -293,13 +292,14 @@ AnchorOS implementa una arquitectura multi-dominio para separación clara de res
 - [x] Implementar lógica de depósitos dinámicos ($200 vs 50%)
 - [x] Sistema de penalizaciones por no-show con waivers
 
-### Fase 4: Dashboard Aperture HQ (95% completado)
+### Fase 4: Dashboard Aperture HQ (100% completado)
 - [x] Dashboard principal con KPIs y métricas operativas
 - [x] Calendar Maestro con vista multi-columna y drag & drop
 - [x] Gestión de staff y recursos (CRUD completo)
 - [x] Sistema de comisiones y nómina
 - [x] Reportes diarios de cierre (PDF)
-- [ ] Mejoras menores en calendario (resize, creación desde slots vacíos)
+- [x] Creación de citas desde slots vacíos en calendario
+- [ ] Mejoras opcionales en calendario (resize de bloques, vista semanal/mensual)
 
 ### Fase 5: Gestión de Clientes y Lealtad ✅
 - [x] Crear niveles de membresía (Free, Gold, Black, VIP) con beneficios

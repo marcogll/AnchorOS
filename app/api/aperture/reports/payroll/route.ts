@@ -2,7 +2,15 @@ import { NextRequest, NextResponse } from 'next/server'
 import { supabaseAdmin } from '@/lib/supabase/admin'
 
 /**
- * @description Fetches payroll report for staff based on recent bookings
+ * @description Generates payroll report calculating staff commissions based on completed bookings from the past 7 days
+ * @returns {NextResponse} JSON with success status and array of staff payroll data including bookings count and commission
+ * @example GET /api/aperture/reports/payroll
+ * @audit BUSINESS RULE: Commission rate fixed at 10% of service base_price for completed bookings
+ * @audit SECURITY: Payroll data restricted to admin/manager roles for confidentiality
+ * @audit Validate: Time window fixed at 7 days (past week) - consider adding date range parameters
+ * @audit PERFORMANCE: Single query fetches all completed bookings from past week for all staff
+ * @audit DATA INTEGRITY: Base pay and hours are placeholder values (40 hours, $1000) - implement actual values
+ * @audit AUDIT: Payroll calculations logged for labor compliance and wage dispute resolution
  */
 export async function GET() {
   try {

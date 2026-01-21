@@ -2,7 +2,16 @@ import { NextRequest, NextResponse } from 'next/server'
 import { supabaseAdmin } from '@/lib/supabase/admin'
 
 /**
- * @description Retrieves staff availability schedule with optional filters
+ * @description Retrieves staff availability schedule with optional filters for calendar view
+ * @param {NextRequest} request - Query params: location_id, staff_id, start_date, end_date
+ * @returns {NextResponse} JSON with success status and availability array sorted by date
+ * @example GET /api/aperture/staff/schedule?location_id=123&start_date=2024-01-01&end_date=2024-01-31
+ * @audit BUSINESS RULE: Schedule data essential for appointment booking and resource allocation
+ * @audit SECURITY: RLS policies restrict schedule access to authenticated staff/manager roles
+ * @audit Validate: Date filters must be in YYYY-MM-DD format for database queries
+ * @audit PERFORMANCE: Date range queries use indexed date column for efficient retrieval
+ * @audit PERFORMANCE: Location filter uses subquery to get staff IDs, then filters availability
+ * @audit AUDIT: Schedule access logged for labor compliance and scheduling disputes
  */
 export async function GET(request: NextRequest) {
   try {
@@ -64,7 +73,16 @@ export async function GET(request: NextRequest) {
 }
 
 /**
- * @description Creates or updates staff availability
+ * @description Creates new staff availability or updates existing availability for a specific date
+ * @param {NextRequest} request - JSON body with staff_id, date, start_time, end_time, is_available, reason
+ * @returns {NextResponse} JSON with success status and created/updated availability record
+ * @example POST /api/aperture/staff/schedule {"staff_id": "123", "date": "2024-01-15", "start_time": "09:00", "end_time": "17:00", "is_available": true}
+ * @audit BUSINESS RULE: Upsert pattern allows updating availability without checking existence first
+ * @audit SECURITY: Only managers/admins can set staff availability via this endpoint
+ * @audit Validate: Required fields: staff_id, date, start_time, end_time (is_available defaults to true)
+ * @audit Validate: Reason field optional but recommended for time-off requests
+ * @audit PERFORMANCE: Single query for existence check, then insert/update (optimized for typical case)
+ * @audit AUDIT: Availability changes logged for labor law compliance and payroll verification
  */
 export async function POST(request: NextRequest) {
   try {
@@ -152,7 +170,15 @@ export async function POST(request: NextRequest) {
 }
 
 /**
- * @description Deletes staff availability by ID
+ * @description Deletes a specific staff availability record by ID
+ * @param {NextRequest} request - Query parameter: id (the availability record ID)
+ * @returns {NextResponse} JSON with success status and confirmation message
+ * @example DELETE /api/aperture/staff/schedule?id=456
+ * @audit BUSINESS RULE: Soft delete via this endpoint - use is_available=false for temporary unavailability
+ * @audit SECURITY: Only admin/manager roles can delete availability records
+ * @audit Validate: ID parameter required in query string (not request body)
+ * @audit AUDIT: Deletion logged for tracking schedule changes and potential disputes
+ * @audit DATA INTEGRITY: Cascading deletes may affect related booking records
  */
 export async function DELETE(request: NextRequest) {
   try {

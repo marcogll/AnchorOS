@@ -2,7 +2,16 @@ import { NextRequest, NextResponse } from 'next/server'
 import { supabaseAdmin } from '@/lib/supabase/admin'
 
 /**
- * @description Updates the status of a specific booking
+ * @description Updates the status of a specific booking by booking ID
+ * @param {NextRequest} request - HTTP request containing the new status in request body
+ * @param {Object} params - Route parameters containing the booking ID
+ * @param {string} params.id - The UUID of the booking to update
+ * @returns {NextResponse} JSON with success status and updated booking data
+ * @example PATCH /api/bookings/123e4567-e89b-12d3-a456-426614174000 { "status": "confirmed" }
+ * @audit BUSINESS RULE: Only allows valid status transitions (pending→confirmed→completed/cancelled/no_show)
+ * @audit SECURITY: Requires authentication and booking ownership validation
+ * @audit Validate: Ensures status is one of the predefined valid values
+ * @audit AUDIT: Status changes are logged in audit_logs table
  */
 export async function PATCH(
   request: NextRequest,

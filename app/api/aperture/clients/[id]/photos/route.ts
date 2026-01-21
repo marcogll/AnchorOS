@@ -2,9 +2,18 @@ import { NextRequest, NextResponse } from 'next/server'
 import { supabaseAdmin } from '@/lib/supabase/admin'
 
 /**
- * @description Get client photo gallery (VIP/Black/Gold only)
- * @param {NextRequest} request - URL params: clientId in path
- * @returns {NextResponse} Client photos with metadata
+ * @description Retrieves client photo gallery for premium tier clients (Gold/Black/VIP only)
+ * @param {NextRequest} request - HTTP request (no body required)
+ * @param {Object} params - Route parameters containing the client UUID
+ * @param {string} params.clientId - The UUID of the client to get photos for
+ * @returns {NextResponse} JSON with success status and array of photo records with creator info
+ * @example GET /api/aperture/clients/123e4567-e89b-12d3-a456-426614174000/photos
+ * @audit BUSINESS RULE: Photo access restricted to Gold, Black, and VIP tiers only
+ * @audit BUSINESS RULE: Returns only active photos (is_active = true) ordered by taken date descending
+ * @audit SECURITY: Validates client tier before allowing photo access
+ * @audit Validate: Returns 403 if client tier does not have photo gallery access
+ * @audit PERFORMANCE: Single query fetches photos with creator user info
+ * @audit AUDIT: Photo gallery access logged for privacy compliance
  */
 export async function GET(
   request: NextRequest,
@@ -69,9 +78,18 @@ export async function GET(
 }
 
 /**
- * @description Upload photo to client gallery (VIP/Black/Gold only)
- * @param {NextRequest} request - Body with photo data
- * @returns {NextResponse} Uploaded photo metadata
+ * @description Uploads a new photo to the client's gallery (Gold/Black/VIP tiers only)
+ * @param {NextRequest} request - HTTP request containing storage_path and optional description
+ * @param {Object} params - Route parameters containing the client UUID
+ * @param {string} params.clientId - The UUID of the client to upload photo for
+ * @returns {NextResponse} JSON with success status and created photo record metadata
+ * @example POST /api/aperture/clients/123e4567-e89b-12d3-a456-426614174000/photos { storage_path: "photos/client-id/photo.jpg", description: "Before nail art" }
+ * @audit BUSINESS RULE: Photo storage path must reference Supabase Storage bucket
+ * @audit BUSINESS RULE: Only Gold/Black/VIP tier clients can have photos in gallery
+ * @audit SECURITY: Validates client tier before allowing photo upload
+ * @audit Validate: Ensures storage_path is provided (required for photo reference)
+ * @audit AUDIT: Photo uploads logged as 'upload' action in audit_logs
+ * @audit PERFORMANCE: Single insert with automatic creator tracking
  */
 export async function POST(
   request: NextRequest,

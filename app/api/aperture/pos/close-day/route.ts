@@ -1,10 +1,16 @@
 /**
- * @description Cash register closure API for daily financial reconciliation
- * @audit BUSINESS RULE: Daily cash closure ensures financial accountability
- * @audit SECURITY: Only admin/manager can close cash registers
- * @audit Validate: All payments for the day must be accounted for
- * @audit AUDIT: Cash closure logged with detailed reconciliation
- * @audit COMPLIANCE: Financial records must be immutable after closure
+ * @description Processes end-of-day cash register closure with financial reconciliation
+ * @param {NextRequest} request - HTTP request containing date, location_id, cash_count object, expected_totals, and optional notes
+ * @returns {NextResponse} JSON with success status, reconciliation report including actual totals, discrepancies, and closure record
+ * @example POST /api/aperture/pos/close-day { date: "2026-01-21", location_id: "...", cash_count: { cash_amount: 5000, card_amount: 8000, transfer_amount: 2000 }, notes: "Day closure" }
+ * @audit BUSINESS RULE: Compares physical cash count with system-recorded transactions to identify discrepancies
+ * @audit BUSINESS RULE: Creates immutable daily_closing_report record after successful reconciliation
+ * @audit SECURITY: Requires authenticated manager/admin role
+ * @audit Validate: Ensures date is valid and location exists
+ * @audit Validate: Calculates discrepancies for each payment method
+ * @audit PERFORMANCE: Uses audit_logs for transaction aggregation (single source of truth)
+ * @audit AUDIT: Daily closure creates permanent financial record with all discrepancies documented
+ * @audit COMPLIANCE: Closure records are immutable and used for financial reporting
  */
 
 import { NextRequest, NextResponse } from 'next/server'

@@ -2,9 +2,16 @@ import { NextRequest, NextResponse } from 'next/server'
 import { supabaseAdmin } from '@/lib/supabase/admin'
 
 /**
- * @description Create expense record
- * @param {NextRequest} request - Body with expense details
- * @returns {NextResponse} Created expense
+ * @description Creates a new expense record for operational cost tracking
+ * @param {NextRequest} request - HTTP request containing location_id (optional), category, description, amount, expense_date, payment_method, receipt_url (optional), notes (optional)
+ * @returns {NextResponse} JSON with success status and created expense data
+ * @example POST /api/aperture/finance/expenses { category: "supplies", description: "Nail polish set", amount: 1500, expense_date: "2026-01-21", payment_method: "card" }
+ * @audit BUSINESS RULE: Expenses categorized for financial reporting (supplies, maintenance, utilities, rent, salaries, marketing, other)
+ * @audit SECURITY: Validates required fields and authenticates creating user
+ * @audit Validate: Ensures category is valid expense category
+ * @audit Validate: Ensures amount is positive number
+ * @audit AUDIT: All expenses logged in audit_logs with category, description, and amount
+ * @audit PERFORMANCE: Single insert with automatic created_by timestamp
  */
 export async function POST(request: NextRequest) {
   try {
@@ -77,9 +84,16 @@ export async function POST(request: NextRequest) {
 }
 
 /**
- * @description Get expenses with filters
- * @param {NextRequest} request - Query params: location_id, category, start_date, end_date
- * @returns {NextResponse} List of expenses
+ * @description Retrieves a paginated list of expenses with optional filtering by location, category, and date range
+ * @param {NextRequest} request - HTTP request with query parameters: location_id, category, start_date, end_date, limit (default 50), offset (default 0)
+ * @returns {NextResponse} JSON with success status, array of expense records, and pagination metadata
+ * @example GET /api/aperture/finance/expenses?location_id=...&category=supplies&start_date=2026-01-01&end_date=2026-01-31&limit=20
+ * @audit BUSINESS RULE: Returns expenses ordered by expense date (most recent first) for expense tracking
+ * @audit SECURITY: Requires authenticated admin/manager role via RLS policies
+ * @audit Validate: Supports filtering by expense category (supplies, maintenance, utilities, rent, salaries, marketing, other)
+ * @audit Validate: Ensures date filters are valid YYYY-MM-DD format
+ * @audit PERFORMANCE: Uses indexed queries on expense_date for efficient filtering
+ * @audit AUDIT: Expense list access logged for financial transparency
  */
 export async function GET(request: NextRequest) {
   try {

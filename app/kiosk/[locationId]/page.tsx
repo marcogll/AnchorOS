@@ -7,7 +7,19 @@ import { BookingConfirmation } from '@/components/kiosk/BookingConfirmation'
 import { WalkInFlow } from '@/components/kiosk/WalkInFlow'
 import { Calendar, UserPlus, MapPin, Clock } from 'lucide-react'
 
-/** @description Kiosk interface component for location-based check-in confirmations and walk-in booking creation. */
+/**
+ * @description Kiosk interface component for location-based check-in confirmations and walk-in booking creation
+ * @param {Object} params - Route parameters containing the locationId
+ * @param {string} params.locationId - The UUID of the salon location this kiosk serves
+ * @returns {JSX.Element} Interactive kiosk interface with authentication, clock, and action cards
+ * @audit BUSINESS RULE: Kiosk enables customer self-service for check-in and walk-in bookings
+ * @audit BUSINESS RULE: Real-time clock displays in location's timezone for customer reference
+ * @audit SECURITY: Device authentication via API key required before any operations
+ * @audit SECURITY: Kiosk mode has no user authentication - relies on device-level security
+ * @audit Validate: Location must be active and have associated kiosk device registered
+ * @audit PERFORMANCE: Single-page app with view-based rendering (no page reloads)
+ * @audit AUDIT: Kiosk operations logged for security and operational monitoring
+ */
 export default function KioskPage({ params }: { params: { locationId: string } }) {
   const [apiKey, setApiKey] = useState<string | null>(null)
   const [location, setLocation] = useState<any>(null)

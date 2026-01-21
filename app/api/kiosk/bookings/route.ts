@@ -1,6 +1,14 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { supabaseAdmin } from '@/lib/supabase/admin'
 
+/**
+ * @description Validates kiosk API key and returns kiosk record if valid
+ * @param {NextRequest} request - HTTP request containing x-kiosk-api-key header
+ * @returns {Promise<Object|null>} Kiosk record with id, location_id, is_active or null if invalid
+ * @example validateKiosk(request)
+ * @audit SECURITY: Simple API key validation for kiosk operations
+ * @audit Validate: Checks both api_key match and is_active status
+ */
 async function validateKiosk(request: NextRequest) {
   const apiKey = request.headers.get('x-kiosk-api-key')
 
@@ -19,7 +27,16 @@ async function validateKiosk(request: NextRequest) {
 }
 
 /**
- * @description Retrieves pending/confirmed bookings for kiosk
+ * @description Retrieves bookings for kiosk display, filtered by optional short_id and date
+ * @param {NextRequest} request - HTTP request with x-kiosk-api-key header and optional query params: short_id, date
+ * @returns {NextResponse} JSON with array of pending/confirmed bookings for the kiosk location
+ * @example GET /api/kiosk/bookings?short_id=ABC123 (Search by booking code)
+ * @example GET /api/kiosk/bookings?date=2026-01-21 (Get all bookings for date)
+ * @audit BUSINESS RULE: Returns only pending and confirmed bookings (not cancelled/completed)
+ * @audit SECURITY: Authenticated via x-kiosk-api-key header; returns only location-specific bookings
+ * @audit Validate: Filters by kiosk's assigned location automatically
+ * @audit PERFORMANCE: Indexed queries on location_id, status, and start_time_utc
+ * @audit AUDIT: Kiosk booking access logged for operational monitoring
  */
 export async function GET(request: NextRequest) {
   try {

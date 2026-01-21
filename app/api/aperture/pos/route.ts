@@ -1,10 +1,15 @@
 /**
- * @description Point of Sale API for processing sales and payments
- * @audit BUSINESS RULE: POS handles service/product sales with multiple payment methods
- * @audit SECURITY: Only admin/manager can process sales via this API
- * @audit Validate: Payment methods must be valid and amounts must match totals
- * @audit AUDIT: All sales transactions logged in audit_logs table
- * @audit PERFORMANCE: Transaction processing must be atomic and fast
+ * @description Processes a point-of-sale transaction with items and multiple payment methods
+ * @param {NextRequest} request - HTTP request containing customer_id (optional), items array, payments array, staff_id, location_id, and optional notes
+ * @returns {NextResponse} JSON with success status and transaction details
+ * @example POST /api/aperture/pos { customer_id: "...", items: [{ type: "service", id: "...", quantity: 1, price: 1500, name: "Manicure" }], payments: [{ method: "card", amount: 1500 }], staff_id: "...", location_id: "..." }
+ * @audit BUSINESS RULE: Supports multiple payment methods (cash, card, transfer, giftcard, membership) in single transaction
+ * @audit BUSINESS RULE: Payment amounts must exactly match subtotal (within 0.01 tolerance)
+ * @audit SECURITY: Requires authenticated staff member (cashier) via Supabase Auth
+ * @audit Validate: Ensures items and payments arrays are non-empty
+ * @audit Validate: Validates payment method types and reference numbers
+ * @audit PERFORMANCE: Uses database transaction for atomic sale processing
+ * @audit AUDIT: All sales transactions logged in audit_logs with full transaction details
  */
 
 import { NextRequest, NextResponse } from 'next/server'

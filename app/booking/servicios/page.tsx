@@ -1,5 +1,13 @@
 'use client'
 
+/**
+ * @description Service selection and appointment booking page for The Boutique
+ * @audit BUSINESS RULE: Multi-step booking flow: service → datetime → confirm → client registration
+ * @audit SECURITY: Public endpoint with rate limiting recommended for availability checks
+ * @audit Validate: All steps must be completed before final booking submission
+ * @audit PERFORMANCE: Auto-fetches services, locations, and time slots based on selections
+ */
+
 import { useState, useEffect } from 'react'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
@@ -23,8 +31,24 @@ interface Location {
   timezone: string
 }
 
-type BookingStep = 'service' | 'datetime' | 'confirm' | 'client'
+interface Staff {
+  id: string
+  display_name: string
+  role: string
+}
 
+type BookingStep = 'service' | 'datetime' | 'artist' | 'confirm' | 'client'
+
+/**
+ * @description Booking flow page guiding customers through service selection, date/time, and confirmation
+ * @returns {JSX.Element} Multi-step booking wizard with service cards, date picker, time slots, and confirmation
+ * @audit BUSINESS RULE: Time slots filtered by service duration and staff availability
+ * @audit BUSINESS RULE: Time slots respect location business hours and existing bookings
+ * @audit SECURITY: Public endpoint; no authentication required for browsing
+ * @audit Validate: Service, location, date, and time required before proceeding
+ * @audit PERFORMANCE: Dynamic time slot loading based on service and date selection
+ * @audit AUDIT: Booking attempts logged for analytics and capacity planning
+ */
 export default function ServiciosPage() {
   const [services, setServices] = useState<Service[]>([])
   const [locations, setLocations] = useState<Location[]>([])
@@ -33,6 +57,8 @@ export default function ServiciosPage() {
   const [selectedDate, setSelectedDate] = useState<Date | null>(new Date())
   const [timeSlots, setTimeSlots] = useState<any[]>([])
   const [selectedTime, setSelectedTime] = useState<string>('')
+  const [availableArtists, setAvailableArtists] = useState<Staff[]>([])
+  const [selectedArtist, setSelectedArtist] = useState<string>('')
   const [currentStep, setCurrentStep] = useState<BookingStep>('service')
   const [loading, setLoading] = useState(false)
   const [errors, setErrors] = useState<Record<string, string>>({})
@@ -90,6 +116,14 @@ export default function ServiciosPage() {
       if (data.availability) {
         setTimeSlots(data.availability)
       }
+
+      const artistsResponse = await fetch(
+        `/api/availability/staff?location_id=${selectedLocation}&service_id=${selectedService}&date=${formattedDate}`
+      )
+      const artistsData = await artistsResponse.json()
+      if (artistsData.staff) {
+        setAvailableArtists(artistsData.staff)
+      }
     } catch (error) {
       console.error('Error fetching time slots:', error)
       setErrors({ ...errors, timeSlots: 'Error al cargar horarios' })
@@ -108,6 +142,10 @@ export default function ServiciosPage() {
   }
 
   const canProceedToConfirm = () => {
+    return selectedService && selectedLocation && selectedDate && selectedTime
+  }
+
+  const canProceedToArtist = () => {
     return selectedService && selectedLocation && selectedDate && selectedTime
   }
 
@@ -133,13 +171,33 @@ export default function ServiciosPage() {
         setErrors({ time: 'Selecciona un horario' })
         return
       }
-      setCurrentStep('confirm')
+      if (availableArtists.length > 0) {
+        setCurrentStep('artist')
+      } else {
+        const params = new URLSearchParams({
+          service_id: selectedService,
+          location_id: selectedLocation,
+          date: format(selectedDate!, 'yyyy-MM-dd'),
+          time: selectedTime
+        })
+        window.location.href = `/booking/cita?${params.toString()}`
+      }
+    } else if (currentStep === 'artist') {
+      const params = new URLSearchParams({
+        service_id: selectedService,
+        location_id: selectedLocation,
+        date: format(selectedDate!, 'yyyy-MM-dd'),
+        time: selectedTime,
+        staff_id: selectedArtist
+      })
+      window.location.href = `/booking/cita?${params.toString()}`
     } else if (currentStep === 'confirm') {
       const params = new URLSearchParams({
         service_id: selectedService,
         location_id: selectedLocation,
         date: format(selectedDate!, 'yyyy-MM-dd'),
-        time: selectedTime
+        time: selectedTime,
+        staff_id: selectedArtist
       })
       window.location.href = `/booking/cita?${params.toString()}`
     }
@@ -148,8 +206,10 @@ export default function ServiciosPage() {
   const handleStepBack = () => {
     if (currentStep === 'datetime') {
       setCurrentStep('service')
-    } else if (currentStep === 'confirm') {
+    } else if (currentStep === 'artist') {
       setCurrentStep('datetime')
+    } else if (currentStep === 'confirm') {
+      setCurrentStep('artist')
     }
   }
 
@@ -267,7 +327,9 @@ export default function ServiciosPage() {
                       ) : (
                         <div className="grid grid-cols-3 gap-2">
                           {timeSlots.map((slot, index) => {
-                            const slotTime = new Date(slot.start_time)
+                            const slotTimeUTC = new Date(slot.start_time)
+                            // JavaScript automatically converts ISO string to local timezone
+                            // Since Monterrey is UTC-6, this gives us the correct local time
                             return (
                               <Button
                                 key={index}
@@ -276,7 +338,7 @@ export default function ServiciosPage() {
                                 className={selectedTime === slot.start_time ? 'w-full' : ''}
                                 style={selectedTime === slot.start_time ? { background: 'var(--deep-earth)' } : {}}
                               >
-                                {format(slotTime, 'HH:mm', { locale: es })}
+                                {format(slotTimeUTC, 'HH:mm', { locale: es })}
                               </Button>
                             )
                           })}
@@ -293,6 +355,66 @@ export default function ServiciosPage() {
                   Duración del servicio: {selectedServiceData.duration_minutes} minutos
                 </div>
               )}
+            </>
+          )}
+
+          {currentStep === 'artist' && (
+            <>
+              <Card style={{ background: 'var(--soft-cream)', borderColor: 'var(--mocha-taupe)', borderWidth: '1px' }}>
+                <CardHeader>
+                  <CardTitle className="flex items-center gap-2" style={{ color: 'var(--charcoal-brown)' }}>
+                    <User className="w-5 h-5" />
+                    Seleccionar Artista
+                  </CardTitle>
+                  <CardDescription style={{ color: 'var(--charcoal-brown)', opacity: 0.7 }}>
+                    {availableArtists.length > 0 
+                      ? 'Elige el artista que prefieres para tu servicio'
+                      : 'Se asignará automáticamente el primer artista disponible'}
+                  </CardDescription>
+                </CardHeader>
+                <CardContent>
+                  {availableArtists.length === 0 ? (
+                    <div className="text-center py-8" style={{ color: 'var(--charcoal-brown)', opacity: 0.7 }}>
+                      No hay artistas específicos disponibles. Se asignará automáticamente.
+                    </div>
+                  ) : (
+                    <div className="space-y-3">
+                  {availableArtists.map((artist) => (
+                    <div
+                      key={artist.id}
+                      className={`p-4 border rounded-lg cursor-pointer transition-all ${
+                        selectedArtist === artist.id
+                          ? 'ring-2 ring-offset-2'
+                          : 'hover:bg-gray-50'
+                      }`}
+                      style={{
+                        borderColor: selectedArtist === artist.id ? 'var(--deep-earth)' : 'var(--mocha-taupe)',
+                        background: selectedArtist === artist.id ? 'var(--bone-white)' : 'transparent'
+                      }}
+                      onClick={() => setSelectedArtist(artist.id)}
+                    >
+                          <div className="flex items-center gap-3">
+                            <div
+                              className="w-10 h-10 rounded-full flex items-center justify-center text-white font-medium"
+                              style={{ background: 'var(--deep-earth)' }}
+                            >
+                              {artist.display_name.split(' ').map(n => n[0]).join('').toUpperCase().slice(0, 2)}
+                            </div>
+                            <div>
+                              <p className="font-medium" style={{ color: 'var(--charcoal-brown)' }}>
+                                {artist.display_name}
+                              </p>
+                              <p className="text-sm capitalize" style={{ color: 'var(--charcoal-brown)', opacity: 0.7 }}>
+                                {artist.role}
+                              </p>
+                            </div>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  )}
+                </CardContent>
+              </Card>
             </>
           )}
 
@@ -314,10 +436,16 @@ export default function ServiciosPage() {
                       <p className="text-sm opacity-75">Fecha</p>
                       <p className="font-medium">{format(selectedDate, 'PPP', { locale: es })}</p>
                     </div>
-                    <div>
-                      <p className="text-sm opacity-75">Hora</p>
-                      <p className="font-medium">{format(parseISO(selectedTime), 'HH:mm', { locale: es })}</p>
-                    </div>
+                      <div>
+                        <p className="text-sm opacity-75">Hora</p>
+                        <p className="font-medium">{format(new Date(selectedTime), 'HH:mm', { locale: es })}</p>
+                      </div>
+                    {selectedArtist && (
+                      <div>
+                        <p className="text-sm opacity-75">Artista</p>
+                        <p className="font-medium">{availableArtists.find(a => a.id === selectedArtist)?.display_name || 'Seleccionado'}</p>
+                      </div>
+                    )}
                     <div>
                       <p className="text-sm opacity-75">Duración</p>
                       <p className="font-medium">{selectedServiceData.duration_minutes} minutos</p>
